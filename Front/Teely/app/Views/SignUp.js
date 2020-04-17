@@ -2,13 +2,14 @@
 import React from 'react';
 import InputWithName from '../Components/InputWithName'
 import SubmitButton from '../Components/SubmitButton'
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image} from 'react-native';
 
 export default class SignUp extends React.Component {
   render() {
     return(
     <View style={styles.main_container}>
       <View style={styles.content_container}>
+        <Image style={styles.logo} source={require('../../assets/icon.png')}/>
         <InputWithName name = "Nom d'utilisateur" type = 'username' placeholder='Pseudonyme' secureTextEntry={false}/>
         <InputWithName name = 'Mot de passe' type = 'password' placeholder='********' secureTextEntry={true}/>
         <InputWithName name = 'Confirmez votre mot de passe' type = 'password' placeholder='********' secureTextEntry={true}/>
@@ -32,7 +33,17 @@ const styles = StyleSheet.create({
     marginTop : 30,
     marginBottom : 20,
     flexDirection : 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  logo : {
+    resizeMode: 'contain',
+    width: 100,
+    height: 100,
+    borderColor: '#ffb4e2',
+    borderWidth : 3,
+    borderRadius: 50,
+    borderBottomWidth : 20
   }
   
 });
