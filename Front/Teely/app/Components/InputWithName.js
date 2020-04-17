@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     flexDirection : 'column',
     justifyContent: 'center',
     alignItems : 'center',
+    marginTop : 10
 
   },
   text: {
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign : 'center',
     color: 'black',  
-    borderBottomWidth : 5
+    //borderBottomWidth : 5
   },
   textInput: {
       backgroundColor: 'white',
