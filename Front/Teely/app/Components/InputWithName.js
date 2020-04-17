@@ -25,19 +25,20 @@ const styles = StyleSheet.create({
     flexDirection : 'column',
     justifyContent: 'center',
     alignItems : 'center',
+
   },
   text: {
     fontFamily: 'Cochin',
     fontSize: 16,
     textAlign : 'center',
     color: 'black',  
-    borderBottomWidth : 10
+    borderBottomWidth : 5
   },
   textInput: {
       backgroundColor: 'white',
       textAlign : 'center',
       height: 40,
       width: 200,
-      borderRadius: 10
-  }
+      borderRadius: 10,
+    }
 });

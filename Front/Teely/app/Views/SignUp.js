@@ -14,6 +14,8 @@ export default class SignUp extends React.Component {
         <InputWithName name = 'Mot de passe' type = 'password' placeholder='********' secureTextEntry={true}/>
         <InputWithName name = 'Confirmez votre mot de passe' type = 'password' placeholder='********' secureTextEntry={true}/>
         <InputWithName name = 'Adresse e-mail' type = 'emailAddress' placeholder='xyz@gmail.com' secureTextEntry={false}/>
+        <InputWithName name = 'Nom' type = 'none' placeholder='Nom' secureTextEntry={false}/>
+        <InputWithName name = 'Prénom' type = 'none' placeholder='Prénom' secureTextEntry={false}/>
         <InputWithName name = 'Date de naissance' type = 'none' placeholder='jj/mm/aaaa' secureTextEntry={false}/>
         <SubmitButton name = 'Créer mon compte'/>
       </View>
