@@ -70,7 +70,7 @@ export default class SignUp extends React.Component {
           secureTextEntry={false} parentCallback = {this.callbackFunctionLastName}/>
         <InputWithName name = 'Prénom' type = 'none' placeholder='Prénom' 
           secureTextEntry={false} parentCallback = {this.callbackFunctionName}/>
-        <InputWithName name = 'Date de naissance' type = 'none' placeholder='jj/mm/aaaa' 
+        <InputWithName name = 'Date de naissance' type = 'none' placeholder='aaaa-mm-jj' 
           secureTextEntry={false} parentCallback = {this.callbackFunctionBirthDate}/>
         <SubmitButton name = 'Créer mon compte' 
           onPress = {() => signUpService.signup(this.username, this.password, this.confirmedPassword,

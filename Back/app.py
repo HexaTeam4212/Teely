@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from peewee import *
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION
 app = Flask(__name__)
 
-mysql_db = MySQLDatabase('test_1', user='root', password='root', host='127.0.0.1', port=3306)
+CORS(app) ## allow CORS for all domains on all routes (to change later)
+
+mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
 
 @app.route('/account/inscription', methods=['POST'])
 def account_inscription():
