@@ -1,14 +1,15 @@
 // app/Components/SubmitButton.js
 import React from 'react';
+import signUpService from '../Services/SignUpService'
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 export default class SubmitButton extends React.Component {
   render() {
     const name = this.props.name
-    //const onPressAction = this.props.onPress
+    const onPressAction = this.props.onPress
     return(
     <View style={styles.main_container}>
-        <TouchableOpacity style = {styles.button}>
+        <TouchableOpacity style = {styles.button} onPress = {onPressAction}>
             <Text style={styles.buttonText}>{name}</Text>
         </TouchableOpacity>
     </View>
@@ -24,6 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems : 'center',
     marginTop : 20
+    
     
   },
   buttonText : {

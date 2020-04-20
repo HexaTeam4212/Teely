@@ -1,22 +1,42 @@
 // app/Components/InputWithName.js
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View} from 'react-native';
 
 export default class InputWithName extends React.Component {
+  constructor(props) {
+    super(props)
+    this.writtenText=""
+  }
+
+  textInputChangedText(text) {
+    this.writtenText=text
+    this.sendData(this.writtenText)
+  }
+
+
+  sendData(data){
+    this.props.parentCallback(data)
+  }
+
   render() {
     const type = this.props.type
     const name = this.props.name
     const placeholder = this.props.placeholder
     const secureTextEntry = this.props.secureTextEntry
+
     return(
     <View style={styles.main_container}>
         <Text style = {styles.text}> {name} </Text>
-        <TextInput placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type} 
-        secureTextEntry= {secureTextEntry} style = {styles.textInput}/>
-    </View>
+        <TextInput
+          placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type} 
+          onChangeText={(text) => this.textInputChangedText(text)}  
+          secureTextEntry= {secureTextEntry} style = {styles.textInput}/>
 
+    </View>
     )
+
   }
+  
 }
 
 const styles = StyleSheet.create({
