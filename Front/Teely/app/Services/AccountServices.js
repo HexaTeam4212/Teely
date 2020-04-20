@@ -1,6 +1,11 @@
 //app/Services/SignUpService.js
 
-class SignUpService {
+
+const backendURL = "http://localhost:5000"
+const endpoint = "/account/"
+
+class AccountServices {
+
     signup(username, password, confirmedPassword,email, lastName, name, birthDate) {
         if (password != confirmedPassword) {
             alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
@@ -14,20 +19,20 @@ class SignUpService {
     }
 
     async signUpRequest(username, password,email, lastName, name, birthDate) {
-        const backendURL = "http://localhost:5000"
-        const endpoint = "/account/inscription"
+        
         try {
-            let requestBody = JSON.stringify({
+            const requestBody = JSON.stringify({
                 username: username,
                 password: password,
                 email: email,
                 birthdate: birthDate,
                 lastName: lastName,
                 name: name,
-                bio: ""
+                bio: "" //TODO: a retirer une fois que le back aura corrigé
             })
-            console.log(requestBody)
-            const response = await fetch(backendURL + endpoint, {
+            const fullEndpoint = endpoint + "inscription"
+            const response = await fetch(backendURL + fullEndpoint, 
+            {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -37,7 +42,7 @@ class SignUpService {
             })
             console.log(response.status)
             if (response.status != 201) {
-                alert("inscription échouée")
+                alert("inscription échouée" + response.status)
             }
         }
         catch (error) {
@@ -46,5 +51,5 @@ class SignUpService {
       }
 
 }
-const signUpService = new SignUpService()
-export default signUpService
+const accountServices = new AccountServices()
+export default accountServices

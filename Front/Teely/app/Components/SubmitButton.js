@@ -1,6 +1,6 @@
 // app/Components/SubmitButton.js
 import React from 'react';
-import signUpService from '../Services/SignUpService'
+import accountServices from '../Services/AccountServices'
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 export default class SubmitButton extends React.Component {
