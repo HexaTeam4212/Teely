@@ -6,7 +6,7 @@ import SubmitButton from '../Components/SubmitButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image} from 'react-native'
 import signUpService from '../Services/SignUpService'
-
+import accountServices from '../Services/AccountServices';
 export default class SignUp extends React.Component {
   constructor(props) {
     super(props)
@@ -74,8 +74,9 @@ export default class SignUp extends React.Component {
           secureTextEntry={false} parentCallback = {this.callbackFunctionName}/>
         <Text style = {styles.text}> Date de naissance </Text>
         <DateTimePicker name="aaaa-mm-jj" parentCallback = {this.callbackFunctionBirthDate}/>
+
         <SubmitButton name = 'Créer mon compte' 
-          onPress = {() => signUpService.signup(this.username, this.password, this.confirmedPassword,
+          onPress = {() => accountServices.signup(this.username, this.password, this.confirmedPassword,
             this.email, this.lastName, this.name, this.birthDate)}/>
       </KeyboardAwareScrollView>
     </View>
