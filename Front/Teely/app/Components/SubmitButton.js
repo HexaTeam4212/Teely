@@ -1,6 +1,5 @@
 // app/Components/SubmitButton.js
 import React from 'react';
-import signUpService from '../Services/SignUpService'
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 export default class SubmitButton extends React.Component {
@@ -25,8 +24,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems : 'center',
     marginTop : 20
-    
-    
   },
   buttonText : {
     fontSize: 20,

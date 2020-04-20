@@ -46,14 +46,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems : 'center',
     marginTop : 10
-
   },
   text: {
-    // fontFamily: 'Cochin',
+    fontFamily: 'Cochin',
     fontSize: 16,
     textAlign : 'center',
     color: 'black',  
-    //borderBottomWidth : 5
+    borderBottomWidth : 5
   },
   textInput: {
       backgroundColor: 'white',

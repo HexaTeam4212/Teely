@@ -1,10 +1,11 @@
 // app/Views/SignUp.js
-import React from 'react';
+import React from 'react'
+import DateTimePicker from '../Components/DateTimePicker'
 import InputWithName from '../Components/InputWithName'
 import SubmitButton from '../Components/SubmitButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, View, Image, Text} from 'react-native'
-import signUpService from '../Services/SignUpService';
+import { StyleSheet, Text, View, Image} from 'react-native'
+import signUpService from '../Services/SignUpService'
 
 export default class SignUp extends React.Component {
   constructor(props) {
@@ -17,7 +18,6 @@ export default class SignUp extends React.Component {
     this.name=""
     this.birthDate=""
   }
-
 
   callbackFunctionUsername = (childData) => {
     this.username = childData
@@ -44,10 +44,10 @@ export default class SignUp extends React.Component {
     this.name = childData
   }
 
-  
   callbackFunctionBirthDate = (childData) => {
     this.birthDate = childData
   }
+ 
 
 
   render() {
@@ -56,7 +56,9 @@ export default class SignUp extends React.Component {
       <KeyboardAwareScrollView 
         contentContainerstyle={styles.content_container} 
         resetScrollToCoords={{ x: 0, y: 0 }}
-        scrollEnabled={false}>
+        scrollEnabled={true}
+        enableAutomaticScroll={(Platform.OS === 'ios')}
+        enableOnAndroid={true}>
         <Image style={styles.logo} source={require('../../assets/logo.png')}/>
         <InputWithName name = "Nom d'utilisateur" type = 'username' placeholder='Pseudonyme' 
           secureTextEntry={false} parentCallback = {this.callbackFunctionUsername}/>
@@ -70,14 +72,13 @@ export default class SignUp extends React.Component {
           secureTextEntry={false} parentCallback = {this.callbackFunctionLastName}/>
         <InputWithName name = 'Prénom' type = 'none' placeholder='Prénom' 
           secureTextEntry={false} parentCallback = {this.callbackFunctionName}/>
-        <InputWithName name = 'Date de naissance' type = 'none' placeholder='jj/mm/aaaa' 
-          secureTextEntry={false} parentCallback = {this.callbackFunctionBirthDate}/>
+        <Text style = {styles.text}> Date de naissance </Text>
+        <DateTimePicker name="aaaa-mm-jj" parentCallback = {this.callbackFunctionBirthDate}/>
         <SubmitButton name = 'Créer mon compte' 
           onPress = {() => signUpService.signup(this.username, this.password, this.confirmedPassword,
             this.email, this.lastName, this.name, this.birthDate)}/>
       </KeyboardAwareScrollView>
     </View>
-
     )
   }
 }
@@ -94,6 +95,14 @@ const styles = StyleSheet.create({
     flexDirection : 'column',
     justifyContent: 'center',
     alignItems: 'center'    
+  },
+  text: {
+    marginTop : 10,
+    fontFamily: 'Cochin',
+    fontSize: 16,
+    textAlign : 'center',
+    color: 'black',  
+    borderBottomWidth : 5
   },
   logo : {
     alignSelf: 'center',
