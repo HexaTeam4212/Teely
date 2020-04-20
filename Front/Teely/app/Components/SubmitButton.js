@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   buttonText : {
     fontSize: 20,
     color : 'black',
-    fontFamily:'Cochin',
+    //fontFamily:'Cochin',
     fontWeight : 'bold'
   },
 

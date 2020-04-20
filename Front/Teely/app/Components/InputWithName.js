@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
 
   },
   text: {
-    fontFamily: 'Cochin',
+    // fontFamily: 'Cochin',
     fontSize: 16,
     textAlign : 'center',
     color: 'black',  
