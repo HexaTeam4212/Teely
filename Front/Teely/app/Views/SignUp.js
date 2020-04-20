@@ -5,7 +5,6 @@ import InputWithName from '../Components/InputWithName'
 import SubmitButton from '../Components/SubmitButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image} from 'react-native'
-import signUpService from '../Services/SignUpService'
 import accountServices from '../Services/AccountServices';
 export default class SignUp extends React.Component {
   constructor(props) {
