@@ -4,7 +4,7 @@ import DateTimePicker from '../Components/DateTimePicker'
 import InputWithName from '../Components/InputWithName'
 import SubmitButton from '../Components/SubmitButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image} from 'react-native'
+import { StyleSheet, Text, View, ActivityIndicator} from 'react-native'
 import accountServices from '../Services/AccountServices';
 export default class SignUp extends React.Component {
   constructor(props) {
@@ -16,6 +16,17 @@ export default class SignUp extends React.Component {
     this.lastName=""
     this.name=""
     this.birthDate=""
+    this.state={isLoading : false}
+  }
+
+  displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator size='large' />
+        </View>
+      )
+    }
   }
 
   callbackFunctionUsername = (childData) => {
@@ -46,6 +57,20 @@ export default class SignUp extends React.Component {
   callbackFunctionBirthDate = (childData) => {
     this.birthDate = childData
   }
+
+  redirect = (signUpOK) => {
+    this.setState({isLoading:false})
+    if (signUpOK==true) {
+      this.props.navigation.navigate("Login")
+    }
+    
+  }
+
+  signup=() => {
+    this.setState({isLoading:true})
+    accountServices.signup(this.username, this.password, this.confirmedPassword,
+              this.email, this.lastName, this.name, this.birthDate, this.redirect)
+  }
  
 
 
@@ -58,7 +83,7 @@ export default class SignUp extends React.Component {
         scrollEnabled={true}
         enableAutomaticScroll={(Platform.OS === 'ios')}
         enableOnAndroid={true}>
-        <Image style={styles.logo} source={require('../../assets/logo.png')}/>
+        
         <InputWithName name = "Nom d'utilisateur" type = 'username' placeholder='Pseudonyme' 
           secureTextEntry={false} parentCallback = {this.callbackFunctionUsername}/>
         <InputWithName name = 'Mot de passe' type = 'password' placeholder='********' 
@@ -75,9 +100,10 @@ export default class SignUp extends React.Component {
         <DateTimePicker name="aaaa-mm-jj" parentCallback = {this.callbackFunctionBirthDate}/>
 
         <SubmitButton name = 'Créer mon compte' 
-          onPress = {() => accountServices.signup(this.username, this.password, this.confirmedPassword,
-            this.email, this.lastName, this.name, this.birthDate)}/>
+          onPress = {this.signup}/>
+      {this.displayLoading()}
       </KeyboardAwareScrollView>
+      
     </View>
     )
   }
@@ -105,14 +131,25 @@ const styles = StyleSheet.create({
     borderBottomWidth : 5
   },
   logo : {
+    marginTop : 10,
     alignSelf: 'center',
     resizeMode: 'contain',
-    width: 100,
-    height: 100,
+    width: 75,
+    height: 75,
     borderColor: '#ffb4e2',
     borderWidth : 3,
     borderRadius: 50,
     borderBottomWidth : 20
+  },
+  loading_container: {
+
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 100,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
   
 });

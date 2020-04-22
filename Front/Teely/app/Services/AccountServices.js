@@ -1,54 +1,61 @@
 //app/Services/SignUpService.js
 
 
-const backendURL = "http://localhost:5000"
+const backendURL = "http://811122ea.ngrok.io"
 const endpoint = "/account/"
 
 class AccountServices {
-
-    signup(username, password, confirmedPassword,email, lastName, name, birthDate) {
-        if (password != confirmedPassword) {
-            alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
-        }
-        if (!email.includes("@") || !email.includes(".")) {
-            alert("Adresse mail non valide, merci de re-vérifier")
-        }
-        //Vérification du format de la date
-        this.signUpRequest(username, password,email, lastName, name, birthDate)
-
+    constructor () {
+        this.signUpResult=""
     }
 
-    async signUpRequest(username, password,email, lastName, name, birthDate) {
-        
-        try {
-            const requestBody = JSON.stringify({
-                username: username,
-                password: password,
-                email: email,
-                birthdate: birthDate,
-                lastName: lastName,
-                name: name,
-                bio: "" //TODO: a retirer une fois que le back aura corrigé
-            })
-            const fullEndpoint = endpoint + "inscription"
-            const response = await fetch(backendURL + fullEndpoint, 
-            {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: requestBody
-            })
-            console.log(response.status)
-            if (response.status != 201) {
-                alert("inscription échouée" + response.status)
+    async signup(username, password, confirmedPassword,email, lastName, name, birthDate, callback) {
+        this.signUpResult="false"
+        if(username=='' || password=='' || confirmedPassword=='' || birthDate=='' || lastName=='' || name=='' || email=='') {
+            alert("Veuillez remplir tous les champs !")
+        } 
+        else if (password != confirmedPassword) {
+            alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
+        }
+        else {
+            try {
+                const requestBody = JSON.stringify({
+                    username: username,
+                    password: password,
+                    email: email,
+                    birthdate: birthDate,
+                    lastName: lastName,
+                    name: name,
+                    bio: "" //TODO: a retirer une fois que le back aura corrigé
+                })
+                const fullEndpoint = endpoint + "inscription"
+                const response = await fetch(backendURL + fullEndpoint, 
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: requestBody
+                })
+                if (response.status != 201) {
+                    if (response.status == 409) {
+                        alert("Ce nom d'utilisateur (ou cette adresse e-mail) est déjà utilisé, merci d'en choisir un autre !")
+                        callback(false);
+                    }    
+                }
+                else {
+                    this.signUpResult="true"
+                    alert("Inscription réussie :)")
+                    callback(true);
+                }
+            }
+            catch (error) {
+                console.error(error)
             }
         }
-        catch (error) {
-            console.error(error)
-        }
-      }
+    }
+
 
 }
 const accountServices = new AccountServices()
