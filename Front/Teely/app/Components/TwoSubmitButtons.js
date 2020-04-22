@@ -1,6 +1,6 @@
 // app/Components/TwoSubmitButtons.js
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, Platform } from 'react-native';
 
 export default class TwoSubmitButtons extends React.Component {
   render() {
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   buttonText : {
     fontSize: 20,
     color : 'black',
-    fontFamily:'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontWeight : 'bold'
   },
 

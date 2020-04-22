@@ -1,6 +1,6 @@
 // app/Components/InputWithName.js
 import React from 'react';
-import { StyleSheet, Text, TextInput, View} from 'react-native';
+import { StyleSheet, Text, TextInput, View, Platform } from 'react-native';
 
 export default class InputWithName extends React.Component {
   constructor(props) {
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     marginTop : 10
   },
   text: {
-    fontFamily: 'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontSize: 16,
     textAlign : 'center',
     color: 'black',  

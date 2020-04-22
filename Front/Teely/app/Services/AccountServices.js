@@ -1,7 +1,7 @@
 //app/Services/SignUpService.js
 
 
-const backendURL = "http://localhost:5000"
+const backendURL = "http://621a5af9.ngrok.io"
 const endpoint = "/account/"
 
 class AccountServices {

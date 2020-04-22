@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
+import { StyleSheet, TouchableOpacity, Text, View, Platform } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 
 export default class DateTimePickerTester extends Component {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 20,
         color: 'black',
-        fontFamily: 'Cochin'
+        fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     },
 
     button: {

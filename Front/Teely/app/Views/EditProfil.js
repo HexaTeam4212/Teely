@@ -2,7 +2,7 @@
 import React from 'react';
 import NameWithInput from '../Components/NameWithInput'
 import TwoSubmitButtons from '../Components/TwoSubmitButtons'
-import { StyleSheet, View, Image, TouchableOpacity, Text, ScrollView} from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Text, ScrollView, Platform} from 'react-native';
 
 export default class EditProfil extends React.Component {
   render() {
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     buttonText : {
     fontSize: 14,
     color : 'black',
-    fontFamily:'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontWeight : 'bold',
     textDecorationLine: 'underline'
   },

@@ -1,7 +1,6 @@
 // app/Components/SubmitButton.js
 import React from 'react';
-import accountServices from '../Services/AccountServices'
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, Platform } from 'react-native';
 
 export default class SubmitButton extends React.Component {
   render() {
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
   buttonText : {
     fontSize: 20,
     color : 'black',
-    //fontFamily:'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontWeight : 'bold'
   },
 
