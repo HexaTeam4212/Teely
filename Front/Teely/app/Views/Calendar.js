@@ -2,8 +2,8 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, ActivityIndicator} from 'react-native'
-import accountServices from '../Services/AccountServices';
-export default class SignUp extends React.Component {
+
+export default class Calendar extends React.Component {
   constructor(props) {
     super(props)
   }

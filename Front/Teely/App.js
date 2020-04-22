@@ -4,6 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './app/Views/Login'
 import SignUp from './app/Views/SignUp'
+import Profile from './app/Views/Profile'
+import EditProfil from './app/Views/EditProfil'
+import Groups from './app/Views/Groups'
+import Calendar from './app/Views/Calendar'
 
 export default function App() {
 
@@ -13,8 +17,68 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="SignUp" 
-          component={SignUp} 
+          name="Profile"
+          component={Profile}
+          options={{
+            title: 'Mon profil',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="Groups"
+          component={Groups}
+          options={{
+            title: 'Mes groupes',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="Calendar"
+          component={Calendar}
+          options={{
+            title: 'Mon calendrier personnel',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfil}
+          options={{
+            title: 'Edition du profil',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
           options={{
             title: 'Inscription',
             headerStyle: {
@@ -24,7 +88,8 @@ export default function App() {
             headerTintColor: 'white',
             headerTitleStyle: {
               fontWeight: 'bold',
-            },}}
+            },
+          }}
         />
         <Stack.Screen
           name="Login"
@@ -38,12 +103,15 @@ export default function App() {
             headerTintColor: 'white',
             headerTitleStyle: {
               fontWeight: 'bold',
-            },}}
+            },
+            headerLeft:null
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
 
 
 

@@ -135,17 +135,6 @@ const styles = StyleSheet.create({
     color: 'black',
     borderBottomWidth: 5
   },
-  logo: {
-    marginTop: 10,
-    alignSelf: 'center',
-    resizeMode: 'contain',
-    width: 75,
-    height: 75,
-    borderColor: '#ffb4e2',
-    borderWidth: 3,
-    borderRadius: 50,
-    borderBottomWidth: 20
-  },
   loading_container: {
 
     position: 'absolute',
