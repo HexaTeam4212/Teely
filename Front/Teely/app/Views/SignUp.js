@@ -74,7 +74,7 @@ export default class SignUp extends React.Component {
         <Text style = {styles.text}> Date de naissance </Text>
         <DateTimePicker name="aaaa-mm-jj" parentCallback = {this.callbackFunctionBirthDate}/>
 
-        <SubmitButton name = 'Créer mon compte' 
+        <SubmitButton name = 'Créer mon compte' width = {200}
           onPress = {() => accountServices.signup(this.username, this.password, this.confirmedPassword,
             this.email, this.lastName, this.name, this.birthDate)}/>
       </KeyboardAwareScrollView>
