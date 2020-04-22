@@ -15,7 +15,7 @@ def account_inscription():
     reponse_body = {}
 
     try:
-        newUser = PERSON(Username = content['username'], Email = content['email'], Password = content['password'], LastName = content['lastName'], Name = content['name'], BirthDate = content['birthdate'], Bio = content['bio'])
+        newUser = PERSON(Username = content['username'], Email = content['email'], Password = content['password'], LastName = content['lastName'], Name = content['name'], BirthDate = content['birthdate'])
     except:
         code = 400
         reponse_body = {
@@ -50,7 +50,10 @@ def account_login():
     try:
         rep = PERSON.select().where(PERSON.Username == username)
     except:
-        print("Error")
+        code = 404
+        reponse_body = {
+            "error" : "This user doesn't exit !"
+        }
 
     for user in rep:
         if user.Password != password:

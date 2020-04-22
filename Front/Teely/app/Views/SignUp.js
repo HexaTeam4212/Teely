@@ -4,7 +4,8 @@ import DateTimePicker from '../Components/DateTimePicker'
 import InputWithName from '../Components/InputWithName'
 import SubmitButton from '../Components/SubmitButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View, ActivityIndicator, Platform} from 'react-native'
+
 import accountServices from '../Services/AccountServices';
 export default class SignUp extends React.Component {
   constructor(props) {
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   },
   text: {
     marginTop : 10,
-    fontFamily: 'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontSize: 16,
     textAlign : 'center',
     color: 'black',  

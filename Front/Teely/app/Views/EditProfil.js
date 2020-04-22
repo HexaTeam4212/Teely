@@ -1,24 +1,37 @@
 // app/Views/EditProfil.js
 import React from 'react';
 import NameWithInput from '../Components/NameWithInput'
-import TwoSubmitButtons from '../Components/TwoSubmitButtons'
-import { StyleSheet, View, Image, TouchableOpacity, Text, ScrollView} from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Text, ScrollView, Platform} from 'react-native';
+import SubmitButton from '../Components/SubmitButton'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default class EditProfil extends React.Component {
+
+   afficher = () => {
+    console.log("clic bouton")
+  }
+
   render() {
     return(
     <View style={styles.main_container}>
     <View style={styles.head_container}>
-    <Image style={styles.goBack} source={require('../../assets/goBack.png')}/>
+    <TouchableOpacity onPress = {() => this.afficher()}>
+    <Image style={styles.goBack} source={require('../../assets/goBack.png')} />
+    </TouchableOpacity>
         <View style={styles.image_container}>
           <Image style={styles.logo} source={require('../../assets/icon.png')}/>
-          <TouchableOpacity style = {styles.button}>
+          <TouchableOpacity style = {styles.button} onPress = {() => this.afficher()}>
             <Text style={styles.buttonText}>modifier</Text>
         </TouchableOpacity>
         </View>
     </View>
         <View style={styles.content_container}>
-        <ScrollView>
+        <KeyboardAwareScrollView 
+        contentContainerstyle={styles.content_container} 
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        scrollEnabled={true}
+        enableAutomaticScroll={(Platform.OS === 'ios')}
+        enableOnAndroid={true}>
         <NameWithInput name = 'Nom : ' type = 'none' placeholder='Nom' height = {40} secureTextEntry={false}/>
         <NameWithInput name = 'Prénom : ' type = 'none' placeholder='Prénom' height = {40} secureTextEntry={false}/>
         <NameWithInput name = "Nom d'utilisateur : " type = 'username' placeholder='Pseudonyme' height = {40} secureTextEntry={false}/>
@@ -28,9 +41,12 @@ export default class EditProfil extends React.Component {
        
         <NameWithInput name = 'Date de naissance : ' type = 'none' placeholder='jj/mm/aaaa' height = {40} secureTextEntry={false}/>
          <NameWithInput name = 'Bibliographie : ' type = 'none' placeholder='Bibliographie' height = {200} secureTextEntry={false}/>
-         </ScrollView>
+         </KeyboardAwareScrollView>
       </View>
-      <TwoSubmitButtons name1="Annuler " name2="Enregistrer" />
+      <View style={styles.buttons_container}>
+        <SubmitButton name="Annuler" width={150} onPress = {() => this.afficher()}/>
+        <SubmitButton name="Enregistrer" width={150} onPress = {() => this.afficher()}/>
+      </View>
     </View>
     )
   }
@@ -56,10 +72,19 @@ const styles = StyleSheet.create({
     flexDirection : 'column',
     alignItems: 'center',
   },
+  buttons_container: {
+    flex: 1,
+    flexDirection : 'row',
+    justifyContent: 'space-around',
+    alignItems : 'center',
+    marginTop : 10,
+    marginBottom: 10
+    
+  },
     buttonText : {
     fontSize: 14,
     color : 'black',
-    fontFamily:'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontWeight : 'bold',
     textDecorationLine: 'underline'
   },

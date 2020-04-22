@@ -1,6 +1,5 @@
 //app/Services/SignUpService.js
 
-
 const backendURL = "http://811122ea.ngrok.io"
 const endpoint = "/account/"
 
@@ -26,7 +25,6 @@ class AccountServices {
                     birthdate: birthDate,
                     lastName: lastName,
                     name: name,
-                    bio: "" //TODO: a retirer une fois que le back aura corrigé
                 })
                 const fullEndpoint = endpoint + "inscription"
                 const response = await fetch(backendURL + fullEndpoint, 
