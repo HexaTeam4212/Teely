@@ -12,7 +12,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen 
+        <Stack.Screen
           name="SignUp" 
           component={SignUp} 
           options={{
@@ -20,6 +20,7 @@ export default function App() {
             headerStyle: {
               backgroundColor: '#78e1db',
             },
+            headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
               fontWeight: 'bold',
@@ -28,6 +29,16 @@ export default function App() {
         <Stack.Screen
           name="Login"
           component={Login}
+          options={{
+            title: 'Connexion',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },}}
         />
       </Stack.Navigator>
     </NavigationContainer>
