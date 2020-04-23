@@ -24,11 +24,16 @@ export default class Login extends React.Component {
   }
 
   login = () => {
-    accountServices.login(this.username, this.password, (connexionOK) => {
-      if (connexionOK == true) {
-        this.props.navigation.navigate("Profile")
-      }
-    })
+    if (this.username.length > 0 && this.password.length > 0) {
+      accountServices.login(this.username, this.password, (connexionOK) => {
+        if (connexionOK == true) {
+          this.props.navigation.navigate("Profile")
+        }
+      })
+    }
+    else {
+      alert("Veuillez renseigner votre nom d'utilisateur et mot de passe")
+    }
   }
 
   render() {
@@ -55,7 +60,7 @@ export default class Login extends React.Component {
           <CustomButton name='Inscription' onPress={() => {
             this.props.navigation.navigate("SignUp")
           }} />
-          </View>
+        </View>
       </View>
     )
   }
@@ -78,7 +83,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignSelf: 'center',
     resizeMode: 'contain',
-    flex:1,
+    flex: 1,
     height: 150,
     borderRadius: 50,
     borderBottomWidth: 20

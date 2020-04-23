@@ -4,12 +4,8 @@ const backendURL = "http://18045fd1.ngrok.io"
 const endpoint = "/account/"
 
 class AccountServices {
-    constructor () {
-        this.signUpResult=""
-    }
 
     async signup(username, password, confirmedPassword,email, lastName, name, birthDate, callback) {
-        this.signUpResult="false"
         if(username=='' || password=='' || confirmedPassword=='' || birthDate=='' || lastName=='' || name=='' || email=='') {
             alert("Veuillez remplir tous les champs !")
         } 
@@ -43,7 +39,6 @@ class AccountServices {
                     }    
                 }
                 else {
-                    this.signUpResult="true"
                     alert("Inscription réussie :)")
                     callback(true);
                 }
