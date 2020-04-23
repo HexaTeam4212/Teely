@@ -2,7 +2,7 @@
 import React from 'react'
 import DateTimePicker from '../Components/DateTimePicker'
 import InputWithName from '../Components/InputWithName'
-import SubmitButton from '../Components/SubmitButton'
+import CustomButton from '../Components/CustomButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, ActivityIndicator, Platform} from 'react-native'
 
@@ -100,7 +100,7 @@ export default class SignUp extends React.Component {
           <Text style={styles.text}> Date de naissance </Text>
           <DateTimePicker name="aaaa-mm-jj" parentCallback={this.callbackFunctionBirthDate} />
 
-          <SubmitButton name='Créer mon compte'
+          <CustomButton name='Créer mon compte'
             onPress={this.signup} />
           {this.displayLoading()}
         </KeyboardAwareScrollView>

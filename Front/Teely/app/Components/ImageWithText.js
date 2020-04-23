@@ -1,4 +1,4 @@
-// app/Components/SubmitButton.js
+// app/Components/CustomButton.js
 import React from 'react';
 import { StyleSheet, ImageBackground, Text, View } from 'react-native';
 

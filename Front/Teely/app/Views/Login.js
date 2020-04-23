@@ -3,7 +3,7 @@ import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Button } from 'react-native'
 
-import SubmitButton from '../Components/SubmitButton'
+import CustomButton from '../Components/CustomButton'
 import InputWithName from '../Components/InputWithName'
 import accountServices from '../Services/AccountServices';
 
@@ -45,16 +45,15 @@ export default class Login extends React.Component {
             secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
           <InputWithName name='Mot de passe' type='password' placeholder='********'
             secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
-          <SubmitButton name='Se connecter' onPress={this.login} />
+          <CustomButton name='Connexion' onPress={this.login} />
           <Text style={styles.text}> Pas encore de compte ? </Text>
-          <Button title='Inscription' onPress={() => {
+          <CustomButton name='Inscription' onPress={() => {
             this.props.navigation.navigate("SignUp")
           }} />
         </KeyboardAwareScrollView>
       </View>
     )
   }
-
 }
 
 const styles = StyleSheet.create({
