@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontWeight : 'bold'
   },
-
   button: {
     padding:10,
     backgroundColor : 'white',

@@ -1,7 +1,7 @@
 // app/Views/Login.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Image } from 'react-native'
 
 import CustomButton from '../Components/CustomButton'
 import InputWithName from '../Components/InputWithName'
@@ -41,16 +41,21 @@ export default class Login extends React.Component {
           enableAutomaticScroll={(Platform.OS === 'ios')}
           enableOnAndroid={true}>
 
+          <Image style={styles.logo} source={require('../../assets/Images/logo.png')} />
           <InputWithName name="Nom d'utilisateur" type='username' placeholder='Pseudonyme'
             secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
           <InputWithName name='Mot de passe' type='password' placeholder='********'
             secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
-          <CustomButton name='Connexion' onPress={this.login} />
-          <Text style={styles.text}> Pas encore de compte ? </Text>
+          <View style={styles.connexionButtonView}>
+            <CustomButton name='Connexion' onPress={this.login} />
+          </View>
+        </KeyboardAwareScrollView>
+        <View style={styles.inscriptionView}>
+          <Text style={styles.inscriptionLabel}> Pas encore de compte ? </Text>
           <CustomButton name='Inscription' onPress={() => {
             this.props.navigation.navigate("SignUp")
           }} />
-        </KeyboardAwareScrollView>
+          </View>
       </View>
     )
   }
@@ -69,5 +74,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-
+  logo: {
+    marginTop: 10,
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    flex:1,
+    height: 150,
+    borderRadius: 50,
+    borderBottomWidth: 20
+  },
+  inscriptionView: {
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 5,
+    right: 0
+  },
+  inscriptionLabel: {
+    marginBottom: -15
+  },
+  connexionButtonView: {
+    marginTop: 30
+  }
 });
