@@ -9,7 +9,7 @@ export default class SubmitButton extends React.Component {
     const onPressAction = this.props.onPress
     return(
     <View style={styles.main_container}>
-        <TouchableOpacity style = {[styles.button, {width: width}]} onPress = {onPressAction}>
+        <TouchableOpacity style = {styles.button} onPress = {onPressAction}>
             <Text style={styles.buttonText}>{name}</Text>
         </TouchableOpacity>
     </View>
