@@ -4,12 +4,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './app/Views/Login'
 import SignUp from './app/Views/SignUp'
+import EditProfil from './app/Views/EditProfil'
 
 export default function App() {
 
   const Stack = createStackNavigator();
 
   return (
+    //<EditProfil/>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen 
@@ -29,9 +31,23 @@ export default function App() {
           name="Login"
           component={Login}
         />
+        <Stack.Screen
+          name="EditProfil"
+          component={EditProfil}
+          options={{
+            title: 'Modification du profil',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
+
 }
 
 
