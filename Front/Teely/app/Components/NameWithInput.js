@@ -3,6 +3,21 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, View, Platform } from 'react-native';
 
 export default class NameWithInput extends React.Component {
+  constructor(props) {
+    super(props)
+    this.writtenText=""
+  }
+
+  textInputChangedText(text) {
+    this.writtenText=text
+    this.sendData(this.writtenText)
+  }
+
+
+  sendData(data){
+    this.props.parentCallback(data)
+  }
+
   render() {
     const type = this.props.type
     const name = this.props.name
@@ -14,7 +29,8 @@ export default class NameWithInput extends React.Component {
     <View style={styles.main_container} >
         <Text style = {styles.text}> {name}</Text>
         <TextInput placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type} 
-        value={value} secureTextEntry= {secureTextEntry} style = {[styles.textInput, {height: height}]}/>
+        value={value} secureTextEntry= {secureTextEntry} onChangeText={(text) => this.textInputChangedText(text)}
+        style = {[styles.textInput, {height: height}]}/>
         
     </View>
 
