@@ -4,7 +4,7 @@ import DateTimePicker from '../Components/DateTimePicker'
 import InputWithName from '../Components/InputWithName'
 import CustomButton from '../Components/CustomButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, ActivityIndicator, Platform} from 'react-native'
+import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-native'
 
 import accountServices from '../Services/AccountServices';
 export default class SignUp extends React.Component {
@@ -64,16 +64,21 @@ export default class SignUp extends React.Component {
     if (signUpOK == true) {
       this.props.navigation.navigate("Login")
     }
-
   }
 
   signup = () => {
-    this.setState({ isLoading: true })
-    accountServices.signup(this.username, this.password, this.confirmedPassword,
-      this.email, this.lastName, this.name, this.birthDate, this.redirect)
+    if (this.username == '' || this.password == '' || this.confirmedPassword == '' || this.birthDate == ''
+      || this.lastName == '' || this.name == '' || this.email == '') {
+      alert("Veuillez remplir tous les champs !")
+    }
+    else if (this.password != this.confirmedPassword) {
+      alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
+    }
+    else {
+      this.setState({ isLoading: true })
+      accountServices.signup(this.username, this.password, this.email, this.lastName, this.name, this.birthDate, this.redirect)
+    }
   }
-
-
 
   render() {
     return (
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   head_container: {
-    justifyContent:'flex-start'
+    justifyContent: 'flex-start'
 
   },
   content_container: {
