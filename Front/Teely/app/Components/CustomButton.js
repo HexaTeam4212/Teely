@@ -1,8 +1,8 @@
-// app/Components/SubmitButton.js
+// app/Components/CustomButton.js
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Platform } from 'react-native';
 
-export default class SubmitButton extends React.Component {
+export default class CustomButton extends React.Component {
   render() {
     const name = this.props.name
     const width = this.props.width
@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontWeight : 'bold'
   },
-
   button: {
     padding:10,
     backgroundColor : 'white',

@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     flexDirection : 'column',
     justifyContent: 'center',
     alignItems : 'center',
-    marginTop : 10
+    marginTop : 15
   },
   text: {
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
   textInput: {
       backgroundColor: 'white',
       textAlign : 'center',
-      height: 40,
-      width: 200,
+      height: "70%",
+      width: "60%",
       borderRadius: 10,
     }
 });

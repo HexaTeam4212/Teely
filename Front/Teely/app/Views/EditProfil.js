@@ -2,7 +2,7 @@
 import React from 'react';
 import NameWithInput from '../Components/NameWithInput'
 import { StyleSheet, View, Image, TouchableOpacity, Text, ScrollView, Platform } from 'react-native';
-import SubmitButton from '../Components/SubmitButton'
+import CustomButton from '../Components/CustomButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default class EditProfil extends React.Component {
@@ -44,8 +44,8 @@ export default class EditProfil extends React.Component {
           </KeyboardAwareScrollView>
         </View>
         <View style={styles.buttons_container}>
-          <SubmitButton name="Annuler" width={150} onPress={() => this.afficher()} />
-          <SubmitButton name="Enregistrer" width={150} onPress={() => this.afficher()} />
+          <CustomButton name="Annuler" width={150} onPress={() => this.afficher()} />
+          <CustomButton name="Enregistrer" width={150} onPress={() => this.afficher()} />
         </View>
       </View>
     )
