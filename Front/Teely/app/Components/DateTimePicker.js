@@ -32,9 +32,10 @@ export default class DateTimePickerTester extends Component {
 
 
     render() {
+        const marginRight = this.props.marginRight
         return (
             <View style={styles.main_container}>
-                <TouchableOpacity style={styles.button} onPress={this.showDateTimePicker}>
+                <TouchableOpacity style={[styles.button, {marginRight:marginRight}]} onPress={this.showDateTimePicker}>
                     <Text style={styles.buttonText}> {this.name} </Text>
                 </TouchableOpacity>
                 <DateTimePicker

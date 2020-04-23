@@ -9,11 +9,12 @@ export default class NameWithInput extends React.Component {
     const placeholder = this.props.placeholder
     const secureTextEntry = this.props.secureTextEntry
     const height = this.props.height
+    const value = this.props.value
     return(
     <View style={styles.main_container} >
         <Text style = {styles.text}> {name}</Text>
         <TextInput placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type} 
-        secureTextEntry= {secureTextEntry} style = {[styles.textInput, {height: height}]}/>
+        value={value} secureTextEntry= {secureTextEntry} style = {[styles.textInput, {height: height}]}/>
         
     </View>
 
@@ -41,7 +42,6 @@ const styles = StyleSheet.create({
   textInput: {
       backgroundColor: 'white',
       textAlign : 'center',
-      //height: 40,
       width: 200,
       borderRadius: 10,
       marginRight: 25
