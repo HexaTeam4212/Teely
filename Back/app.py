@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from peewee import *
+import json
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION
 app = Flask(__name__)
 
@@ -67,3 +68,49 @@ def account_login():
             }
 
     return jsonify(reponse_body), code
+
+@app.route('/group', methods=['GET', 'POST'])
+def group(): 
+    content = request.get_json()
+    reponse_body = {}
+    #Il faut récupérer l'ID de celui qui est connecté 
+    userId = 1
+
+    if request.method == 'POST':
+        code = 204
+        try:
+            newGroup = GROUP(Name = content['group_name'], Description = content['description'])
+        except:
+            code = 400
+            reponse_body = {
+            "error" : "Make sure to send all the parameters"
+            }
+        try:    
+           newGroup.save()
+        except:
+            code = 409
+            reponse_body = {
+                "error": "This group couldn't be add in the database !"
+            }
+        try:
+            for user in content['members'] :
+                INVITATION.insert(Sender_id=userId ,Recipient_id=user,Group_id=newGroup.groupId).execute()
+        except:
+            code = 400
+            reponse_body = {
+                "error": "Make sure to send all the parameters"
+            }
+       # try :
+        PARTICIPATE_IN.insert(User_id=userId,Group_id=newGroup.groupId).execute()
+        return jsonify(reponse_body), code
+        
+    if request.method == 'GET':
+        code=200
+        rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == userId)
+        res = ()
+        for groupId in rep:
+            res += str(groupId) ,
+        response_body = {"groups" : res }
+        return json.dumps(response_body),code
+
+        
