@@ -49,14 +49,8 @@ def account_login():
         }
 
     try:
-        rep = PERSON.select().where(PERSON.Username == username)
-    except:
-        code = 404
-        reponse_body = {
-            "error" : "This user doesn't exit !"
-        }
+        user = PERSON.get(PERSON.Username == username)
 
-    for user in rep:
         if user.Password != password:
             code = 401
             reponse_body = {
@@ -66,6 +60,11 @@ def account_login():
             reponse_body = {
                 "token": "dsfsdofjsdpofjsdpfk"
             }
+    except:
+        code = 404
+        reponse_body = {
+            "error" : "This user doesn't exit !"
+        }
 
     return jsonify(reponse_body), code
 
