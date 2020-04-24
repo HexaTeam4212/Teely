@@ -54,7 +54,7 @@ def account_login():
         return sendError(401, "The password is incorrect !")
     else:
         reponse_body = {
-            "token": "dsfsdofjsdpofjsdpfk"
+            "authToken": "dsfsdofjsdpofjsdpfk"
         }
 
     return jsonify(reponse_body), code
