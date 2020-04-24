@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     borderColor: '#ffb4e2',
     borderWidth: 3,
     borderRadius: 50,
-    borderBottomWidth: 20
+    marginBottom: 20
   },
   goBack: {
     resizeMode: 'contain',
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: 'black',
-    borderBottomWidth: 5
+    marginBottom: 5
   }
 
 });

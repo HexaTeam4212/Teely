@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         borderColor: '#ffb4e2',
         borderWidth: 3,
         borderRadius: 50,
-        borderBottomWidth: 20
+        marginBottom: 20
     },
     editButton: {
         flex: 1,

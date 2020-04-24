@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     textAlign : 'center',
     color: 'black',
     //marginTop : 10
-    //borderBottomWidth : 5
+    marginBottom : 5
   },
   textInput: {
       backgroundColor: 'white',

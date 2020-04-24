@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 150,
     borderRadius: 50,
-    borderBottomWidth: 20
+    marginBottom: 20
   },
   inscriptionView: {
     alignItems: 'center',

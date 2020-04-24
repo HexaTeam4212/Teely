@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: 'black',
-    borderBottomWidth: 5
+    marginBottom: 5
   },
   loading_container: {
 
