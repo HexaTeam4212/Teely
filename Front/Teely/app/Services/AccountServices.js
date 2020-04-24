@@ -1,6 +1,7 @@
 //app/Services/SignUpService.js
 import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
+import { storeToken, getToken } from '../modules/TokenStorage.js'
 
 const endpoint = "/account/"
 
@@ -71,6 +72,7 @@ class AccountServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
+            const jsonBody = await response.json()
             if (response.status != 200) {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
@@ -79,9 +81,10 @@ class AccountServices {
                     httpError(response.status)
                 }
                 callback(false);
-                console.error(await response.json())
+                console.error(await jsonBody)
             }
             else {
+                storeToken(jsonBody.authToken)
                 callback(true);
             }
         }
@@ -145,7 +148,7 @@ class AccountServices {
 
     dataProfil() {
         alert("Récupération données profil")
-        
+
         const username = "Pseudonyme"
         const password = "********"
         const email = "xyz@gmail.com"
