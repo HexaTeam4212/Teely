@@ -1,6 +1,6 @@
 //app/Services/SignUpService.js
+import { backendURL } from '../modules/BackendConfig.js';
 
-const backendURL = "http://612c66f7.ngrok.io"
 const endpoint = "/account/"
 
 class AccountServices {
