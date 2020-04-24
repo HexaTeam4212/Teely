@@ -9,6 +9,12 @@ CORS(app) ## allow CORS for all domains on all routes (to change later)
 
 mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
 
+def sendError(code, msg):
+    body = {
+        "error": msg
+    }
+    return jsonify(body), code
+
 @app.route('/account/inscription', methods=['POST'])
 def account_inscription():
     content = request.get_json()
@@ -18,18 +24,12 @@ def account_inscription():
     try:
         newUser = PERSON(Username = content['username'], Email = content['email'], Password = content['password'], LastName = content['lastName'], Name = content['name'], BirthDate = content['birthdate'])
     except:
-        code = 400
-        reponse_body = {
-            "error": "Bad Request: Make sure to send all parameters !"
-        }
+        return sendError(400, "Bad Request: Make sure to send all parameters !")
 
     try:    
         newUser.save()
     except:
-        code = 409
-        reponse_body = {
-            "error": "Conflict: This username or email already exist in database !"
-        }
+        return sendError(409, "Conflict: This username or email already exist in database !")
 
     return jsonify(reponse_body), code
 
@@ -43,27 +43,18 @@ def account_login():
         username = content["username"]
         password = content["password"]
     except:
-        code = 400
-        reponse_body = {
-            "error": "Bad Request: Make sure to send all parameters !"
-        }
+        return sendError(400, "Bad Request: Make sure to send all parameters !")
 
     try:
         user = PERSON.get(PERSON.Username == username)
-
-        if user.Password != password:
-            code = 401
-            reponse_body = {
-                "error": "The password is incorrect !"
-            }
-        else:
-            reponse_body = {
-                "token": "dsfsdofjsdpofjsdpfk"
-            }
     except:
-        code = 404
+        return sendError(404, "This user doesn't exit !")
+
+    if user.Password != password:
+        return sendError(401, "The password is incorrect !")
+    else:
         reponse_body = {
-            "error" : "This user doesn't exit !"
+            "token": "dsfsdofjsdpofjsdpfk"
         }
 
     return jsonify(reponse_body), code
@@ -80,26 +71,19 @@ def group():
         try:
             newGroup = GROUP(Name = content['group_name'], Description = content['description'])
         except:
-            code = 400
-            reponse_body = {
-            "error" : "Make sure to send all the parameters"
-            }
+            return sendError(400, "Make sure to send all the parameters")
+        
         try:    
            newGroup.save()
         except:
-            code = 409
-            reponse_body = {
-                "error": "This group couldn't be add in the database !"
-            }
+            return sendError(409, "This group couldn't be add in the database !")
+        
         try:
             for user in content['members'] :
                 INVITATION.insert(Sender_id=userId ,Recipient_id=user,Group_id=newGroup.groupId).execute()
         except:
-            code = 400
-            reponse_body = {
-                "error": "Make sure to send all the parameters"
-            }
-       # try :
+            return sendError(400, "Make sure to send all the parameters")
+
         PARTICIPATE_IN.insert(User_id=userId,Group_id=newGroup.groupId).execute()
         return jsonify(reponse_body), code
         
@@ -111,5 +95,3 @@ def group():
             res += str(groupId) ,
         response_body = {"groups" : res }
         return json.dumps(response_body),code
-
-        
