@@ -226,7 +226,6 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderWidth: 3,
     borderRadius: 50,
-    marginBottom: 20
   },
   goBack: {
     resizeMode: 'contain',
