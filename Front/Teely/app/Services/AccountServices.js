@@ -93,10 +93,11 @@ class AccountServices {
         }
     }
 
-    async saveProfil(username, password, confirmedPassword, email, lastName, name, birthDate, biography, callback) {
-
-        alert(lastName + "\n" + name + "\n" + username + "\n" + password + "\n"
-            + confirmedPassword + "\n" + email + "\n" + birthDate + "\n" + biography)
+      async saveProfil(username, password, confirmedPassword,email, lastName, name, birthDate, biography, image,callback) {
+        
+        alert(lastName +"\n" +name +"\n"+username+"\n" +password+"\n"
+        +confirmedPassword+"\n" + email+"\n"+ birthDate+"\n"+ biography
+        + "\n"+image)
         callback(true);
 
         /*if(username=='' || password=='' || confirmedPassword=='' || birthDate=='' || lastName=='' || name=='' || email=='') {
@@ -115,6 +116,7 @@ class AccountServices {
                     lastName: lastName,
                     name: name,
                     biography: biography,
+                    image: image
                 })
                 const fullEndpoint = endpoint + "update"
                 const response = await fetch(backendURL + fullEndpoint, 
@@ -154,8 +156,10 @@ class AccountServices {
         const name = "Prénom"
         const birthDate = "aaaa-mm-jj"
         const biography = "Biographie"
-        let datasProfil = [lastName, name, username, password, email, birthDate, biography]
-
+        const image = 18
+        console.log("image data profil : "+image)
+        let datasProfil = [lastName, name,username,password,email, birthDate, biography, image]
+        
         /*let datasProfil = []
         try {
             const fullEndpoint = endpoint + "info"
@@ -180,6 +184,7 @@ class AccountServices {
                 datasProfil.push(response.email)
                 datasProfil.push(response.birthDate)
                 datasProfil.push(response.biography)
+                datasProfil.push(response.image)
             }
         }
         catch (error) {

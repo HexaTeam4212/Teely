@@ -6,6 +6,7 @@ import { StyleSheet, View, Image, TouchableOpacity, Text, Platform, ActivityIndi
 import CustomButton from '../Components/CustomButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import accountServices from '../Services/AccountServices';
+import Images from '../modules/ImageProfil';
 
 export default class EditProfil extends React.Component {
   constructor(props) {
@@ -13,14 +14,18 @@ export default class EditProfil extends React.Component {
     this.birthDate = ""
     this.firstLoadPage = true
     this.initDatasProfil = []
-    this.state = { isLoading: false, 
-                username : "",
-                password : "",
-                confirmedPassword : "",
-                email : "",
-                lastName : "",
-                name : "",
-                biography : "" }
+    this.idImage = 18
+    this.state = {
+      isLoading: false,
+      username: "",
+      password: "",
+      confirmedPassword: "",
+      email: "",
+      lastName: "",
+      name: "",
+      biography: "",
+      imageProfil: ""
+    }
   }
 
   displayLoading() {
@@ -34,19 +39,19 @@ export default class EditProfil extends React.Component {
   }
 
   callbackFunctionUsername = (childData) => {
-    this.setState({username:childData})
+    this.setState({ username: childData })
   }
 
   callbackFunctionPassword = (childData) => {
-    this.setState({password:childData})
+    this.setState({ password: childData })
   }
 
   callbackFunctionConfirmedPassword = (childData) => {
-    this.setState({confirmedPassword:childData})
+    this.setState({ confirmedPassword: childData })
   }
 
   callbackFunctionEmail = (childData) => {
-    this.setState({email:childData})
+    this.setState({ email: childData })
   }
 
   callbackFunctionLastName = (childData) => {
@@ -54,7 +59,7 @@ export default class EditProfil extends React.Component {
   }
 
   callbackFunctionName = (childData) => {
-    this.setState({name:childData})
+    this.setState({ name: childData })
   }
 
   callbackFunctionBirthDate = (childData) => {
@@ -62,39 +67,67 @@ export default class EditProfil extends React.Component {
   }
 
   callbackFunctionBibliography = (childData) => {
-    this.setState({biography:childData})
+    this.setState({ biography: childData })
   }
 
   redirect = (profilOk) => {
-    this.setState({isLoading:false})
+    this.setState({ isLoading: false })
     if (profilOk) {
       this.props.navigation.navigate("Profile")//mettre le nom de la bonne page quand cree
     }
-    
+
   }
 
   saveProfil = () => {
-    this.setState({isLoading:true})
+    this.setState({ isLoading: true })
     accountServices.saveProfil(this.state.username, this.state.password, this.state.confirmedPassword,
-      this.state.email, this.state.lastName, this.state.name, this.birthDate, this.state.biography, this.redirect)
+      this.state.email, this.state.lastName, this.state.name, this.birthDate, this.state.biography, 
+      this.idImage,this.redirect)
   }
 
-  dataProfil = () => {
+  getDataProfil = ()=> {
     if (this.firstLoadPage) {
       console.log("firstloadPage")
       this.initDatasProfil = accountServices.dataProfil()
       console.log(this.initDatasProfil)
       this.birthDate = this.initDatasProfil[5]
-      this.setState({lastName : this.initDatasProfil[0], name : this.initDatasProfil[1], 
-      username : this.initDatasProfil[2],password: this.initDatasProfil[3], 
-      confirmedPassword:this.initDatasProfil[3], email: this.initDatasProfil[4],
-      biography: this.initDatasProfil[6]})
+      this.idImage = this.initDatasProfil[7]
+      this.setState({
+        lastName: this.initDatasProfil[0], name: this.initDatasProfil[1],
+        username: this.initDatasProfil[2], password: this.initDatasProfil[3],
+        confirmedPassword: this.initDatasProfil[3], email: this.initDatasProfil[4],
+        biography: this.initDatasProfil[6], imageProfil: Images[this.idImage]
+      })
       this.firstLoadPage = false
 
     }
+  }
 
+  imageProfil = () => {
+    this.getDataProfil()
+    console.log(this.initDatasProfil)
     return (
-      <KeyboardAwareScrollView
+      <Image style={styles.profil} source={this.state.imageProfil} />
+    )
+  }
+
+  pickImageProfil = () => {
+    let max = 18
+    this.idImage = Math.floor(Math.random() * max)
+    this.setState({ imageProfil: Images[idImage]})
+  }
+
+  render() {
+    return (
+      <View style={styles.main_container}>
+        <View style={styles.image_container}>
+          {this.imageProfil()}
+          <TouchableOpacity style={styles.button} onPress={() => this.pickImageProfil()}>
+            <Text style={styles.buttonText}>modifier</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.content_container}>
+        <KeyboardAwareScrollView
         contentContainerstyle={styles.content_container}
         resetScrollToCoords={{ x: 0, y: 0 }}
         scrollEnabled={true}
@@ -119,20 +152,6 @@ export default class EditProfil extends React.Component {
         <NameWithInput name='Biographie : ' type='none' placeholder={this.initDatasProfil[6]} height={200}
           value={this.state.biography} secureTextEntry={false} parentCallback={this.callbackFunctionBibliography} />
       </KeyboardAwareScrollView>
-    )
-  }
-
-  render() {
-    return (
-      <View style={styles.main_container}>
-          <View style={styles.image_container}>
-            <Image style={styles.logo} source={require('../../assets/Images/logo.png')} />
-            <TouchableOpacity style={styles.button} onPress={() => this.afficher()}>
-              <Text style={styles.buttonText}>modifier</Text>
-            </TouchableOpacity>
-          </View>
-        <View style={styles.content_container}>
-          {this.dataProfil()}
         </View>
         <View style={styles.buttons_container}>
           <CustomButton name="Enregistrer" onPress={this.saveProfil} />
@@ -199,15 +218,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: "center",
   },
-  logo: {
+  profil: {
     resizeMode: 'contain',
     alignItems: 'center',
     width: 100,
     height: 100,
-    borderColor: '#ffb4e2',
+    borderColor: 'white',
     borderWidth: 3,
     borderRadius: 50,
-    marginBottom: 20
   },
   goBack: {
     resizeMode: 'contain',
