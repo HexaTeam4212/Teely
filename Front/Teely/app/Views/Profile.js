@@ -3,15 +3,18 @@ import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, ActivityIndicator, Image, Platform, TouchableOpacity, ImageBackground } from 'react-native'
 import ImageWithText from '../Components/ImageWithText'
+import accountServices from '../Services/AccountServices';
+import Images from '../modules/ImageProfil';
 
 export default class Profile extends React.Component {
     constructor(props) {
         super(props)
-        this.username = "username"
-        this.lastName = "LastName"
-        this.name = "Name"
-        this.birthDate = "07/06/1999"
-        this.bio = "Hi everyone :) "
+        this.username = ""
+        this.lastName = ""
+        this.name = ""
+        this.birthDate = ""
+        this.bio = ""
+        this.initDatasProfil = []
         this.state = { isLoading: false }
     }
 
@@ -42,6 +45,24 @@ export default class Profile extends React.Component {
         }*/
     }
 
+    getDataProfil = ()=> {
+          this.initDatasProfil = accountServices.dataProfil()
+          
+          this.lastName = this.initDatasProfil[0]
+          this.name = this.initDatasProfil[1]
+          this.username = this.initDatasProfil[2]
+          this.birthDate = "07/06/1999" //this.initDatasProfil[5]
+          this.bio = this.initDatasProfil[6]
+          this.idImage = this.initDatasProfil[7]
+      }
+
+    imageProfil = () => {
+        this.getDataProfil()
+        return (
+          <Image style={styles.profilePic} source={Images[this.idImage]} />
+        )
+      }
+
 
     render() {
         return (
@@ -56,7 +77,7 @@ export default class Profile extends React.Component {
                         <Text style={styles.buttonText}>Déconnexion</Text>
                     </TouchableOpacity>
                     <View style={styles.head_container}>
-                        <Image style={styles.profilePic} source={require('../../assets/Images/logo.png')} />
+                        {this.imageProfil()}
                         <View style={styles.headerInfo_container}>
                             <View style={styles.labels_container}>
                                 <Text style={styles.name_text}>{this.name} {this.lastName}</Text>

@@ -7,7 +7,7 @@ const endpoint = "/account/"
 
 class AccountServices {
 
-    async signup(username, password, email, lastName, name, birthDate, callback) {
+    async signup(username, password, email, lastName, name, birthDate, idImage, callback) {
         const requestBody = JSON.stringify({
             username: username,
             password: password,
@@ -15,6 +15,7 @@ class AccountServices {
             birthdate: birthDate,
             lastName: lastName,
             name: name,
+            //idImage: idImage
         })
         const fullEndpoint = endpoint + "inscription"
         try {
@@ -93,22 +94,14 @@ class AccountServices {
         }
     }
 
-      async saveProfil(username, password, confirmedPassword,email, lastName, name, birthDate, biography, image,callback) {
-        
-        alert(lastName +"\n" +name +"\n"+username+"\n" +password+"\n"
-        +confirmedPassword+"\n" + email+"\n"+ birthDate+"\n"+ biography
-        + "\n"+image)
+    async saveProfil(username, password, confirmedPassword, email, lastName, name, birthDate, biography, callback) {
+
+        alert(lastName + "\n" + name + "\n" + username + "\n" + password + "\n"
+            + confirmedPassword + "\n" + email + "\n" + birthDate + "\n" + biography)
         callback(true);
 
-        /*if(username=='' || password=='' || confirmedPassword=='' || birthDate=='' || lastName=='' || name=='' || email=='') {
-            alert("Veuillez remplir tous les champs !")
-        } 
-        else if (password != confirmedPassword) {
-            alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
-        }
-        else {
-            try {
-                const requestBody = JSON.stringify({
+        
+        /*const requestBody = JSON.stringify({
                     username: username,
                     password: password,
                     email: email,
@@ -116,10 +109,11 @@ class AccountServices {
                     lastName: lastName,
                     name: name,
                     biography: biography,
-                    image: image
                 })
-                const fullEndpoint = endpoint + "update"
-                const response = await fetch(backendURL + fullEndpoint, 
+
+        const fullEndpoint = endpoint + "update"
+            try {
+                const response = await fetch(backendURL + fullEndpoint,
                 {
                     method: 'PUT',
                     headers: {
@@ -138,8 +132,8 @@ class AccountServices {
                     alert("Modification enregistrée :)")
                     callback(true);
                 }
-            }
-            catch (error) {
+            
+            }catch (error) {
                 console.error(error)
             }
         }*/
@@ -149,20 +143,20 @@ class AccountServices {
     dataProfil() {
         alert("Récupération données profil")
 
-        const username = "Pseudonyme"
+        const username = "username"
         const password = "********"
         const email = "xyz@gmail.com"
-        const lastName = "Nom"
-        const name = "Prénom"
+        const lastName = "LastName"
+        const name = "Name"
         const birthDate = "aaaa-mm-jj"
-        const biography = "Biographie"
-        const image = 18
-        console.log("image data profil : "+image)
-        let datasProfil = [lastName, name,username,password,email, birthDate, biography, image]
-        
+        const biography = "Hi everyone :) "
+        const image = 2
+        console.log("image data profil : " + image)
+        let datasProfil = [lastName, name, username, password, email, birthDate, biography, image]
+
         /*let datasProfil = []
+        const fullEndpoint = endpoint + "info"
         try {
-            const fullEndpoint = endpoint + "info"
             const response = await fetch(backendURL + fullEndpoint, 
             {
                 method: 'GET',

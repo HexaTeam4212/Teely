@@ -2,3 +2,4 @@ venv/
 .vscode/
 __pycache__/
 Front/Teely/package-lock.json
+package-lock.json

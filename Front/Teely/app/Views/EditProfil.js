@@ -24,7 +24,6 @@ export default class EditProfil extends React.Component {
       lastName: "",
       name: "",
       biography: "",
-      imageProfil: ""
     }
   }
 
@@ -79,10 +78,20 @@ export default class EditProfil extends React.Component {
   }
 
   saveProfil = () => {
-    this.setState({ isLoading: true })
-    accountServices.saveProfil(this.state.username, this.state.password, this.state.confirmedPassword,
-      this.state.email, this.state.lastName, this.state.name, this.birthDate, this.state.biography, 
-      this.idImage,this.redirect)
+    if (this.username == '' || this.password == '' || this.confirmedPassword == '' || this.birthDate == ''
+      || this.lastName == '' || this.name == '' || this.email == '') {
+      alert("Veuillez remplir tous les champs !")
+    }
+    else if (this.password != this.confirmedPassword) {
+      alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
+    }
+    else {
+      this.setState({ isLoading: true })
+      accountServices.saveProfil(this.state.username, this.state.password, this.state.confirmedPassword,
+        this.state.email, this.state.lastName, this.state.name, this.birthDate, this.state.biography, 
+        this.redirect)
+    }
+    
   }
 
   getDataProfil = ()=> {
@@ -96,7 +105,7 @@ export default class EditProfil extends React.Component {
         lastName: this.initDatasProfil[0], name: this.initDatasProfil[1],
         username: this.initDatasProfil[2], password: this.initDatasProfil[3],
         confirmedPassword: this.initDatasProfil[3], email: this.initDatasProfil[4],
-        biography: this.initDatasProfil[6], imageProfil: Images[this.idImage]
+        biography: this.initDatasProfil[6]
       })
       this.firstLoadPage = false
 
@@ -107,14 +116,8 @@ export default class EditProfil extends React.Component {
     this.getDataProfil()
     console.log(this.initDatasProfil)
     return (
-      <Image style={styles.profil} source={this.state.imageProfil} />
+      <Image style={styles.profil} source={Images[this.idImage]} />
     )
-  }
-
-  pickImageProfil = () => {
-    let max = 18
-    this.idImage = Math.floor(Math.random() * max)
-    this.setState({ imageProfil: Images[idImage]})
   }
 
   render() {
@@ -122,9 +125,6 @@ export default class EditProfil extends React.Component {
       <View style={styles.main_container}>
         <View style={styles.image_container}>
           {this.imageProfil()}
-          <TouchableOpacity style={styles.button} onPress={() => this.pickImageProfil()}>
-            <Text style={styles.buttonText}>modifier</Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.content_container}>
         <KeyboardAwareScrollView
@@ -169,12 +169,12 @@ const styles = StyleSheet.create({
   },
   content_container: {
     flex: 7,
-    marginTop: 10,
+    borderColor: '#ffdb58',
+    borderWidth: 5,
   },
   image_container: {
     flex: 2,
     marginTop: 10,
-    marginBottom: 10,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -202,37 +202,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  buttonText: {
-    fontSize: 14,
-    color: 'black',
-    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
-    fontWeight: 'bold',
-    textDecorationLine: 'underline'
-  },
-  button: {
-    padding: 5,
-    backgroundColor: 'transparent',
-    height: 30,
-    width: 80,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: "center",
-  },
   profil: {
     resizeMode: 'contain',
     alignItems: 'center',
     width: 100,
     height: 100,
-    borderColor: 'white',
+    borderColor: '#ffb4e2',
     borderWidth: 3,
-    borderRadius: 50,
-  },
-  goBack: {
-    resizeMode: 'contain',
-    width: 30,
-    height: 30,
-    marginLeft: 10,
-    marginTop: 10
+    borderRadius: 60,
   },
   text: {
     marginTop: 10,

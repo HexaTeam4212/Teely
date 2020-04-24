@@ -17,6 +17,7 @@ export default class SignUp extends React.Component {
     this.lastName = ""
     this.name = ""
     this.birthDate = ""
+    this.idImage = 18
     this.state = { isLoading: false }
   }
 
@@ -50,7 +51,6 @@ export default class SignUp extends React.Component {
     this.lastName = childData
   }
 
-
   callbackFunctionName = (childData) => {
     this.name = childData
   }
@@ -76,8 +76,14 @@ export default class SignUp extends React.Component {
     }
     else {
       this.setState({ isLoading: true })
-      accountServices.signup(this.username, this.password, this.email, this.lastName, this.name, this.birthDate, this.redirect)
+      this.pickImageProfil()
+      accountServices.signup(this.username, this.password, this.email, this.lastName, this.name, this.birthDate, this.idImage,this.redirect)
     }
+  }
+
+  pickImageProfil = () => {
+    let max = 18
+    this.idImage = Math.floor(Math.random() * max)
   }
 
   render() {
