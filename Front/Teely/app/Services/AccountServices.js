@@ -1,21 +1,22 @@
 //app/Services/SignUpService.js
-import { backendURL } from '../modules/BackendConfig.js';
+import { backendURL } from '../modules/BackendConfig.js'
+import { httpError } from '../modules/Error.js'
 
 const endpoint = "/account/"
 
 class AccountServices {
 
     async signup(username, password, email, lastName, name, birthDate, callback) {
+        const requestBody = JSON.stringify({
+            username: username,
+            password: password,
+            email: email,
+            birthdate: birthDate,
+            lastName: lastName,
+            name: name,
+        })
+        const fullEndpoint = endpoint + "inscription"
         try {
-            const requestBody = JSON.stringify({
-                username: username,
-                password: password,
-                email: email,
-                birthdate: birthDate,
-                lastName: lastName,
-                name: name,
-            })
-            const fullEndpoint = endpoint + "inscription"
             const response = await fetch(backendURL + fullEndpoint,
                 {
                     method: 'POST',
@@ -25,11 +26,21 @@ class AccountServices {
                     },
                     body: requestBody
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 201) {
                 if (response.status == 409) {
                     alert("Ce nom d'utilisateur (ou cette adresse e-mail) est déjà utilisé, merci d'en choisir un autre !")
-                    callback(false);
                 }
+                else if (response.status == 400) {
+                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                }
+                else {
+                    httpError(response.status)
+                }
+                callback(false);
+                console.error(await response.json())
             }
             else {
                 alert("Inscription réussie :)")
@@ -42,12 +53,12 @@ class AccountServices {
     }
 
     async login(username, password, callback) {
+        const requestBody = JSON.stringify({
+            username: username,
+            password: password,
+        })
+        const fullEndpoint = endpoint + "login"
         try {
-            const requestBody = JSON.stringify({
-                username: username,
-                password: password,
-            })
-            const fullEndpoint = endpoint + "login"
             const response = await fetch(backendURL + fullEndpoint,
                 {
                     method: 'POST',
@@ -57,11 +68,18 @@ class AccountServices {
                     },
                     body: requestBody
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 200) {
                 if (response.status == 400) {
-                    alert("Nom d'utilisateur ou mot de passe non renseignés")
-                    callback(false);
+                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
                 }
+                else {
+                    httpError(response.status)
+                }
+                callback(false);
+                console.error(await response.json())
             }
             else {
                 callback(true);
