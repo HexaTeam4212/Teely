@@ -1,7 +1,7 @@
 // app/Views/Login.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
 
 import CustomButton from '../Components/CustomButton'
 import InputWithName from '../Components/InputWithName'
@@ -13,6 +13,7 @@ export default class Login extends React.Component {
     this.state = { hasError: false };
     this.username = ""
     this.password = ""
+    this.state = { isLoading: false }
   }
 
   callbackFunctionUsername = (childData) => {
@@ -23,12 +24,24 @@ export default class Login extends React.Component {
     this.password = childData
   }
 
+  displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator color='#ffb4e2' size='large' />
+        </View>
+      )
+    }
+  }
+
   login = () => {
+    this.setState({isLoading:true})
     if (this.username.length > 0 && this.password.length > 0) {
       accountServices.login(this.username, this.password, (connexionOK) => {
         if (connexionOK == true) {
           this.props.navigation.navigate("Profile")
         }
+        this.setState({isLoading:false})
       })
     }
     else {
@@ -61,6 +74,7 @@ export default class Login extends React.Component {
             this.props.navigation.navigate("SignUp")
           }} />
         </View>
+        {this.displayLoading()}
       </View>
     )
   }
@@ -99,5 +113,14 @@ const styles = StyleSheet.create({
   },
   connexionButtonView: {
     marginTop: 30
+  },
+  loading_container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 100,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });

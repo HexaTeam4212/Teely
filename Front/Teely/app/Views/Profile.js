@@ -1,10 +1,16 @@
 // app/Views/SignUp.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, ActivityIndicator, Image, Platform, TouchableOpacity, ImageBackground } from 'react-native'
+import { StyleSheet, Text, View, ActivityIndicator, Image, Platform, TouchableOpacity, FlatList, SafeAreaView } from 'react-native'
 import ImageWithText from '../Components/ImageWithText'
-import accountServices from '../Services/AccountServices';
-import Images from '../modules/ImageProfil';
+import accountServices from '../Services/AccountServices'
+import Images from '../modules/ImageProfil'
+import TaskItem from '../Components/TaskItem'
+import { YellowBox } from 'react-native'
+
+YellowBox.ignoreWarnings([
+	'VirtualizedLists should never be nested', // TODO: Remove when fixed
+])
 
 export default class Profile extends React.Component {
     constructor(props) {
@@ -14,6 +20,7 @@ export default class Profile extends React.Component {
         this.name = ""
         this.birthDate = ""
         this.bio = ""
+        this.tasks = []
         this.initDatasProfil = []
         this.state = { isLoading: false }
     }
@@ -28,84 +35,90 @@ export default class Profile extends React.Component {
         }
     }
     displayUpcomingTasks() {
-        //Si aucune tâche
-        return (
-            <View style={styles.tasks_container}>
-                <Text style={styles.bio_text}>Rien à signaler pour le moment.. </Text>
-                <Image style={{ height: 230, width: 200 }} source={require('../../assets/Images/cat.png')} />
-            </View>
-        )
-
-        /*else {
-            return(
-                <View style={styles.tasks_container}>
-                    <Text style={styles.name_text}>A venir :</Text> 
+        this.tasks = accountServices.accountTasks().slice(0,6) //On affiche max les 6 prochaines
+        if (!(this.tasks.length)) {
+            return (
+                <View style={styles.emptyTasks_container}>
+                    <Text style={styles.bio_text}>Rien à signaler pour le moment.. </Text>
+                    <Image style={{ height: 150, width: 100 }} source={require('../../assets/Images/cat.png')} />
                 </View>
             )
-        }*/
+        }
+        else {
+            return (
+                <SafeAreaView style={styles.tasks_container}>
+                    <Text style={styles.name_text}>A venir :</Text>
+                    <FlatList
+                        data={this.tasks}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => <TaskItem task={item} />}
+                    />
+                </SafeAreaView>
+            )
+        }
     }
 
-    getDataProfil = ()=> {
-          this.initDatasProfil = accountServices.dataProfil()
-          
-          this.lastName = this.initDatasProfil[0]
-          this.name = this.initDatasProfil[1]
-          this.username = this.initDatasProfil[2]
-          this.birthDate = "07/06/1999" //this.initDatasProfil[5]
-          this.bio = this.initDatasProfil[6]
-          this.idImage = this.initDatasProfil[7]
-      }
+    getDataProfil = () => {
+        this.initDatasProfil = accountServices.dataProfil()
+        this.lastName = this.initDatasProfil[0]
+        this.name = this.initDatasProfil[1]
+        this.username = this.initDatasProfil[2]
+        this.birthDate = this.initDatasProfil[5]
+        this.bio = this.initDatasProfil[6]
+        this.idImage = this.initDatasProfil[7]
+    }
+
 
     imageProfil = () => {
         this.getDataProfil()
         return (
-          <Image style={styles.profilePic} source={Images[this.idImage]} />
+            <Image style={styles.profilePic} source={Images[this.idImage]} />
         )
-      }
+
+    }
 
 
     render() {
         return (
             <View style={styles.main_container}>
-                <KeyboardAwareScrollView
-                    contentContainerstyle={styles.content_container}
-                    resetScrollToCoords={{ x: 0, y: 0 }}
-                    scrollEnabled={true}
-                    enableAutomaticScroll={(Platform.OS === 'ios')}
-                    enableOnAndroid={true}>
-                    <TouchableOpacity style={styles.signOutButton} onPress={() => this.props.navigation.navigate("Login")}>
-                        <Text style={styles.buttonText}>Déconnexion</Text>
-                    </TouchableOpacity>
-                    <View style={styles.head_container}>
-                        {this.imageProfil()}
-                        <View style={styles.headerInfo_container}>
-                            <View style={styles.labels_container}>
-                                <Text style={styles.name_text}>{this.name} {this.lastName}</Text>
-                                <Text style={styles.username_text}> ({this.username}) </Text>
-                            </View>
-                            <View style={styles.bio_container}>
-                                <Text style={styles.bio_text} numberOfLines={4}> {this.bio}</Text>
-                            </View>
-                            <View style={styles.foot_container}>
-                                <Text style={styles.date_text}>Né(e) le : {this.birthDate}</Text>
-                                <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditProfile")}>
-                                    <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
-                                </TouchableOpacity>
-                            </View>
+                <TouchableOpacity style={styles.signOutButton} onPress={() => this.props.navigation.navigate("Login")}>
+                    <Text style={styles.buttonText}>Déconnexion</Text>
+                </TouchableOpacity>
+                <View style={styles.head_container}>
+                    {this.imageProfil()}
+                    <View style={styles.headerInfo_container}>
+                        <View style={styles.labels_container}>
+                            <Text style={styles.name_text}>{this.name} {this.lastName}</Text>
+                            <Text style={styles.username_text}> ({this.username}) </Text>
                         </View>
-
+                        <View style={styles.bio_container}>
+                            <Text style={styles.bio_text} numberOfLines={4}> {this.bio}</Text>
+                        </View>
+                        <View style={styles.foot_container}>
+                            <Text style={styles.date_text}>Né(e) le : {this.birthDate}</Text>
+                            <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditProfile")}>
+                                <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Calendar")}>
-                        <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='MON CALENDRIER' />
-                    </TouchableOpacity>
-                    {this.displayUpcomingTasks()}
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Groups")}>
-                        <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='MES GROUPES' />
-                    </TouchableOpacity>
-
-                    {this.displayLoading()}
-                </KeyboardAwareScrollView>
-
+                </View>
+                <TouchableOpacity style={{ flex: 3 }} onPress={() => this.props.navigation.navigate("Calendar")}>
+                    <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='MON CALENDRIER' />
+                </TouchableOpacity>
+                <View style={styles.content_container}>
+                    <KeyboardAwareScrollView
+                        contentContainerstyle={styles.content_container}
+                        resetScrollToCoords={{ x: 0, y: 0 }}
+                        scrollEnabled={true}
+                        enableAutomaticScroll={(Platform.OS === 'ios')}
+                        enableOnAndroid={true}>
+                        {this.displayUpcomingTasks()}
+                    </KeyboardAwareScrollView>
+                </View>
+                <TouchableOpacity style={{ flex: 3, marginBottom: 1 }} onPress={() => this.props.navigation.navigate("Groups")}>
+                    <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='MES GROUPES' />
+                </TouchableOpacity>
+                {this.displayLoading()}
             </View>
         )
     }
@@ -117,9 +130,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     head_container: {
+        flex: 5,
         marginRight: 10,
-        marginLeft:10,
-        marginBottom:10,
+        marginLeft: 10,
         justifyContent: 'space-evenly',
         flexDirection: 'row',
     },
@@ -134,36 +147,35 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     content_container: {
-        flex: 1,
-        marginTop: 30,
-        marginBottom: 10,
+        flex: 5,
         flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    labels_container: {
-        flex: 3,
-        flexDirection: 'column',
-        justifyContent: 'center'
-
-    },
-    tasks_container: {
-        margin: 10,
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'space-evenly',  
         marginLeft: 50,
         marginRight: 30,
         backgroundColor: '#60dbd3',
         borderColor: 'white',
         borderWidth: 2,
         borderRadius: 15,
-
+    },
+    labels_container: {
+        flex: 2,
+        flexDirection: 'column',
+        justifyContent: 'center'
+    },
+    emptyTasks_container: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    tasks_container: {
+        margin: 10,
+        flex: 1,
+        flexDirection: 'column',
     },
     name_text: {
         fontWeight: 'bold',
-        fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+        fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
         fontSize: 25,
         textAlign: 'center',
         color: 'white',
@@ -171,8 +183,9 @@ const styles = StyleSheet.create({
     },
     username_text: {
         fontWeight: 'bold',
-        fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+        fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
         fontSize: 18,
+        fontStyle: 'italic',
         color: 'white',
         textAlign: 'center',
         flexWrap: 'wrap'
@@ -185,7 +198,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap'
     },
     bio_container: {
-        flex: 3
+        flex: 3,
+        justifyContent: 'center'
     },
     bio_text: {
         fontStyle: 'italic',
@@ -200,7 +214,7 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontSize: 18,
         color: 'white',
-        fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+        fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
     },
     profilePic: {
         marginTop: 10,
@@ -234,18 +248,18 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 15,
         color: 'black',
-        fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+        fontFamily: Platform.OS === 'ios' ? 'Papyrus' : 'Roboto',
         fontWeight: 'bold',
         textDecorationLine: 'underline',
-        textAlign:'center'
+        textAlign: 'center'
     },
     signOutButton: {
         padding: 10,
         backgroundColor: '#ffb4e2',
         width: 110,
-        height:40,
+        height: 40,
         borderRadius: 30,
-        alignSelf:'flex-end'
+        alignSelf: 'flex-end'
     }
 
 

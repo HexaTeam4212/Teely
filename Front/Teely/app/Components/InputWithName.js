@@ -5,16 +5,16 @@ import { StyleSheet, Text, TextInput, View, Platform } from 'react-native';
 export default class InputWithName extends React.Component {
   constructor(props) {
     super(props)
-    this.writtenText=""
+    this.writtenText = ""
   }
 
   textInputChangedText(text) {
-    this.writtenText=text
+    this.writtenText = text
     this.sendData(this.writtenText)
   }
 
 
-  sendData(data){
+  sendData(data) {
     this.props.parentCallback(data)
   }
 
@@ -24,41 +24,41 @@ export default class InputWithName extends React.Component {
     const placeholder = this.props.placeholder
     const secureTextEntry = this.props.secureTextEntry
 
-    return(
-    <View style={styles.main_container}>
-        <Text style = {styles.text}> {name} </Text>
+    return (
+      <View style={styles.main_container}>
+        <Text style={styles.text}> {name} </Text>
         <TextInput
-          placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type} 
-          onChangeText={(text) => this.textInputChangedText(text)}  
-          secureTextEntry= {secureTextEntry} style = {styles.textInput}/>
+          placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type}
+          onChangeText={(text) => this.textInputChangedText(text)}
+          secureTextEntry={secureTextEntry} style={styles.textInput} />
 
-    </View>
+      </View>
     )
 
   }
-  
+
 }
 
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
-    flexDirection : 'column',
+    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems : 'center',
-    marginTop : 15
+    alignItems: 'center',
+    margin:15
   },
   text: {
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontSize: 16,
-    textAlign : 'center',
-    color: 'black',  
-    marginBottom : 5
+    textAlign: 'center',
+    color: 'black',
+    marginBottom: 5
   },
   textInput: {
-      backgroundColor: 'white',
-      textAlign : 'center',
-      height: "70%",
-      width: "60%",
-      borderRadius: 10,
-    }
+    backgroundColor: 'white',
+    textAlign: 'center',
+    height: "90%",
+    width: "60%",
+    borderRadius: 10,
+  }
 });

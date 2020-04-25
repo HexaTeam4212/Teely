@@ -100,7 +100,7 @@ class AccountServices {
             + confirmedPassword + "\n" + email + "\n" + birthDate + "\n" + biography)
         callback(true);
 
-        
+
         /*const requestBody = JSON.stringify({
                     username: username,
                     password: password,
@@ -141,15 +141,13 @@ class AccountServices {
     }
 
     dataProfil() {
-        alert("Récupération données profil")
-
         const username = "username"
         const password = "********"
         const email = "xyz@gmail.com"
         const lastName = "LastName"
         const name = "Name"
         const birthDate = "aaaa-mm-jj"
-        const biography = "Hi everyone :) "
+        const biography = "Hi everyone"
         const image = 2
         console.log("image data profil : " + image)
         let datasProfil = [lastName, name, username, password, email, birthDate, biography, image]
@@ -187,6 +185,44 @@ class AccountServices {
         return datasProfil
     }
 
+
+
+    accountTasks() {
+
+        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-25', startingTime: '11:20' }
+        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-26', startingTime: '15:00' }
+        const task3 = { id: 501, name: 'Convention de stage', description: 'remplir avenant convention de stage', dueDate: '2020-04-25', startingTime: '16:10' }
+
+        const task4 = { id: 321, name: 'Courses', description: 'Faire les courses pour la semaine', dueDate: '2020-04-27', startingTime: '13:00' }
+    
+        let accountTasks = [task1, task2, task3, task4]
+        /*let accountTasks = []
+        const fullEndpoint = endpoint + "task/all"
+        try {
+            const response = await fetch(backendURL + fullEndpoint, 
+            {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: none
+            })
+            if (response.status != 200) {
+                    alert("Erreur lors de la récupération des tâches")
+            }
+            else {
+                alert("Récupération des tâches réussie :)")
+                accountTasks.push(response.tasks)
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }*/
+        return accountTasks
+    }
+
 }
+
 const accountServices = new AccountServices()
 export default accountServices

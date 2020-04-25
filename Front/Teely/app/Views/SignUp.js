@@ -77,7 +77,7 @@ export default class SignUp extends React.Component {
     else {
       this.setState({ isLoading: true })
       this.pickImageProfil()
-      accountServices.signup(this.username, this.password, this.email, this.lastName, this.name, this.birthDate, this.idImage,this.redirect)
+      accountServices.signup(this.username, this.password, this.email, this.lastName, this.name, this.birthDate, this.idImage, this.redirect)
     }
   }
 
@@ -89,33 +89,34 @@ export default class SignUp extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-        <KeyboardAwareScrollView
-          contentContainerstyle={styles.content_container}
-          resetScrollToCoords={{ x: 0, y: 0 }}
-          scrollEnabled={true}
-          enableAutomaticScroll={(Platform.OS === 'ios')}
-          enableOnAndroid={true}>
+        <View style={styles.content_container}>
+          <KeyboardAwareScrollView
+            contentContainerstyle={styles.content_container}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            enableAutomaticScroll={(Platform.OS === 'ios')}
+            enableOnAndroid={true}>
 
-          <InputWithName name="Nom d'utilisateur" type='username' placeholder='Pseudonyme'
-            secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
-          <InputWithName name='Mot de passe' type='password' placeholder='********'
-            secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
-          <InputWithName name='Confirmez votre mot de passe' type='password' placeholder='********'
-            secureTextEntry={true} parentCallback={this.callbackFunctionConfirmedPassword} />
-          <InputWithName name='Adresse e-mail' type='emailAddress' placeholder='xyz@gmail.com'
-            secureTextEntry={false} parentCallback={this.callbackFunctionEmail} />
-          <InputWithName name='Nom' type='none' placeholder='Nom'
-            secureTextEntry={false} parentCallback={this.callbackFunctionLastName} />
-          <InputWithName name='Prénom' type='none' placeholder='Prénom'
-            secureTextEntry={false} parentCallback={this.callbackFunctionName} />
-          <Text style={styles.text}> Date de naissance </Text>
-          <DateTimePicker name="aaaa-mm-jj" parentCallback={this.callbackFunctionBirthDate} />
+            <InputWithName name="Nom d'utilisateur" type='username' placeholder='Pseudonyme'
+              secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
+            <InputWithName name='Mot de passe' type='password' placeholder='********'
+              secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
+            <InputWithName name='Confirmez votre mot de passe' type='password' placeholder='********'
+              secureTextEntry={true} parentCallback={this.callbackFunctionConfirmedPassword} />
+            <InputWithName name='Adresse e-mail' type='emailAddress' placeholder='xyz@gmail.com'
+              secureTextEntry={false} parentCallback={this.callbackFunctionEmail} />
+            <InputWithName name='Nom' type='none' placeholder='Nom'
+              secureTextEntry={false} parentCallback={this.callbackFunctionLastName} />
+            <InputWithName name='Prénom' type='none' placeholder='Prénom'
+              secureTextEntry={false} parentCallback={this.callbackFunctionName} />
+            <Text style={styles.text}> Date de naissance </Text>
+            <DateTimePicker name="aaaa-mm-jj" parentCallback={this.callbackFunctionBirthDate} />
 
-          <CustomButton name='Créer mon compte'
+          </KeyboardAwareScrollView>
+        </View>
+        <CustomButton name='Créer mon compte'
             onPress={this.signup} />
-          {this.displayLoading()}
-        </KeyboardAwareScrollView>
-
+        {this.displayLoading()}
       </View>
     )
   }
@@ -124,19 +125,14 @@ export default class SignUp extends React.Component {
 const styles = StyleSheet.create({
   main_container: {
     backgroundColor: '#78e1db',
-    flex: 1
-  },
-  head_container: {
-    justifyContent: 'flex-start'
-
+    flex: 1,
   },
   content_container: {
-    flex: 1,
-    marginTop: 30,
-    marginBottom: 10,
+    flex: 7,
+    marginTop: 10,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'space-evenly',
+    alignItems: 'stretch'
   },
   text: {
     marginTop: 10,
@@ -147,7 +143,6 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   loading_container: {
-
     position: 'absolute',
     left: 0,
     right: 0,

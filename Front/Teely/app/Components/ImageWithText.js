@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     button_text: {
+        fontFamily: Platform.OS === 'ios' ? 'Marker Felt' : 'Roboto',
         fontWeight: 'bold',
         fontSize: 26,
         textAlign: 'left',
