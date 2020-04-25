@@ -8,7 +8,7 @@ import SignUp from './app/Views/SignUp'
 import Profile from './app/Views/Profile'
 import EditProfil from './app/Views/EditProfil'
 import Groups from './app/Views/Groups'
-import Calendar from './app/Views/Calendar'
+import PersonalCalendar from './app/Views/PersonalCalendar'
 
 
 export default function App() {
@@ -50,8 +50,8 @@ export default function App() {
           }}
         />
         <Stack.Screen
-          name="Calendar"
-          component={Calendar}
+          name="PersonalCalendar"
+          component={PersonalCalendar}
           options={{
             title: 'Mon calendrier personnel',
             headerStyle: {

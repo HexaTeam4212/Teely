@@ -42,7 +42,7 @@ class AccountServices {
                     httpError(response.status)
                 }
                 callback(false);
-                console.error(await response.json())
+                console.log(await response.json())
             }
             else {
                 alert("Inscription réussie :)")
@@ -82,7 +82,7 @@ class AccountServices {
                     httpError(response.status)
                 }
                 callback(false);
-                console.error(await jsonBody)
+                console.log(await jsonBody)
             }
             else {
                 storeToken(jsonBody.authToken)

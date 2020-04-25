@@ -102,7 +102,7 @@ export default class Profile extends React.Component {
                         </View>
                     </View>
                 </View>
-                <TouchableOpacity style={{ flex: 3 }} onPress={() => this.props.navigation.navigate("Calendar")}>
+                <TouchableOpacity style={{ flex: 3 }} onPress={() => this.props.navigation.navigate("PersonalCalendar")}>
                     <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='MON CALENDRIER' />
                 </TouchableOpacity>
                 <View style={styles.content_container}>
