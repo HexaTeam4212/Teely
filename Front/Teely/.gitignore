@@ -12,4 +12,3 @@ web-report/
 utile
 # macOS
 .DS_Store
-package-lock.json
