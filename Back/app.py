@@ -79,10 +79,7 @@ def account_update():
     reponse_body = {}
 
     if 'username' not in session:
-        code = 401
-        reponse_body = {
-            "error": "User is not logged in"
-        }
+        return sendError("User is not logged in", 401)
     else:
         try:
             user = PERSON.get(PERSON.Username == session['username'])
@@ -100,6 +97,27 @@ def account_update():
             return sendError(400, "Bad Request: Make sure to send all parameters !")
 
     return jsonify(reponse_body), code
+
+@app.route('/account/info',  methods=['GET'])
+def account_info():
+
+    reponse_body = {}
+
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else:
+        user = PERSON.get(PERSON.Username == session['username'])
+        reponse_body = {
+            "username": user.Username,
+            "email": user.Email,
+            "birthdate": user.BirthDate,
+            "lastName": user.LastName,
+            "name": user.Name,
+            "bio": user.Bio,
+            "idImage": user.idImage
+        }
+
+    return jsonify(reponse_body), 200
 
 # Group endpoints
 
