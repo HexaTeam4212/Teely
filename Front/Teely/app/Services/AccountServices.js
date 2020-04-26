@@ -1,7 +1,7 @@
 //app/Services/SignUpService.js
 import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
-import { storeToken, getToken } from '../modules/TokenStorage.js'
+import { storeToken, getToken, removeToken } from '../modules/TokenStorage.js'
 
 const endpoint = "/account/"
 
@@ -98,6 +98,10 @@ class AccountServices {
         catch (error) {
             console.error(error)
         }
+    }
+
+    async logout() {
+        removeToken();
     }
 
     async saveProfil(username, password, confirmedPassword, email, lastName, name, birthDate, biography, callback) {

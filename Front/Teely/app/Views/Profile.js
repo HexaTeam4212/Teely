@@ -6,6 +6,7 @@ import ImageWithText from '../Components/ImageWithText'
 import accountServices from '../Services/AccountServices'
 import Images from '../modules/ImageProfil'
 import TaskItem from '../Components/TaskItem'
+import LogoutButton from '../Components/LogoutButton'
 import { YellowBox } from 'react-native'
 
 YellowBox.ignoreWarnings([
@@ -81,9 +82,7 @@ export default class Profile extends React.Component {
     render() {
         return (
             <View style={styles.main_container}>
-                <TouchableOpacity style={styles.signOutButton} onPress={() => this.props.navigation.navigate("Login")}>
-                    <Text style={styles.buttonText}>Déconnexion</Text>
-                </TouchableOpacity>
+                <LogoutButton></LogoutButton>
                 <View style={styles.head_container}>
                     {this.imageProfil()}
                     <View style={styles.headerInfo_container}>
@@ -244,23 +243,5 @@ const styles = StyleSheet.create({
         bottom: 100,
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    buttonText: {
-        fontSize: 15,
-        color: 'black',
-        fontFamily: Platform.OS === 'ios' ? 'Papyrus' : 'Roboto',
-        fontWeight: 'bold',
-        textDecorationLine: 'underline',
-        textAlign: 'center'
-    },
-    signOutButton: {
-        padding: 10,
-        backgroundColor: '#ffb4e2',
-        width: 110,
-        height: 40,
-        borderRadius: 30,
-        alignSelf: 'flex-end'
     }
-
-
 });

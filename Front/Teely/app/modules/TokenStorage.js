@@ -21,3 +21,11 @@ export const getToken = async () => {
         console.error(e)
     }
 }
+
+export const removeToken = async () => {
+    try {
+        await AsyncStorage.removeItem('Authorization')
+    } catch (e) {
+        console.error(e)
+    }
+}
