@@ -78,6 +78,12 @@ class AccountServices {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
                 }
+                else if (response.status == 404) {
+                    alert("Ce nom d'utilisateur n'existe pas.")
+                }
+                else if (response.status == 401) {
+                    alert("Mot de passe incorrect.")
+                }
                 else {
                     httpError(response.status)
                 }
