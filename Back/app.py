@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from peewee import *
 import json
@@ -7,6 +7,9 @@ app = Flask(__name__)
 
 CORS(app) ## allow CORS for all domains on all routes (to change later)
 
+# Set the secret key to some random bytes. Keep this really secret!
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
 mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
 
 def sendError(code, msg):
@@ -14,6 +17,8 @@ def sendError(code, msg):
         "error": msg
     }
     return jsonify(body), code
+
+# Account endpoints
 
 @app.route('/account/inscription', methods=['POST'])
 def account_inscription():
@@ -56,8 +61,47 @@ def account_login():
         reponse_body = {
             "authToken": "dsfsdofjsdpofjsdpfk"
         }
+        session['username'] = username
 
     return jsonify(reponse_body), code
+
+@app.route('/account/logout',  methods=['GET'])
+def account_logout():
+    if 'username' in session:
+        session.pop('username', None)
+
+    return jsonify({}), 204
+
+@app.route('/account/update',  methods=['PUT'])
+def account_update():
+    content = request.get_json()
+    code = 204
+    reponse_body = {}
+
+    if 'username' not in session:
+        code = 401
+        reponse_body = {
+            "error": "User is not logged in"
+        }
+    else:
+        try:
+            user = PERSON.get(PERSON.Username == session['username'])
+            user.Username = content["username"]
+            user.Email = content["email"]
+            user.Password = content["password"]
+            user.LastName = content["lastName"]
+            user.Name = content["name"]
+            user.BirthDate = content["birthdate"]
+            user.idImage = content["idImage"]
+            if "bio" in content:
+                user.Bio = content["bio"]
+            user.save()
+        except:
+            return sendError(400, "Bad Request: Make sure to send all parameters !")
+
+    return jsonify(reponse_body), code
+
+# Group endpoints
 
 @app.route('/group', methods=['GET', 'POST'])
 def group(): 
