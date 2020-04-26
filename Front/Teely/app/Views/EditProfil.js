@@ -72,7 +72,7 @@ export default class EditProfil extends React.Component {
   redirect = (profilOk) => {
     this.setState({ isLoading: false })
     if (profilOk) {
-      this.props.navigation.navigate("Profile")//mettre le nom de la bonne page quand cree
+      this.props.navigation.navigate("Profile")
     }
 
   }
@@ -146,8 +146,8 @@ export default class EditProfil extends React.Component {
         <NameWithInput name='Email : ' type='emailAddress' placeholder={this.initDatasProfil[4]} height={40}
           value={this.state.email} secureTextEntry={false} parentCallback={this.callbackFunctionEmail} />
         <View style={styles.date_container} >
-          <Text style={[styles.text, { marginLeft: 15 }]}> Date de naissance : </Text>
-          <DateTimePicker name={this.initDatasProfil[5]} marginRight={22} parentCallback={this.callbackFunctionBirthDate} />
+          <Text style={[styles.text, { marginRight: 10 }]}>Date de naissance : </Text>
+          <DateTimePicker name={this.initDatasProfil[5]} marginRight={35} parentCallback={this.callbackFunctionBirthDate} />
         </View>
         <NameWithInput name='Biographie : ' type='none' placeholder={this.initDatasProfil[6]} height={200}
           value={this.state.biography} secureTextEntry={false} parentCallback={this.callbackFunctionBibliography} />
@@ -169,7 +169,9 @@ const styles = StyleSheet.create({
   },
   content_container: {
     flex: 7,
+    margin: 5,
     borderColor: '#ffdb58',
+    borderRadius: 10,
     borderWidth: 5,
   },
   image_container: {

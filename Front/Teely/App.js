@@ -2,14 +2,17 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import Login from './app/Views/Login'
 import SignUp from './app/Views/SignUp'
-
 import Profile from './app/Views/Profile'
 import EditProfil from './app/Views/EditProfil'
 import Groups from './app/Views/Groups'
-import PersonalCalendar from './app/Views/PersonalCalendar'
 
+import PersonalCalendar from './app/Views/PersonalCalendar'
+import DetailedGroup from './app/Views/DetailedGroup'
+import Invitations from './app/Views/Invitations'
+import CreateGroup from './app/Views/CreateGroup'
 
 export default function App() {
 
@@ -111,17 +114,49 @@ export default function App() {
           }}
         />
         <Stack.Screen
-          name="EditProfil"
-          component={EditProfil}
+          name="DetailedGroup"
+          component={DetailedGroup}
           options={{
-            title: 'Modification du profil',
+            title: 'Vue détaillée groupe',
             headerStyle: {
               backgroundColor: '#78e1db',
             },
+            headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
               fontWeight: 'bold',
-            },}}
+            },
+          }}
+        />
+        <Stack.Screen
+          name="Invitations"
+          component={Invitations}
+          options={{
+            title: 'Mes invitations',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
+         <Stack.Screen
+          name="CreateGroup"
+          component={CreateGroup}
+          options={{
+            title: 'Création d\'un groupe',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -141,6 +141,9 @@ class AccountServices {
     }
 
     dataProfil() {
+
+        //alert("Récupération données profil")
+
         const username = "username"
         const password = "********"
         const email = "xyz@gmail.com"
@@ -149,7 +152,6 @@ class AccountServices {
         const birthDate = "aaaa-mm-jj"
         const biography = "Hi everyone"
         const image = 2
-        console.log("image data profil : " + image)
         let datasProfil = [lastName, name, username, password, email, birthDate, biography, image]
 
         /*let datasProfil = []
@@ -185,8 +187,6 @@ class AccountServices {
         return datasProfil
     }
 
-
-
     accountTasks() {
 
         const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-25', startingTime: '11:20' }
@@ -198,6 +198,7 @@ class AccountServices {
         let accountTasks = [task1, task2, task3, task4]
         /*let accountTasks = []
         const fullEndpoint = endpoint + "task/all"
+
         try {
             const response = await fetch(backendURL + fullEndpoint, 
             {
@@ -209,6 +210,7 @@ class AccountServices {
                 body: none
             })
             if (response.status != 200) {
+
                     alert("Erreur lors de la récupération des tâches")
             }
             else {
@@ -220,6 +222,41 @@ class AccountServices {
             console.log(error)
         }*/
         return accountTasks
+    }
+
+    accountInvitations() {
+        //alert("Récupération invitations profil")
+
+        const invit1 = { id: 1, sender: 'User57', group: 'La mifa !', idImage: '13' }
+        const invit2 = { id: 2, sender: 'Fati', group: 'Les collègues',idImage: '6' }
+        const invit3 = { id: 3, sender: 'Lili la licorne', group: 'Vacances dans les iles',idImage: '16'}
+        const invit4 = { id: 4, sender: 'Anonyme201', group: 'H4212',idImage: '8' }
+    
+        let accountInvitations = [invit1, invit2, invit3, invit4]
+        /*let accountInvitations = []
+        const fullEndpoint = endpoint + "invitation"
+        try {
+            const response = await fetch(backendURL + fullEndpoint, 
+            {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: none
+            })
+            if (response.status != 200) {
+                    alert("Erreur lors de la récupération des invitations")
+            }
+            else {
+                alert("Récupération des invitations réussie :)")
+                accountInvitations.push(response.invitations)
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }*/
+        return accountInvitations
     }
 
 }
