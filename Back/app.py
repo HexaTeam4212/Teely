@@ -22,7 +22,7 @@ def account_inscription():
     reponse_body = {}
 
     try:
-        newUser = PERSON(Username = content['username'], Email = content['email'], Password = content['password'], LastName = content['lastName'], Name = content['name'], BirthDate = content['birthdate'])
+        newUser = PERSON(Username = content['username'], Email = content['email'], Password = content['password'], LastName = content['lastName'], Name = content['name'], BirthDate = content['birthdate'], idImage = content["idImage"])
     except:
         return sendError(400, "Bad Request: Make sure to send all parameters !")
 

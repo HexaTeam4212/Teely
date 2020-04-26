@@ -16,6 +16,7 @@ class PERSON(BaseModel):
 	Name = CharField(max_length = 50)
 	BirthDate = DateField(formats = '%Y-%m-%d')
 	Bio = CharField(max_length = 500, null = True)
+	idImage = IntegerField(null = True)
 
 class GROUP(BaseModel):
 	groupId = AutoField(primary_key = True)
