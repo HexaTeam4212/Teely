@@ -126,11 +126,12 @@ def account_info():
 def group(): 
     content = request.get_json()
     reponse_body = {}
-    #Il faut récupérer l'ID de celui qui est connecté 
-    userId = 1
 
-    if request.method == 'POST':
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else if request.method == 'POST':
         code = 204
+        user = PERSON.get(PERSON.Username == session['username'])
         try:
             newGroup = GROUP(Name = content['group_name'], Description = content['description'])
         except:
@@ -141,18 +142,15 @@ def group():
         except:
             return sendError(409, "This group couldn't be add in the database !")
         
-        try:
-            for user in content['members'] :
-                INVITATION.insert(Sender_id=userId ,Recipient_id=user,Group_id=newGroup.groupId).execute()
-        except:
-            return sendError(400, "Make sure to send all the parameters")
-
-        PARTICIPATE_IN.insert(User_id=userId,Group_id=newGroup.groupId).execute()
-        return jsonify(reponse_body), code
-        
-    if request.method == 'GET':
+        for username in content['guests'] :
+            recipient = PERSON.get(PERSON.Username == username)
+            INVITATION.insert(Sender_id=user.personId ,Recipient_id=recipient.personId,Group_id=newGroup.groupId).execute()
+            
+        PARTICIPATE_IN.insert(User_id=user.personId,Group_id=newGroup.groupId).execute()
+        return jsonify(reponse_body), code    
+    else if request.method == 'GET':
         code=200
-        rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == userId)
+        rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
         res = ()
         for groupId in rep:
             res += str(groupId) ,
