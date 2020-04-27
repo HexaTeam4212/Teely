@@ -8,10 +8,10 @@ class GroupServices {
     dataGroupsUser() {
         //alert("Récupération groupes utilisateur")
 
-        const group1 = { id: 1, name: 'Le meilleur groupe de travail', idImage: '5' }
-        const group2 = { id: 2, name: 'En famille !', idImage: '10' }
-        const group3 = { id: 3, name: 'Vacaciones', idImage: '3'}
-        const group4 = { id: 4, name: 'Les potaux', idImage: '7' }
+        const group1 = { id: 1, name: 'Le meilleur groupe de travail', idImage: '0' }
+        const group2 = { id: 2, name: 'En famille !', idImage: '1' }
+        const group3 = { id: 3, name: 'Vacaciones', idImage: '2'}
+        const group4 = { id: 4, name: 'Les poteaux', idImage: '3' }
     
         let accountGroups = [group1, group2, group3, group4]
         /*let accountGroups = []

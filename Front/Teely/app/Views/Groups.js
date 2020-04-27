@@ -2,9 +2,11 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
-import groupServices from '../Services/GroupServices'
-import accountServices from '../Services/AccountServices'
-import Images from '../modules/ImageProfile'
+
+import groupServices from '../Services/GroupServices';
+import accountServices from '../Services/AccountServices';
+import Images from '../modules/ImageProfile';
+import ImagesGp from '../modules/ImageGroup';
 import GroupItem from '../Components/GroupItem'
 import ImageWithText from '../Components/ImageWithText'
 
@@ -72,8 +74,8 @@ export default class Groups extends React.Component {
             data={this.groups}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) =>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", {idGroup:item.id})}> 
-            <GroupItem group={item.name} image={Images[item.idImage]} />
+            <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup")}> 
+            <GroupItem group={item.name} image={ImagesGp[item.idImage]} />
             </TouchableOpacity>}
           />
         </KeyboardAwareScrollView>
@@ -86,18 +88,7 @@ export default class Groups extends React.Component {
     this.invitations = accountServices.accountInvitations()
     const nbInvit = this.invitations.length
     const title = 'MES INVITATIONS (' + nbInvit + ')'
-    /*if (!(this.invitations.length)) {
-      return (
-        <View style={styles.noInvit_container}>
-          <Text style={styles.text}>Aucune invitation en attente </Text>
-        </View>
-      )
-    }
-    else {
-      return (
-        <InvitationItem invitation={this.invitations[0]} />
-      )
-    }*/
+
     return (
       <TouchableOpacity onPress={() => this.props.navigation.navigate("Invitations", {invitations: this.invitations})}>
         <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text={title} />
@@ -107,6 +98,7 @@ export default class Groups extends React.Component {
 
 
   render() {
+    
     return (
       <View style={styles.main_container}>
         <View style={styles.head_container}>

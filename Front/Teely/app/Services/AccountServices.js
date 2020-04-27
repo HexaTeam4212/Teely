@@ -237,10 +237,10 @@ class AccountServices {
     accountInvitations() {
         //alert("Récupération invitations profil")
 
-        const invit1 = { id: 1, sender: 'User57', group: 'La mifa !', idImage: '13' }
-        const invit2 = { id: 2, sender: 'Fati', group: 'Les collègues',idImage: '6' }
-        const invit3 = { id: 3, sender: 'Lili la licorne', group: 'Vacances dans les iles',idImage: '16'}
-        const invit4 = { id: 4, sender: 'Anonyme201', group: 'H4212',idImage: '8' }
+        const invit1 = { id: 1, sender: 'User57', group: 'La mifa !', idImage: '4' }
+        const invit2 = { id: 2, sender: 'Fati', group: 'Les collègues',idImage: '3' }
+        const invit3 = { id: 3, sender: 'Lili la licorne', group: 'Vacances dans les iles',idImage: '5'}
+        const invit4 = { id: 4, sender: 'Anonyme201', group: 'H4212',idImage: '6' }
     
         let accountInvitations = [invit1, invit2, invit3, invit4]
         /*let accountInvitations = []
@@ -267,6 +267,42 @@ class AccountServices {
             console.log(error)
         }*/
         return accountInvitations
+    }
+
+    async accountInvitationChoice(idInvit,choice, callback) {
+        /*const requestBody = JSON.stringify({
+            idInvit: idInvit,
+            choice: choice,
+            
+        })
+        const fullEndpoint = endpoint + "invitation/choice"
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: requestBody
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            if (response.status != 201) {
+                alert("Une erreur s'est produite")
+                httpError(response.status)
+                callback(false);
+                console.log(await response.json())
+            }
+            else {
+                callback(true);
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }*/
+        callback(true)
     }
 
 }
