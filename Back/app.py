@@ -129,7 +129,7 @@ def group():
 
     if 'username' not in session:
         return sendError("User is not logged in", 401)
-    else if request.method == 'POST':
+    elif request.method == 'POST':
         code = 204
         user = PERSON.get(PERSON.Username == session['username'])
         try:
@@ -145,20 +145,37 @@ def group():
         for username in content['guests'] :
             recipient = PERSON.get(PERSON.Username == username)
             INVITATION.insert(Sender_id=user.personId ,Recipient_id=recipient.personId,Group_id=newGroup.groupId).execute()
-            
+
         PARTICIPATE_IN.insert(User_id=user.personId,Group_id=newGroup.groupId).execute()
         return jsonify(reponse_body), code    
-    else if request.method == 'GET':
+    elif request.method == 'GET':
         code=200
         rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
         res = ()
         for groupId in rep:
             res += str(groupId) ,
         response_body = {"groups" : res }
-
         return json.dumps(response_body),code
+'''
+@app.route('/group/<id_group>', methods=['GET'])
+def get_group(id_group):
+    group = GROUP.get(GROUP.groupId == id_group)
+    rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.Group_id == id_group)
+    res = ()
+    for userId in rep:
+        member = PERSON.get(PERSON.personId == userId)
+        res += str(member.username) ,
+    reponse_body = {
+        "id": group.groupId,
+        "group_name": group.Name,
+        "description": group.Description,
+        "members": res
+    }
+    return json.dumps(response_body),code
+'''
 
-        
+
+
 @app.route('/group/<id_group>/invite', methods=['DELETE'])
 def delete_invite(id_group): 
     content = request.get_json()
