@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './app/Views/Login'
 import SignUp from './app/Views/SignUp'
 import Profile from './app/Views/Profile'
-import EditProfil from './app/Views/EditProfil'
+import EditProfile from './app/Views/EditProfile'
 import Groups from './app/Views/Groups'
 
 import PersonalCalendar from './app/Views/PersonalCalendar'
@@ -19,7 +19,6 @@ export default function App() {
   const Stack = createStackNavigator();
 
   return (
-    //<EditProfil/>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
@@ -69,7 +68,7 @@ export default function App() {
         />
         <Stack.Screen
           name="EditProfile"
-          component={EditProfil}
+          component={EditProfile}
           options={{
             title: 'Edition du profil',
             headerStyle: {

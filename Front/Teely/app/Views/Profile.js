@@ -4,7 +4,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { StyleSheet, Text, View, ActivityIndicator, Image, Platform, TouchableOpacity, FlatList, SafeAreaView } from 'react-native'
 import ImageWithText from '../Components/ImageWithText'
 import accountServices from '../Services/AccountServices'
-import Images from '../modules/ImageProfil'
+import Images from '../modules/ImageProfile'
 import TaskItem from '../Components/TaskItem'
 import LogoutButton from '../Components/LogoutButton'
 import { YellowBox } from 'react-native'
@@ -22,7 +22,7 @@ export default class Profile extends React.Component {
         this.birthDate = ""
         this.bio = ""
         this.tasks = []
-        this.initDatasProfil = []
+        this.initDataProfile = []
         this.state = { isLoading: false }
     }
 
@@ -36,7 +36,7 @@ export default class Profile extends React.Component {
         }
     }
     displayUpcomingTasks() {
-        this.tasks = accountServices.accountTasks().slice(0,6) //On affiche max les 6 prochaines
+        this.tasks = accountServices.accountTasks().slice(0,3) //On affiche max les 3 prochaines
         if (!(this.tasks.length)) {
             return (
                 <View style={styles.emptyTasks_container}>
@@ -59,19 +59,19 @@ export default class Profile extends React.Component {
         }
     }
 
-    getDataProfil = () => {
-        this.initDatasProfil = accountServices.dataProfil()
-        this.lastName = this.initDatasProfil[0]
-        this.name = this.initDatasProfil[1]
-        this.username = this.initDatasProfil[2]
-        this.birthDate = this.initDatasProfil[5]
-        this.bio = this.initDatasProfil[6]
-        this.idImage = this.initDatasProfil[7]
+    getDataProfile = () => {
+        this.initDataProfile = accountServices.dataProfile()
+        this.lastName = this.initDataProfile[0]
+        this.name = this.initDataProfile[1]
+        this.username = this.initDataProfile[2]
+        this.birthDate = this.initDataProfile[5]
+        this.bio = this.initDataProfile[6]
+        this.idImage = this.initDataProfile[7]
     }
 
 
-    imageProfil = () => {
-        this.getDataProfil()
+    imageProfile = () => {
+        this.getDataProfile()
         return (
             <Image style={styles.profilePic} source={Images[this.idImage]} />
         )
@@ -84,7 +84,7 @@ export default class Profile extends React.Component {
             <View style={styles.main_container}>
                 <LogoutButton></LogoutButton>
                 <View style={styles.head_container}>
-                    {this.imageProfil()}
+                    {this.imageProfile()}
                     <View style={styles.headerInfo_container}>
                         <View style={styles.labels_container}>
                             <Text style={styles.name_text}>{this.name} {this.lastName}</Text>

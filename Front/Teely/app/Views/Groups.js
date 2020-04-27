@@ -1,10 +1,10 @@
-// app/Views/SignUp.js
+// app/Views/Groups.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
-import groupServices from '../Services/GroupServices';
-import accountServices from '../Services/AccountServices';
-import Images from '../modules/ImageProfil';
+import groupServices from '../Services/GroupServices'
+import accountServices from '../Services/AccountServices'
+import Images from '../modules/ImageProfile'
 import GroupItem from '../Components/GroupItem'
 import ImageWithText from '../Components/ImageWithText'
 
@@ -12,20 +12,20 @@ export default class Groups extends React.Component {
   constructor(props) {
     super(props)
     this.idImage = 18
-    this.initDatasProfil = []
+    this.initDataProfile = []
     this.groups = []
     this.invitations = []
     this.firstload = true
     this.state = { isLoading: false }
   }
 
-  getDataProfil = () => {
-    this.initDatasProfil = accountServices.dataProfil()
-    this.idImage = this.initDatasProfil[7]
+  getDataProfile = () => {
+    this.initDataProfile = accountServices.dataProfile()
+    this.idImage = this.initDataProfile[7]
   }
 
-  imageProfil = () => {
-    this.getDataProfil()
+  imageProfile = () => {
+    this.getDataProfile()
     return (
       <Image style={styles.profile} source={Images[this.idImage]} />
     )
@@ -110,7 +110,7 @@ export default class Groups extends React.Component {
     return (
       <View style={styles.main_container}>
         <View style={styles.head_container}>
-          {this.imageProfil()}
+          {this.imageProfile()}
           <View style={styles.title_container}>
             <Text style={styles.title_text}>Mes groupes</Text>
             <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
