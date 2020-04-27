@@ -104,7 +104,7 @@ class AccountServices {
         removeToken();
     }
 
-    async saveProfil(username, password, confirmedPassword, email, lastName, name, birthDate, biography, callback) {
+    async saveProfile(username, password, confirmedPassword, email, lastName, name, birthDate, biography, callback) {
 
         alert(lastName + "\n" + name + "\n" + username + "\n" + password + "\n"
             + confirmedPassword + "\n" + email + "\n" + birthDate + "\n" + biography)
@@ -150,7 +150,7 @@ class AccountServices {
 
     }
 
-    dataProfil() {
+    dataProfile() {
 
         //alert("Récupération données profil")
 
@@ -162,9 +162,9 @@ class AccountServices {
         const birthDate = "aaaa-mm-jj"
         const biography = "Hi everyone"
         const image = 2
-        let datasProfil = [lastName, name, username, password, email, birthDate, biography, image]
+        let dataProfile = [lastName, name, username, password, email, birthDate, biography, image]
 
-        /*let datasProfil = []
+        /*let dataProfile = []
         const fullEndpoint = endpoint + "info"
         try {
             const response = await fetch(backendURL + fullEndpoint, 
@@ -181,20 +181,20 @@ class AccountServices {
             }
             else {
                 alert("Récupération profil réussie :)")
-                datasProfil.push(response.lastName)
-                datasProfil.push(response.name)
-                datasProfil.push(response.username)
-                datasProfil.push(response.password)
-                datasProfil.push(response.email)
-                datasProfil.push(response.birthDate)
-                datasProfil.push(response.biography)
-                datasProfil.push(response.image)
+                dataProfile.push(response.lastName)
+                dataProfile.push(response.name)
+                dataProfile.push(response.username)
+                dataProfile.push(response.password)
+                dataProfile.push(response.email)
+                dataProfile.push(response.birthDate)
+                dataProfile.push(response.biography)
+                dataProfile.push(response.image)
             }
         }
         catch (error) {
             console.error(error)
         }*/
-        return datasProfil
+        return dataProfile
     }
 
     accountTasks() {
