@@ -118,6 +118,31 @@ def account_info():
 
     return jsonify(reponse_body), 200
 
+@app.route('/account/invitation', methods=['GET'])
+@authenticate
+def account_invitation():
+
+    user = PERSON.select().where(PERSON.Username == session["username"])
+    invitations = INVITATION.select().where(INVITATION.Recipient == user)
+
+    invitData = []
+
+    for invit in invitations:
+        data = {
+            "invitationId": invit.invitationId,
+            "sender": invit.Sender.Username,
+            "group": invit.Group.Name,
+            "idImageGroup": invit.Group.idImage
+        }
+        invitData.append(data)
+
+    reponse_body = {
+        "invitations" : invitData
+    }
+
+    return jsonify(reponse_body), 200
+
+
 # Group endpoints
 
 @app.route('/group', methods=['GET', 'POST'])
