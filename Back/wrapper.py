@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, session
+from functools import wraps
 
 def sendError(code, msg):
 	body = {
@@ -7,6 +8,7 @@ def sendError(code, msg):
 	return jsonify(body), code
 
 def authenticate(func):
+	@wraps(func)
 	def authenticate_and_call(*args, **kwargs):
 		if "Authorization" not in request.headers:
 			return sendError(412, "Missing authorization header !")
