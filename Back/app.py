@@ -3,6 +3,7 @@ from flask_cors import CORS
 from peewee import *
 import json
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION
+from wrapper import sendError, authenticate
 app = Flask(__name__)
 
 CORS(app) ## allow CORS for all domains on all routes (to change later)
@@ -11,12 +12,6 @@ CORS(app) ## allow CORS for all domains on all routes (to change later)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
-
-def sendError(code, msg):
-    body = {
-        "error": msg
-    }
-    return jsonify(body), code
 
 # Account endpoints
 
@@ -67,58 +62,87 @@ def account_login():
     return jsonify(reponse_body), code
 
 @app.route('/account/logout',  methods=['GET'])
+@authenticate
 def account_logout():
-    if 'username' in session:
-        session.pop('username', None)
+
+    session.pop('username', None)
 
     return jsonify({}), 204
 
 @app.route('/account/update',  methods=['PUT'])
+@authenticate
 def account_update():
     content = request.get_json()
     code = 204
     reponse_body = {}
 
-    if 'username' not in session:
-        return sendError("User is not logged in", 401)
-    else:
-        try:
-            user = PERSON.get(PERSON.Username == session['username'])
-            user.Username = content["username"]
-            user.Email = content["email"]
-            user.Password = content["password"]
-            user.LastName = content["lastName"]
-            user.Name = content["name"]
-            user.BirthDate = content["birthdate"]
-            user.idImage = content["idImage"]
-            if "bio" in content:
-                user.Bio = content["bio"]
-            user.save()
-        except:
-            return sendError(400, "Bad Request: Make sure to send all parameters !")
+    try:
+        user = PERSON.get(PERSON.Username == session['username'])
+        user.Username = content["username"]
+        user.Email = content["email"]
+        user.Password = content["password"]
+        user.LastName = content["lastName"]
+        user.Name = content["name"]
+        user.BirthDate = content["birthdate"]
+        user.idImage = content["idImage"]
+        if "bio" in content:
+            user.Bio = content["bio"]
+        user.save()
+    except:
+        return sendError(400, "Bad Request: Make sure to send all parameters !")
 
     return jsonify(reponse_body), code
 
 @app.route('/account/info',  methods=['GET'])
+@authenticate
 def account_info():
 
-    reponse_body = {}
+    user = PERSON.get(PERSON.Username == session['username'])
+    groupsParticipating = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User == user.personId)
 
-    if 'username' not in session:
-        return sendError("User is not logged in", 401)
-    else:
-        user = PERSON.get(PERSON.Username == session['username'])
-        reponse_body = {
-            "username": user.Username,
-            "email": user.Email,
-            "birthdate": user.BirthDate,
-            "lastName": user.LastName,
-            "name": user.Name,
-            "bio": user.Bio,
-            "idImage": user.idImage
-        }
+    groupIds = []
+
+    for groupP in groupsParticipating:
+        groupIds.append(groupP.Group.groupId)
+
+    reponse_body = {
+        "username": user.Username,
+        "email": user.Email,
+        "birthdate": user.BirthDate,
+        "lastName": user.LastName,
+        "name": user.Name,
+        "bio": user.Bio,
+        "idImage": user.idImage,
+        "groupIds": groupIds
+    }
 
     return jsonify(reponse_body), 200
+
+@app.route('/account/invitation', methods=['GET'])
+@authenticate
+def account_invitation():
+
+    user = PERSON.select().where(PERSON.Username == session["username"])
+    invitations = INVITATION.select().where(INVITATION.Recipient == user)
+
+    invitData = []
+
+    for invit in invitations:
+        data = {
+            "invitationId": invit.invitationId,
+            "sender": invit.Sender.Username,
+            "group": invit.Group.Name,
+            "groupId": invit.Group.groupId,
+            "idImageGroup": invit.Group.idImage
+        }
+        invitData.append(data)
+
+    reponse_body = {
+        "invitations" : invitData
+    }
+
+    return jsonify(reponse_body), 200
+
 
 # Group endpoints
 
