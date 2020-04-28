@@ -141,15 +141,17 @@ def group():
            newGroup.save()
         except:
             return sendError(409, "This group couldn't be add in the database !")
-        
-        for username in content['guests'] :
-            recipient = PERSON.get(PERSON.Username == username)
-            INVITATION.insert(Sender_id=user.personId ,Recipient_id=recipient.personId,Group_id=newGroup.groupId).execute()
-
+       
+        if 'guests' in content:
+            for username in content['guests'] :
+                recipient = PERSON.get(PERSON.Username == username)
+                INVITATION.insert(Sender_id=user.personId ,Recipient_id=recipient.personId,Group_id=newGroup.groupId).execute()
+                
         PARTICIPATE_IN.insert(User_id=user.personId,Group_id=newGroup.groupId).execute()
         return jsonify(reponse_body), code    
     elif request.method == 'GET':
         code=200
+        user = PERSON.get(PERSON.Username == session['username'])
         rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
         res = ()
         for groupId in rep:
@@ -173,8 +175,6 @@ def get_group(id_group):
     }
     return json.dumps(response_body),code
 '''
-
-
 
 @app.route('/group/<id_group>/invite', methods=['DELETE'])
 def delete_invite(id_group): 
@@ -203,6 +203,12 @@ def create_invite(id_group):
             reponse_body = {
                 "error": "Conflict: The request could not be completed due to conflict. User may have already been invited."
             }   
+        resultat = PARTICIPATE_IN.select().where( (PARTICIPATE_IN.User_id == user.personId) & (PARTICIPATE_IN.Group_id == id_group) )
+        for participant in resultat : 
+            code = 409
+            reponse_body = {
+                "error": "Conflict: The request could not be completed due to conflict. User is already in the group."
+            }  
         INVITATION.insert(Sender_id=userId ,Recipient_id=user.personId ,Group_id=id_group).execute()
     return jsonify(reponse_body), code
 
