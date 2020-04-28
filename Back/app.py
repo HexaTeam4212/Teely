@@ -98,6 +98,13 @@ def account_update():
 def account_info():
 
     user = PERSON.get(PERSON.Username == session['username'])
+    groupsParticipating = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User == user.personId)
+
+    groupIds = []
+
+    for groupP in groupsParticipating:
+        groupIds.append(groupP.Group.groupId)
+
     reponse_body = {
         "username": user.Username,
         "email": user.Email,
@@ -105,7 +112,8 @@ def account_info():
         "lastName": user.LastName,
         "name": user.Name,
         "bio": user.Bio,
-        "idImage": user.idImage
+        "idImage": user.idImage,
+        "groupIds": groupIds
     }
 
     return jsonify(reponse_body), 200
