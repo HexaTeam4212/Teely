@@ -22,6 +22,7 @@ class GROUP(BaseModel):
 	groupId = AutoField(primary_key = True)
 	Name = CharField(max_length = 50)
 	Description = CharField(max_length = 500)
+	idImage = IntegerField(null = True)
 
 class PARTICIPATE_IN(BaseModel):
 	User = ForeignKeyField(PERSON, backref='+')
