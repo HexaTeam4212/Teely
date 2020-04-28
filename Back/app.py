@@ -132,6 +132,7 @@ def account_invitation():
             "invitationId": invit.invitationId,
             "sender": invit.Sender.Username,
             "group": invit.Group.Name,
+            "groupId": invit.Group.groupId,
             "idImageGroup": invit.Group.idImage
         }
         invitData.append(data)
