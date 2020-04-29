@@ -66,7 +66,7 @@ export default class Profile extends React.Component {
     updateDataProfile = (dataProfile) => {
         this.setState({
             username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
-            birthDate: dataProfile.birthDate, biography: dataProfile.bio, idImage: dataProfile.idImage, isLoading: false
+            birthDate: this.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage, isLoading: false
         })
     }
 
@@ -93,7 +93,8 @@ export default class Profile extends React.Component {
         }
     
 
-    /*formatDate(date){
+    formatDate(dateString){
+        var date = new Date(dateString); 
         var year = parseInt(date.getFullYear())
         var month = parseInt(date.getMonth() + 1)
         var day = parseInt(date.getDate())
@@ -103,9 +104,9 @@ export default class Profile extends React.Component {
         if (day < 10) {
             day = "0" + day
         }
-        this.formattedDate = day + "/" + month + "/" + year
+        var formattedDate = day + "/" + month + "/" + year
         return formattedDate
-    }*/
+    }
 
 
 
