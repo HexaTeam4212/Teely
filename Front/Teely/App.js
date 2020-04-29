@@ -21,6 +21,22 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+      <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{
+            title: 'Connexion',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            headerLeft:null
+          }}
+        />
         <Stack.Screen
           name="Profile"
           component={Profile}
@@ -94,22 +110,6 @@ export default function App() {
             headerTitleStyle: {
               fontWeight: 'bold',
             },
-          }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{
-            title: 'Connexion',
-            headerStyle: {
-              backgroundColor: '#78e1db',
-            },
-            headerTruncatedBackTitle: true,
-            headerTintColor: 'white',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-            headerLeft:null
           }}
         />
         <Stack.Screen

@@ -15,7 +15,7 @@ class AccountServices {
             birthdate: birthDate,
             lastName: lastName,
             name: name,
-            //idImage: idImage
+            idImage: idImage
         })
         const fullEndpoint = endpoint + "inscription"
         try {
@@ -91,7 +91,7 @@ class AccountServices {
                 console.log(await jsonBody)
             }
             else {
-                storeToken(jsonBody.authToken)
+                storeToken(username)
                 callback(true);
             }
         }
@@ -150,21 +150,10 @@ class AccountServices {
 
     }
 
-    dataProfile() {
+    async dataProfile(callback) {
 
-        //alert("Récupération données profil")
-
-        const username = "username"
-        const password = "********"
-        const email = "xyz@gmail.com"
-        const lastName = "LastName"
-        const name = "Name"
-        const birthDate = "aaaa-mm-jj"
-        const biography = "Hi everyone"
-        const image = 2
-        let dataProfile = [lastName, name, username, password, email, birthDate, biography, image]
-
-        /*let dataProfile = []
+        const username = await getToken()
+        let dataProfile = []
         const fullEndpoint = endpoint + "info"
         try {
             const response = await fetch(backendURL + fullEndpoint, 
@@ -173,27 +162,20 @@ class AccountServices {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                },
-                body: none
+                    Authorization : username
+                }
             })
+            const respBody = await response.json()
             if (response.status != 200) {
                     alert("Erreur lors de la récupération du profil")
             }
             else {
-                alert("Récupération profil réussie :)")
-                dataProfile.push(response.lastName)
-                dataProfile.push(response.name)
-                dataProfile.push(response.username)
-                dataProfile.push(response.password)
-                dataProfile.push(response.email)
-                dataProfile.push(response.birthDate)
-                dataProfile.push(response.biography)
-                dataProfile.push(response.image)
+                callback(respBody)
             }
         }
         catch (error) {
             console.error(error)
-        }*/
+        }
         return dataProfile
     }
 

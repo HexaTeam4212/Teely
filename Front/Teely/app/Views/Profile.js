@@ -10,20 +10,24 @@ import LogoutButton from '../Components/LogoutButton'
 import { YellowBox } from 'react-native'
 
 YellowBox.ignoreWarnings([
-	'VirtualizedLists should never be nested', // TODO: Remove when fixed
+    'VirtualizedLists should never be nested', // TODO: Remove when fixed
 ])
 
 export default class Profile extends React.Component {
     constructor(props) {
         super(props)
-        this.username = ""
-        this.lastName = ""
-        this.name = ""
-        this.birthDate = ""
-        this.bio = ""
         this.tasks = []
-        this.initDataProfile = []
-        this.state = { isLoading: false }
+        this.state = {
+            isLoading: true,
+            username: "",
+            name: "",
+            lastName: "",
+            birthDate: "",
+            biography: "",
+            idImage: 1
+        }
+        this.getDataProfile()
+
     }
 
     displayLoading() {
@@ -36,7 +40,7 @@ export default class Profile extends React.Component {
         }
     }
     displayUpcomingTasks() {
-        this.tasks = accountServices.accountTasks().slice(0,3) //On affiche max les 3 prochaines
+        this.tasks = accountServices.accountTasks().slice(0, 3) //On affiche max les 3 prochaines
         if (!(this.tasks.length)) {
             return (
                 <View style={styles.emptyTasks_container}>
@@ -59,24 +63,51 @@ export default class Profile extends React.Component {
         }
     }
 
-    getDataProfile = () => {
-        this.initDataProfile = accountServices.dataProfile()
-        this.lastName = this.initDataProfile[0]
-        this.name = this.initDataProfile[1]
-        this.username = this.initDataProfile[2]
-        this.birthDate = this.initDataProfile[5]
-        this.bio = this.initDataProfile[6]
-        this.idImage = this.initDataProfile[7]
+    updateDataProfile = (dataProfile) => {
+        this.setState({
+            username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
+            birthDate: dataProfile.birthDate, biography: dataProfile.bio, idImage: dataProfile.idImage, isLoading: false
+        })
     }
 
+    getDataProfile = () => {
+        accountServices.dataProfile(this.updateDataProfile)
+    }
 
     imageProfile = () => {
-        this.getDataProfile()
         return (
-            <Image style={styles.profilePic} source={Images[this.idImage]} />
+            <Image style={styles.profilePic} source={Images[this.state.idImage]} />
         )
-
     }
+
+    displayBiography = () => {
+        if (this.state.biography==null) {
+            return (
+                <Text style={styles.bio_text}> Votre bio ici :) </Text>
+            )
+        } else {
+            return (
+                <Text style={styles.bio_text} numberOfLines={4}> {this.state.biography}</Text>
+            )
+        }
+        }
+    
+
+    /*formatDate(date){
+        var year = parseInt(date.getFullYear())
+        var month = parseInt(date.getMonth() + 1)
+        var day = parseInt(date.getDate())
+        if (month < 10) {
+            month = "0" + month
+        }
+        if (day < 10) {
+            day = "0" + day
+        }
+        this.formattedDate = day + "/" + month + "/" + year
+        return formattedDate
+    }*/
+
+
 
 
     render() {
@@ -87,14 +118,14 @@ export default class Profile extends React.Component {
                     {this.imageProfile()}
                     <View style={styles.headerInfo_container}>
                         <View style={styles.labels_container}>
-                            <Text style={styles.name_text}>{this.name} {this.lastName}</Text>
-                            <Text style={styles.username_text}> ({this.username}) </Text>
+                            <Text style={styles.name_text}>{this.state.name} {this.state.lastName}</Text>
+                            <Text style={styles.username_text}> ({this.state.username}) </Text>
                         </View>
                         <View style={styles.bio_container}>
-                            <Text style={styles.bio_text} numberOfLines={4}> {this.bio}</Text>
+                            {this.displayBiography()}
                         </View>
                         <View style={styles.foot_container}>
-                            <Text style={styles.date_text}>Né(e) le : {this.birthDate}</Text>
+                            <Text style={styles.date_text}>Né(e) le : {this.state.birthDate}</Text>
                             <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditProfile")}>
                                 <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
                             </TouchableOpacity>
@@ -129,7 +160,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     head_container: {
-        flex: 5,
+        flex: 4,
         marginRight: 10,
         marginLeft: 10,
         justifyContent: 'space-evenly',
@@ -148,7 +179,7 @@ const styles = StyleSheet.create({
     content_container: {
         flex: 5,
         flexDirection: 'column',
-        justifyContent: 'space-evenly',  
+        justifyContent: 'space-evenly',
         marginLeft: 50,
         marginRight: 30,
         backgroundColor: '#60dbd3',
@@ -211,7 +242,7 @@ const styles = StyleSheet.create({
     date_text: {
         marginTop: 5,
         textAlign: 'left',
-        fontSize: 18,
+        fontSize: 16,
         color: 'white',
         fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
     },
