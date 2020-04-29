@@ -1,7 +1,7 @@
 // app/Views/CreateGroup.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Image, FlatList } from 'react-native'
 
 import InputWithName from '../Components/InputWithName'
 import Images from '../modules/ImageProfile'
@@ -13,7 +13,8 @@ export default class CreateGroup extends React.Component {
     super(props)
     this.state = {
       groupName: false,
-      description: ""
+      description: "",
+      invitations: [{ id: "1", username: "user1re" }, { id: "2", username: "user2" }]
     }
   }
 
@@ -37,8 +38,21 @@ export default class CreateGroup extends React.Component {
           <InputWithName placeholder='Nom du groupe' value={this.state.groupName} parentCallback={this.callbackFunctionGroupName} />
           <InputWithName style={styles.text} placeholder={'Description\n\n\n'} value={this.state.description}
             parentCallback={this.callbackFunctionDescription} multiline={true} />
-          <InviteButton name='Inviter des participants'></InviteButton>
-           {/* flatlist for adding dynamically invitations */}
+          <FlatList data={this.state.invitations}
+            renderItem={({ item }) =>
+              <View style={styles.item}>
+                <Text style={styles.itemText}>{item.username} </Text>
+              </View>
+            }>
+          </FlatList>
+          <InviteButton name='Inviter des participants' 
+          onPress={() => {
+            this.state.invitations.push({id:'5', username: 'root'})
+            this.setState({ 
+              refresh: !this.state.refresh
+            })
+            console.log(this.state.invitations)
+          }}></InviteButton>
           <View style={styles.create_container}>
             <CustomButton name='Créer groupe'></CustomButton>
           </View>
@@ -68,6 +82,15 @@ const styles = StyleSheet.create({
   create_container: {
     flex: 1,
     marginTop: 30
+  },
+  item: {
+    backgroundColor: 'lightpink',
+    padding: 15,
+    marginVertical: 8,
+    marginHorizontal: 50,
+  },
+  itemText: {
+    alignSelf: 'center'
   }
 
 });
