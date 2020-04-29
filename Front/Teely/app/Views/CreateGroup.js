@@ -1,12 +1,14 @@
 // app/Views/CreateGroup.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, TextInput } from 'react-native'
+import ActionButton from 'react-native-action-button'
 
 import InputWithName from '../Components/InputWithName'
 import Images from '../modules/ImageProfile'
 import InviteButton from '../Components/InviteButton'
 import CustomButton from '../Components/CustomButton'
+import NameWithInput from '../Components/NameWithInput'
 
 export default class CreateGroup extends React.Component {
   constructor(props) {
@@ -14,7 +16,8 @@ export default class CreateGroup extends React.Component {
     this.state = {
       groupName: false,
       description: "",
-      invitations: [{ id: "1", username: "user1re" }, { id: "2", username: "user2" }]
+      invitations: [{ id: "1", username: "user1re" }, { id: "2", username: "user2" }],
+      invitationInput: ""
     }
   }
 
@@ -45,16 +48,28 @@ export default class CreateGroup extends React.Component {
               </View>
             }>
           </FlatList>
-          <InviteButton name='Inviter des participants' 
-          onPress={() => {
-            this.state.invitations.push({id:'5', username: 'root'})
-            this.setState({ 
-              refresh: !this.state.refresh
-            })
-            console.log(this.state.invitations)
-          }}></InviteButton>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={text => this.setState({invitationInput: text})}
+            value={this.state.invitationInput} placeholder={'Participant à inviter'}
+          />
+          <View style={styles.addButton}>
+          <ActionButton
+            buttonColor="pink"
+            onPress={() => {
+              this.state.invitations.push({ id: '5', username: this.state.invitationInput })
+              this.setState({
+                refresh: !this.state.refresh
+              })
+              this.setState({invitationInput: ''})
+              console.log(this.state.invitations)
+            }}
+            position="center"
+          />
+          </View>
+          {/* <InviteButton name='Inviter des participants'></InviteButton> */}
           <View style={styles.create_container}>
-            <CustomButton name='Créer groupe'></CustomButton>
+            <CustomButton name='Créer groupe' onPress={() => { console.log("oups") }}></CustomButton>
           </View>
         </KeyboardAwareScrollView>
       </View>
@@ -91,6 +106,18 @@ const styles = StyleSheet.create({
   },
   itemText: {
     alignSelf: 'center'
+  },
+  textInput: {
+      backgroundColor: 'white',
+      textAlign : 'center',
+      alignSelf: 'center',
+      padding: 15,
+      borderRadius: 10,
+      marginVertical: 8
+    },
+  addButton: {
+    marginBottom: 70,
+    marginTop: -25
   }
 
 });
