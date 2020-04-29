@@ -252,3 +252,99 @@ def quit_group(id_group):
     userId = 1
     PARTICIPATE_IN.delete().where( (PARTICIPATE_IN.User_id == userId) & (PARTICIPATE_IN.Group_id == id_group) ).execute()
     return jsonify(reponse_body), code
+
+@app.route('/group/<id_group>/task/all', methods=['GET'])
+def group_task_all(id_group):
+    rep = TASK.select().where(TASK.Group_id == id_group)
+    response_body = {}
+    taskData = []
+    ''' manque des éléments à rajouter"description":
+    manque la DATE
+    '''
+    for task in rep:
+        data = {"id": task.taskId,
+            "taskedUsers": task.TaskUser_id,
+            "frequency": task.Frequency,
+            "priority": task.PriorityLevel,
+            "duration": task.Duration
+        }
+
+        taskData.append(data)
+
+    response_body = {
+        "tasks" : taskData
+    }
+
+    return json.dumps(response_body),200
+
+@app.route('/group/<id_group>/task/<id_task>', methods=['GET'])
+def group_task_id(id_group, id_task):
+    rep = TASK.select().where(TASK.taskId == id_task)
+    taskData = []
+    ''' manque des éléments à rajouter '''
+    for task in rep:
+        data = {"id": task.taskId,
+        "description": task.Description,
+        "taskedUsers": task.TaskUser_id,
+        "dueDate": task.Date,
+        "frequency": task.Frequency,
+        "priority": task.PriorityLevel,
+        "duration": task.Duration
+        }
+
+        taskData.append(data)
+    response_body = {"task" : taskData}
+
+    return json.dumps(response_body),200
+
+@app.route('/group/<id_group>/task', methods=['POST'])
+def group_task(id_group):
+    content = request.get_json()
+    reponse_body = {}
+    ''' verification que le groupe existe ?'''
+    try :
+        newTask = TASK(TaskUser=content['taskUser'], Description = content['description'], Frequency=content['frequency'],Group=id_group, Date= content['date'], PriorityLevel=content['priorityLevel'],Duration = content['duration'])
+    except:
+        return sendError(400, "Make sure to send all the parameters")
+    try:
+       newTask.save()
+    except:
+        return sendError(409, "This task couldn't be add in the database !")
+
+    return jsonify(reponse_body), 200
+
+
+@app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])
+def delete_task(id_group,id_task):
+    reponse_body = {}
+    code = 204
+    TASK.delete().where( (TASK.taskId == id_task) ).execute()
+    return jsonify(reponse_body), code
+
+@app.route('/group/<id_group>/task/<id_task>',  methods=['PUT'])
+def task_put(id_group,id_task):
+    content = request.get_json()
+    code = 204
+    response_body ={}
+    try:
+        task = TASK.get(TASK.taskId==id_task)
+        task.TaskUser=content['taskUser']
+        task.Description = content['description']
+        task.Frequency=content['frequency']
+        task.Group=id_group
+        task.Date= content['date']
+        task.PriorityLevel=content['priorityLevel']
+        task.Duration = content['duration']
+        task.save()
+    except:
+        return sendError(400, "Bad Request: Make sure to send all parameters !")
+    task = TASK.get(TASK.taskId==id_task)
+    data = {"id": task.taskId,
+    "description": task.Description,
+    "taskedUsers": task.TaskUser_id,
+    "frequency": task.Frequency,
+    "priority": task.PriorityLevel,
+    "duration": task.Duration}
+    response_body =data
+    return json.dumps(response_body), 200
+ 
