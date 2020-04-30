@@ -142,6 +142,25 @@ def account_invitation():
 
     return jsonify(reponse_body), 200
 
+@app.route('/account',  methods=['GET'])
+@authenticate
+def account_list():
+    try:
+        username = request.args.get('username')
+    except:
+        username = ""
+
+    users_rep = PERSON.select().where(PERSON.Username.startswith(username))
+    users_list = []
+    for user in users_rep:
+        users_list.append(user.Username)
+
+    reponse_body = {
+        "users": users_list
+    }
+
+    return jsonify(reponse_body), 200
+
 
 # Group endpoints
 
