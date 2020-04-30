@@ -31,6 +31,7 @@ class PARTICIPATE_IN(BaseModel):
 class TASK(BaseModel):
 	taskId = AutoField(primary_key = True)
 	TaskUser = ForeignKeyField(PERSON, backref='+', null = True)
+	Name = CharField(max_length = 50, null = True)
 	Description = CharField(max_length = 500, null = True)
 	Frequency = IntegerField(null = True)
 	Group = ForeignKeyField(GROUP, backref='+')

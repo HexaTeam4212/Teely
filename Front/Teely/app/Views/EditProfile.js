@@ -150,7 +150,7 @@ export default class EditProfil extends React.Component {
           <Text style={[styles.text, { marginRight: 10 }]}>Date de naissance : </Text>
           <DateTimePicker name={this.initDataProfile[5]} marginRight={35} parentCallback={this.callbackFunctionBirthDate} />
         </View>
-        <NameWithInput name='Biographie : ' type='none' placeholder={this.initDataProfile[6]} height={200}
+        <NameWithInput name='Biographie : ' type='none' placeholder={this.initDataProfile[6]} height={200} multiline={true}
           value={this.state.biography} secureTextEntry={false} parentCallback={this.callbackFunctionBibliography} />
       </KeyboardAwareScrollView>
         </View>
