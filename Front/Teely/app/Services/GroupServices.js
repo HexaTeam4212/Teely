@@ -40,6 +40,48 @@ class GroupServices {
         return accountGroups
     }
 
+    async createGroup(groupName, description, invitedUsers, callback) {
+        const requestBody = JSON.stringify({
+            group_name: groupName,
+            description: description,
+            guests: invitedUsers
+        })
+        console.log(requestBody)
+        const token = await getToken();
+        try {
+            const response = await fetch(backendURL + endpoint,
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    },
+                    body: requestBody
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            if (response.status != 204) {
+                if (response.status == 400) {
+                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                }
+                else if (response.status == 409) {
+                    alert("Le groupe n'a pas pu être ajouté à la base de données. Veuillez consulter les logs pour plus de détails")
+                }
+                else {
+                    httpError(response.status)
+                }
+            }
+            else {
+                callback()
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
 }
 const groupServices = new GroupServices()
 export default groupServices
