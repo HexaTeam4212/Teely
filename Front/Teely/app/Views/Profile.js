@@ -8,7 +8,7 @@ import Images from '../modules/ImageProfile'
 import TaskItem from '../Components/TaskItem'
 import LogoutButton from '../Components/LogoutButton'
 import { YellowBox } from 'react-native'
-
+import moment from 'moment'
 YellowBox.ignoreWarnings([
     'VirtualizedLists should never be nested', // TODO: Remove when fixed
 ])
@@ -95,16 +95,7 @@ export default class Profile extends React.Component {
 
     formatDate(dateString){
         var date = new Date(dateString); 
-        var year = parseInt(date.getFullYear())
-        var month = parseInt(date.getMonth() + 1)
-        var day = parseInt(date.getDate())
-        if (month < 10) {
-            month = "0" + month
-        }
-        if (day < 10) {
-            day = "0" + day
-        }
-        var formattedDate = day + "/" + month + "/" + year
+        var formattedDate= moment(date).format("DD/MM/YYYY")
         return formattedDate
     }
 
