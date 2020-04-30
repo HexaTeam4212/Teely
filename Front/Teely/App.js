@@ -32,7 +32,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
             headerLeft:null
           }}
@@ -48,8 +50,11 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
+            headerLeft:null
           }}
         />
         <Stack.Screen
@@ -63,7 +68,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
           }}
         />
@@ -78,7 +85,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
           }}
         />
@@ -93,7 +102,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
           }}
         />
@@ -108,7 +119,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
           }}
         />
@@ -123,7 +136,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
             },
           }}
         />
@@ -138,7 +153,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
           }}
         />
@@ -153,7 +170,9 @@ export default function App() {
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
             headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
+              fontSize: 17,
             },
           }}
         />

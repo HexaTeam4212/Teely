@@ -181,11 +181,10 @@ class AccountServices {
 
     accountTasks() {
 
-        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-25', startingTime: '11:20' }
-        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-26', startingTime: '15:00' }
-        const task3 = { id: 501, name: 'Convention de stage', description: 'remplir avenant convention de stage', dueDate: '2020-04-25', startingTime: '16:10' }
-
-        const task4 = { id: 321, name: 'Courses', description: 'Faire les courses pour la semaine', dueDate: '2020-04-27', startingTime: '13:00' }
+        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-30', startingTime: '11:20', endingTime: '11:40' }
+        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-30', startingTime: '15:00', endingTime: '16:00' }
+        const task3 = { id: 501, name: 'Convention de stage', description: 'remplir avenant convention de stage', dueDate: '2020-04-30', startingTime: '16:10', endingTime: '16:30' }
+        const task4 = { id: 321, name: 'Courses', description: 'Faire les courses pour la semaine', dueDate: '2020-04-29', startingTime: '13:00', endingTime: '15:00' }
     
         let accountTasks = [task1, task2, task3, task4]
         /*let accountTasks = []
@@ -198,22 +197,37 @@ class AccountServices {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                },
-                body: none
+                    Authorization : username
+                }
             })
+            const respBody = await response.json()
             if (response.status != 200) {
-
                     alert("Erreur lors de la récupération des tâches")
             }
             else {
-                alert("Récupération des tâches réussie :)")
-                accountTasks.push(response.tasks)
+                callback(respBody)
             }
         }
         catch (error) {
-            console.log(error)
+            console.error(error)
         }*/
         return accountTasks
+    }
+
+    tasksByDate(day) {
+        let tasksForDay = []
+        let tasks=this.accountTasks()
+        const arr = Object.keys(tasks);
+        for (let i = 0; i < arr.length; ++i) {
+            let task = {...tasks[arr[i]]}
+            if (task.dueDate==day) {
+                // let result = Array.isArray(tasksForDay[day]) ? tasksForDay[day] : []
+                // tasksForDay[day] = [task, ...result]
+                tasksForDay.push(task)
+            }
+        }
+        return tasksForDay      
+        
     }
 
     accountInvitations() {

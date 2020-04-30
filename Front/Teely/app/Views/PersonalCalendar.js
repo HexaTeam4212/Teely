@@ -18,9 +18,11 @@ LocaleConfig.defaultLocale = 'fr';
 export default class PersonalCalendar extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { currentDate: moment(new Date()).format("YYYY-MM-DD"),
-       isLoading: false, tasks: [] }
-    this.getTasks()
+    this.tasks = {}
+    this.state = {
+      selectedDate: moment(new Date()).format("YYYY-MM-DD"),
+      isLoading: false
+    }
   }
 
   displayLoading() {
@@ -33,55 +35,43 @@ export default class PersonalCalendar extends React.Component {
     }
   }
 
-  getTasks() {
-    //this.setState({tasks: accountServices.accountTasks()})
+
+
+  renderKnob = () => {
+    return (
+      <View style={{ flex: 1, top: Platform.OS == 'ios' ? null : 5, }}>
+        <Image
+          source={require('../../assets/Images/down-arrow.png')} style={{ width: 20, height: 20 }}
+        />
+      </View>
+    );
   }
 
-  getSelectedDayTasks = (date) => {
-
-    let taskDate = moment(date);
-    taskDate = taskDate.format("DD/MM/YYYY");
-
-
-    //const data = { username : CLIENT_ID, ServiceDate : taskDate };
-
-    //returned result with fetch api
-    /*requestData(PROVIDER_URL + SERVICES_FOR_DATE_URL, data).then((result) => {
-        console.log(result);*/
-        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', startingTime: '11:20' }
-        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', startingTime: '15:00' }
-       
-        //if (result.status == "Successful") {
-            let resultData=[task1, task2]
-            if (resultData != "") {
-                //changing the received result object so that calendar can view the event on selected date
-                let modifiedData = { [date] : resultData };
-                this.setState({tasks:modifiedData});
-                console.log(modifiedData);
-                //to change the month and year on top of agenda
-                //setDate(moment(date).format("MMMM YYYY"));
-            }
-            else {
-                let modifiedData = { [date] : resultData };
-                this.setState({tasks:modifiedData});
-            }
-        //}
-        /*else {
-            Toast.show(result.message ? result.message : result, Toast.SHORT);
-        }
-
-    })
-    .catch((error) => {
-        console.log(error);
-    });*/
-}
+  loadItems = (day) => {
+    this.setState({ selectedDate: day })
+    if (!day)
+      return;
+    let begin = moment(day.dateString).startOf('month')
+    let end = moment(day.dateString).endOf('month')
+    while (begin.isSameOrBefore(end)) {
+      const currentDay = begin.format('YYYY-MM-DD')
+      let value = accountServices.tasksByDate(currentDay)
+      if (value.length) {
+        this.tasks[currentDay] = Array.isArray(value) ? [...value] : []
+      }
+      begin.add(1, 'days')
+    }
+    
+  }
 
 
   renderItem = (item) => {
     return (
       <View style={styles.task_container}>
-        <Text >{item.name}</Text>
-        <Text >{item.startingTime}</Text>
+        <View><Text style={styles.time_text}>{item.startingTime}</Text></View>
+        <View><Text style={styles.name_text}>{item.name}</Text></View>
+        <View><Text style={styles.description_text}>{item.description}</Text></View>
+        <View><Text style={styles.time_text}>{item.endingTime}</Text></View>
       </View>
     );
   }
@@ -101,42 +91,14 @@ export default class PersonalCalendar extends React.Component {
     return (
       <View style={styles.main_container}>
         <Agenda
-          items={{
-            '2020-04-26': [{ name: 'ménage', startingTime: '11:10' }],
-            '2020-04-27': [{ name: 'promener le chien', startingTime: '15:00' }],
-            '2020-04-28': [{ name: 'item 3 - any js object' }, { name: 'any js object' }]
-          }}
-          loadItemsForMonth={(month) => {
-                    let currentDate = moment();
-                    currentDate = currentDate.format("YYYY-MM-DD");
-                    if (currentDate == month.dateString) {
-                        this.getSelectedDayTasks(month.dateString);
-                    }
-                    console.log(currentDate);
-                    console.log("trigger loading items");
-                }
-            }
-          onCalendarToggled={(calendarOpened) => { console.log(calendarOpened) }}
-          onDayPress={(day) => { console.log('day pressed') }}
-          onDayChange={(day) => { }}
+          items={this.tasks}
+          loadItemsForMonth={this.loadItems}
           selected={this.state.currentDate}
           pastScrollRange={50}
           futureScrollRange={50}
-          renderKnob={() => {
-            return (
-              <View style={{ flex: 1, top: Platform.OS == 'ios' ? null : 5, }}>
-                <Image
-                  source={require('../../assets/Images/down-arrow.png')} style={{ width: 20, height: 20}}
-                />
-              </View>
-            );
-          }}
+          renderKnob={this.renderKnob}
           // Specify how each item should be rendered in agenda
           renderItem={this.renderItem}
-          // Specify how each date should be rendered. day can be undefined if the item is not first in that day.
-          renderDay={(day, item) => {
-            return ();
-          }}
           renderEmptyData={this.renderEmptyData}
           hideKnob={false}
           onRefresh={() => console.log('refreshing...')}
@@ -144,25 +106,28 @@ export default class PersonalCalendar extends React.Component {
           refreshControl={null}
           theme={{
             backgroundColor: '#78e1db',
-            calendarBackground: '#ffffff',
+            calendarBackground: 'white',
             textSectionTitleColor: '#b6c1cd',
             selectedDayBackgroundColor: '#ffb4e2',
             selectedDayTextSize: 20,
             selectedDayTextColor: 'white',
             todayTextColor: '#78e1db',
             dayTextColor: '#2d4150',
+            dayTextFontSize: 30,
+            dayBackgroundColor: 'white',
             textDisabledColor: '#d9e1e8',
             dotColor: '#ffdb58',
-            selectedDotColor: 'green',
+            selectedDotColor: 'white',
             arrowColor: 'orange',
             indicatorColor: 'blue',
             textMonthFontWeight: 'bold',
             textDayFontSize: 17,
             textMonthFontSize: 17,
+
             agendaDayTextColor: 'black',
+            agendaDayTextFontSize : 40,
             agendaDayNumColor: 'black',
-            agendaTodayColor: '#ffb4e2',
-            agendaKnobColor: 'blue',
+            agendaTodayColor: 'white',
           }}
           style={styles.content_container}
         />
@@ -180,21 +145,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#78e1db',
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   task_container: {
     backgroundColor: 'white',
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-evenly'
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 17
   },
   content_container: {
     flex: 1,
     marginTop: 30,
     marginBottom: 10,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
   },
   emptyTask_text: {
     fontStyle: 'italic',
@@ -205,5 +171,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flexWrap: 'wrap'
   },
+  name_text: {
+    fontWeight: 'bold',
+    fontFamily: Platform.OS === 'ios' ? 'Noteworthy' : 'Roboto',
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#2d4150',
+    flexWrap: 'wrap',
+    marginBottom: 5
+  },
+  description_text: {
+    fontWeight: 'bold',
+    fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'Roboto',
+    fontSize: 16,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    color: '#2d4150',
+    flexWrap: 'wrap',
+    marginBottom: 5
+  },
+  time_text: {
+    fontSize: 14,
+    textAlign: 'left',
+    color: 'grey',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+  }
 
 });
