@@ -81,7 +81,7 @@ export default class Profile extends React.Component {
     }
 
     displayBiography = () => {
-        if (this.state.biography==null) {
+        if (this.state.biography == null) {
             return (
                 <Text style={styles.bio_text}> Votre bio ici :) </Text>
             )
@@ -90,8 +90,7 @@ export default class Profile extends React.Component {
                 <Text style={styles.bio_text} numberOfLines={4}> {this.state.biography}</Text>
             )
         }
-        }
-    
+    }
 
     formatDate(dateString){
         var date = new Date(dateString); 
@@ -100,9 +99,8 @@ export default class Profile extends React.Component {
     }
 
 
-
-
     render() {
+        console.log("params profile : " + this.props.navigation)
         return (
             <View style={styles.main_container}>
                 <LogoutButton></LogoutButton>

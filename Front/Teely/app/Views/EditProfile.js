@@ -11,12 +11,8 @@ import Images from '../modules/ImageProfile';
 export default class EditProfil extends React.Component {
   constructor(props) {
     super(props)
-    this.birthDate = ""
-    this.firstLoadPage = true
-    this.initDataProfile = []
-    this.idImage = 18
     this.state = {
-      isLoading: false,
+      isLoading: true,
       username: "",
       password: "",
       confirmedPassword: "",
@@ -24,7 +20,11 @@ export default class EditProfil extends React.Component {
       lastName: "",
       name: "",
       biography: "",
+      birthDate: "aaaa-mm-jj", 
+      idImage: ""
     }
+
+    this.getDataProfile()
   }
 
   displayLoading() {
@@ -62,63 +62,71 @@ export default class EditProfil extends React.Component {
   }
 
   callbackFunctionBirthDate = (childData) => {
-    this.birthDate = childData
+    this.setState({ birthDate: childData })
   }
 
   callbackFunctionBibliography = (childData) => {
     this.setState({ biography: childData })
   }
 
-  redirect = (profilOk) => {
+  redirect = (profileOk) => {
     this.setState({ isLoading: false })
-    if (profilOk) {
-      this.props.navigation.navigate("Profile")//mettre le nom de la bonne page quand cree
+    if (profileOk) {
+      this.props.navigation.navigate("Profile")
     }
 
   }
 
   saveProfile = () => {
-    if (this.username == '' || this.password == '' || this.confirmedPassword == '' || this.birthDate == ''
-      || this.lastName == '' || this.name == '' || this.email == '') {
+    if (this.state.username == '' || this.state.password == '' || this.state.confirmedPassword == '' 
+    || this.state.birthDate == '' || this.state.lastName == '' || this.state.name == '' || this.state.email == '') {
       alert("Veuillez remplir tous les champs !")
     }
-    else if (this.password != this.confirmedPassword) {
+    else if (this.state.password != this.state.confirmedPassword) {
       alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
     }
     else {
       this.setState({ isLoading: true })
-      accountServices.saveProfile(this.state.username, this.state.password, this.state.confirmedPassword,
-        this.state.email, this.state.lastName, this.state.name, this.birthDate, this.state.biography,
+      accountServices.saveProfile(this.state.username, this.state.password,this.state.email,
+      this.state.lastName, this.state.name, this.state.birthDate, this.state.biography,
         this.redirect)
     }
 
   }
 
-  getDataProfile = () => {
-    if (this.firstLoadPage) {
-      console.log("firstloadPage")
-      this.initDataProfile = accountServices.dataProfile()
-      console.log(this.initDataProfile)
-      this.birthDate = this.initDataProfile[5]
-      this.idImage = this.initDataProfile[7]
-      this.setState({
-        lastName: this.initDataProfile[0], name: this.initDataProfile[1],
-        username: this.initDataProfile[2], password: this.initDataProfile[3],
-        confirmedPassword: this.initDataProfile[3], email: this.initDataProfile[4],
-        biography: this.initDataProfile[6]
-      })
-      this.firstLoadPage = false
+  updateDataProfile = (dataProfile) => {
+    this.setState({
+      username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
+      birthDate: this.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage, 
+      email: dataProfile.email,
+      idImage: dataProfile.idImage, isLoading: false
+    })
+  }
 
-    }
+  getDataProfile = () => {
+    accountServices.dataProfile(this.updateDataProfile)
   }
 
   imageProfil = () => {
-    this.getDataProfile()
-    console.log(this.initDataProfile)
     return (
-      <Image style={styles.profil} source={Images[this.idImage]} />
+      <Image style={styles.profil} source={Images[this.state.idImage]} />
     )
   }
+
+  formatDate(dateString) {
+    var date = new Date(dateString);
+    var year = parseInt(date.getFullYear())
+    var month = parseInt(date.getMonth() + 1)
+    var day = parseInt(date.getDate())
+    if (month < 10) {
+        month = "0" + month
+    }
+    if (day < 10) {
+        day = "0" + day
+    }
+    var formattedDate = year + "-" + month + "-" + day
+    return formattedDate
+}
 
   render() {
     return (
@@ -128,31 +136,31 @@ export default class EditProfil extends React.Component {
         </View>
         <View style={styles.content_container}>
 
-        <KeyboardAwareScrollView
-        contentContainerstyle={styles.content_container}
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        scrollEnabled={true}
-        enableAutomaticScroll={(Platform.OS === 'ios')}
-        enableOnAndroid={true}>
-        <NameWithInput name='Nom : ' type='none' placeholder={this.initDataProfile[0]} height={40}
-          value={this.state.lastName} secureTextEntry={false} parentCallback={this.callbackFunctionLastName} />
-        <NameWithInput name='Prénom : ' type='none' placeholder={this.initDataProfile[1]} height={40}
-          value={this.state.name} secureTextEntry={false} parentCallback={this.callbackFunctionName} />
-        <NameWithInput name="Nom d'utilisateur : " type='username' placeholder={this.initDataProfile[2]} height={40}
-          value={this.state.username} secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
-        <NameWithInput name='Mot de passe : ' type='password' placeholder={this.initDataProfile[3]} height={40}
-          value={this.state.password} secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
-        <NameWithInput name={"Confirmez votre \nmot de passe : "} type='password' placeholder={this.initDataProfile[3]} height={40}
-          value={this.state.confirmedPassword} secureTextEntry={true} parentCallback={this.callbackFunctionName} />
-        <NameWithInput name='Email : ' type='emailAddress' placeholder={this.initDataProfile[4]} height={40}
-          value={this.state.email} secureTextEntry={false} parentCallback={this.callbackFunctionEmail} />
-        <View style={styles.date_container} >
-          <Text style={[styles.text, { marginRight: 10 }]}>Date de naissance : </Text>
-          <DateTimePicker name={this.initDataProfile[5]} marginRight={35} parentCallback={this.callbackFunctionBirthDate} />
-        </View>
-        <NameWithInput name='Biographie : ' type='none' placeholder={this.initDataProfile[6]} height={200} multiline={true}
-          value={this.state.biography} secureTextEntry={false} parentCallback={this.callbackFunctionBibliography} />
-      </KeyboardAwareScrollView>
+          <KeyboardAwareScrollView
+            contentContainerstyle={styles.content_container}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            enableAutomaticScroll={(Platform.OS === 'ios')}
+            enableOnAndroid={true}>
+            <NameWithInput name='Nom : ' type='none' placeholder={"Nom"} height={40}
+              value={this.state.lastName} secureTextEntry={false} parentCallback={this.callbackFunctionLastName} />
+            <NameWithInput name='Prénom : ' type='none' placeholder={"Prénom"} height={40}
+              value={this.state.name} secureTextEntry={false} parentCallback={this.callbackFunctionName} />
+            <NameWithInput name="Nom d'utilisateur : " type='username' placeholder={"Pseudonyme"} height={40}
+              value={this.state.username} secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
+            <NameWithInput name='Mot de passe : ' type='password' placeholder={"********"} height={40}
+              value={this.state.password} secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
+            <NameWithInput name={"Confirmez votre \nmot de passe : "} type='password' placeholder={"********"} height={40}
+              value={this.state.confirmedPassword} secureTextEntry={true} parentCallback={this.callbackFunctionConfirmedPassword} />
+            <NameWithInput name='Email : ' type='emailAddress' placeholder={"Email"} height={40}
+              value={this.state.email} secureTextEntry={false} parentCallback={this.callbackFunctionEmail} />
+            <View style={styles.date_container} >
+              <Text style={[styles.text, { marginLeft: 5 }]}>Date de naissance : </Text>
+              <DateTimePicker name={this.state.birthDate} marginRight={25} parentCallback={this.callbackFunctionBirthDate} />
+            </View>
+            <NameWithInput name='Biographie : ' type='none' placeholder={"Biographie"} height={200} multiline={true}
+              value={this.state.biography} secureTextEntry={false} parentCallback={this.callbackFunctionBibliography} />
+          </KeyboardAwareScrollView>
         </View>
         <View style={styles.buttons_container}>
           <CustomButton name="Enregistrer" onPress={this.saveProfile} />
@@ -170,11 +178,7 @@ const styles = StyleSheet.create({
   },
   content_container: {
     flex: 7,
-    borderColor: '#ffdb58',
-    borderWidth: 2,
-    borderRadius: 10,
     margin: 7,
-    backgroundColor: '#60dbd3',
   },
   image_container: {
     flex: 2,

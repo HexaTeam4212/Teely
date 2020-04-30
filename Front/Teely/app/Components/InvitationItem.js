@@ -24,7 +24,7 @@ class InvitationItem extends React.Component {
                 <View style={styles.image_container}>
                     <Image
                         style={styles.image}
-                        source={Images[this.invitation.idImage]}
+                        source={Images[this.invitation.idImageGroup]}
                     />
                 </View>
                 <View style={styles.right_container}>

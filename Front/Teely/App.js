@@ -17,7 +17,7 @@ import CreateGroup from './app/Views/CreateGroup'
 export default function App() {
 
   const Stack = createStackNavigator();
-
+  
   return (
     <NavigationContainer>
       <Stack.Navigator>

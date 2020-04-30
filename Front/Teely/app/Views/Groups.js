@@ -13,56 +13,56 @@ import ImageWithText from '../Components/ImageWithText'
 export default class Groups extends React.Component {
   constructor(props) {
     super(props)
-    this.idImage = 18
-    this.initDataProfile = []
+    this.idImage = ""
     this.groups = []
     this.invitations = []
     this.firstload = true
-    this.state = { isLoading: false }
+    this.state = { isLoading: true }
+
+    this.getInvitations()
+    this.getDataProfile()
+    
+  }
+
+  displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator color='#ffb4e2' size='large' />
+        </View>
+      )
+    }
+  }
+
+  updateDataProfile = (dataProfile) => {
+    this.idImage = dataProfile.idImage
+    this.setState({ isLoading: false })
   }
 
   getDataProfile = () => {
-    this.initDataProfile = accountServices.dataProfile()
-    this.idImage = this.initDataProfile[7]
+    accountServices.dataProfile(this.updateDataProfile)
   }
 
   imageProfile = () => {
-    this.getDataProfile()
     return (
       <Image style={styles.profile} source={Images[this.idImage]} />
     )
   }
 
-  displayLoading() {
-    if (this.state.isLoading) {
-        return (
-            <View style={styles.loading_container}>
-                <ActivityIndicator color='#ffb4e2' size='large' />
-            </View>
-        )
-    }
-}
-
+ 
   displayGroups() {
-    /*if(this.firstload){
-      this.setState({ isLoading: true })
-      this.groups = groupServices.dataGroupsUser()
-      setTimeout(() => { this.setState({ isLoading: false }) }, 3000);
-      
-      this.firstload = false
-    }*/
     this.groups = groupServices.dataGroupsUser()
     if (!(this.groups.length)) {
       return (
         <View style={styles.noGroup_container}>
           <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
           <Image style={styles.image_group} source={require('../../assets/Images/noGroup.png')} />
-          <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvre créer votre propore groupe !</Text>
+          <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvez créer votre propre groupe !</Text>
         </View>
       )
     }
     else {
-      
+
       return (
         <KeyboardAwareScrollView
           contentContainerstyle={styles.content_container}
@@ -74,23 +74,31 @@ export default class Groups extends React.Component {
             data={this.groups}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) =>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup")}> 
-            <GroupItem group={item.name} image={ImagesGp[item.idImage]} />
-            </TouchableOpacity>}
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.id })}>
+                <GroupItem group={item.name} image={ImagesGp[item.idImage]} />
+              </TouchableOpacity>}
           />
         </KeyboardAwareScrollView>
       )
-      
+
     }
   }
 
+  updateInvitations = (dataInvit) => {
+    this.invitations = dataInvit
+  }
+
+  getInvitations() {
+    accountServices.accountInvitations(this.updateInvitations)
+  }
+
   displayInvitations() {
-    this.invitations = accountServices.accountInvitations()
-    const nbInvit = this.invitations.length
+    let nbInvit = this.invitations.length
+
     const title = 'MES INVITATIONS (' + nbInvit + ')'
 
     return (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate("Invitations", {invitations: this.invitations})}>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })}>
         <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text={title} />
       </TouchableOpacity>
     )
@@ -98,7 +106,7 @@ export default class Groups extends React.Component {
 
 
   render() {
-    
+
     return (
       <View style={styles.main_container}>
         <View style={styles.head_container}>
@@ -106,7 +114,7 @@ export default class Groups extends React.Component {
           <View style={styles.title_container}>
             <Text style={styles.title_text}>Mes groupes</Text>
             <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
-            <Image style={styles.image_plus} source={require('../../assets/Images/plus.png')} />
+              <Image style={styles.image_plus} source={require('../../assets/Images/plus.png')} />
             </TouchableOpacity>
           </View>
         </View>
@@ -216,7 +224,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: 60,
     width: 60,
-    marginLeft:10
+    marginLeft: 10
   },
   loading_container: {
     position: 'absolute',
@@ -226,7 +234,7 @@ const styles = StyleSheet.create({
     bottom: 100,
     alignItems: 'center',
     justifyContent: 'center'
-},
+  },
 
 
 });

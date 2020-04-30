@@ -5,7 +5,8 @@ import { storeToken, getToken } from '../modules/TokenStorage.js'
 const endpoint = "/group"
 
 class GroupServices {
-    dataGroupsUser() {
+    
+    async dataGroupsUser() {
         //alert("Récupération groupes utilisateur")
 
         const group1 = { id: 1, name: 'Le meilleur groupe de travail', idImage: '0' }
@@ -23,8 +24,7 @@ class GroupServices {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                },
-                body: none
+                }
             })
             if (response.status != 200) {
                     alert("Erreur lors de la récupération des groupes")

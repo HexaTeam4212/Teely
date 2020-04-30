@@ -84,7 +84,6 @@ def account_update():
         user.LastName = content["lastName"]
         user.Name = content["name"]
         user.BirthDate = content["birthdate"]
-        user.idImage = content["idImage"]
         if "bio" in content:
             user.Bio = content["bio"]
         user.save()

@@ -87,6 +87,7 @@ export default class SignUp extends React.Component {
   }
 
   render() {
+    console.log("params signup : "+this.props.navigation)
     return (
       <View style={styles.main_container}>
         <View style={styles.content_container}>
