@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from peewee import *
 import json
+import datetime
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION
 from wrapper import sendError, authenticate
 app = Flask(__name__)
@@ -161,6 +162,55 @@ def account_list():
 
     return jsonify(reponse_body), 200
 
+@app.route('/account/task/all',  methods=['GET'])
+@authenticate
+def account_all_tasks_for_user():
+
+    tasks_rep = TASK.select().where(TASK.TaskUser.Username == session["username"])
+    tasks_list = []
+
+    for task in tasks_rep:
+        data = {
+            "name": task.Name,
+            "description": task.Description,
+            "taskedUser": task.TaskUser,
+            "dueDate": task.Date,
+            "duration": task.Duration,
+            "frequency": task.Frequency,
+            "priority": task.PriorityLevel
+        }
+        tasks_list.append(data)
+
+    reponse_body = {
+        "tasks": tasks_list
+    }
+
+    return jsonify(reponse_body), 200
+
+@app.route('/account/task/upcomming',  methods=['GET'])
+@authenticate
+def account_upcomming_tasks_for_user():
+
+    tasks_rep = TASK.select().where(TASK.TaskUser.Username == session["username"] & TASK.Date > datetime.datetime.now())
+    tasks_list = []
+
+    for task in tasks_rep:
+        data = {
+            "name": task.Name,
+            "description": task.Description,
+            "taskedUser": task.TaskUser,
+            "dueDate": task.Date,
+            "duration": task.Duration,
+            "frequency": task.Frequency,
+            "priority": task.PriorityLevel
+        }
+        tasks_list.append(data)
+
+    reponse_body = {
+        "tasks": tasks_list
+    }
+
+    return jsonify(reponse_body), 200
 
 # Group endpoints
 
