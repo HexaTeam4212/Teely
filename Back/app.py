@@ -163,7 +163,7 @@ def group():
         try:    
            newGroup.save()
         except:
-            return sendError(409, "This group couldn't be add in the database !")
+            return sendError(409, "This group couldn't be added to the database !")
        
         if 'guests' in content:
             for username in content['guests'] :

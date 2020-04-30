@@ -6,17 +6,16 @@ import ActionButton from 'react-native-action-button'
 
 import InputWithName from '../Components/InputWithName'
 import Images from '../modules/ImageProfile'
-import InviteButton from '../Components/InviteButton'
 import CustomButton from '../Components/CustomButton'
-import NameWithInput from '../Components/NameWithInput'
+import groupServices from '../Services/GroupServices'
 
 export default class CreateGroup extends React.Component {
   constructor(props) {
     super(props)
+    this.groupName = ""
+    this.description = ""
     this.state = {
-      groupName: false,
-      description: "",
-      invitations: [{ id: "1", username: "user1re" }, { id: "2", username: "user2" }],
+      invitations: [],
       invitationInput: ""
     }
   }
@@ -38,8 +37,8 @@ export default class CreateGroup extends React.Component {
           enableAutomaticScroll={(Platform.OS === 'ios')}
           enableOnAndroid={true}>
           <Image style={styles.profile} source={Images[2]} />
-          <InputWithName placeholder='Nom du groupe' value={this.state.groupName} parentCallback={this.callbackFunctionGroupName} />
-          <InputWithName style={styles.text} placeholder={'Description\n\n\n'} value={this.state.description}
+          <InputWithName placeholder='Nom du groupe' value={this.groupName} parentCallback={this.callbackFunctionGroupName} />
+          <InputWithName style={styles.text} placeholder={'Description\n\n\n'} value={this.description}
             parentCallback={this.callbackFunctionDescription} multiline={true} />
           <FlatList data={this.state.invitations}
             renderItem={({ item }) =>
@@ -67,13 +66,17 @@ export default class CreateGroup extends React.Component {
             position="center"
           />
           </View>
-          {/* <InviteButton name='Inviter des participants'></InviteButton> */}
           <View style={styles.create_container}>
-            <CustomButton name='Créer groupe' onPress={() => { console.log("oups") }}></CustomButton>
+            <CustomButton name='Créer groupe' onPress={() => { 
+              console.log(this.groupName)
+              console.log(this.description)
+              console.log(this.state)
+              groupServices.createGroup(this.groupName, this.description, this.state.invitations,
+                () => this.props.navigation.navigate("Groups"))
+              }}></CustomButton>
           </View>
         </KeyboardAwareScrollView>
       </View>
-
     )
   }
 }
@@ -96,7 +99,8 @@ const styles = StyleSheet.create({
   },
   create_container: {
     flex: 1,
-    marginTop: 30
+    marginTop: 30,
+    marginBottom: 10
   },
   item: {
     backgroundColor: 'lightpink',
