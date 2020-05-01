@@ -320,15 +320,13 @@ class AccountServices {
                 console.error(response.error)
             }
             else {
-                console.log("resp users "+respBody.users)
                 callback(respBody.users)
             }
         }
         catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
-
 }
 
 const accountServices = new AccountServices()

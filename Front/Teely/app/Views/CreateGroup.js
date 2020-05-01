@@ -50,12 +50,14 @@ export default class CreateGroup extends React.Component {
               </View>
             }>
           </FlatList>
-          <TextInput
+          {/* <TextInput
             style={styles.textInput}
             onChangeText={text => this.setState({ usernameInput: text })}
             value={this.state.usernameInput} placeholder={'Participant à inviter'}
-          />
+          /> */}
           <Autocomplete
+            inputContainerStyle={styles.textInput}
+            listContainerStyle={styles.suggestionList}
             placeholder="Participant à inviter"
             data={this.state.usernameList}
             defaultValue={this.state.usernameInput}
@@ -87,7 +89,6 @@ export default class CreateGroup extends React.Component {
                   refresh: !this.state.refresh
                 })
                 this.setState({ usernameInput: '' })
-                console.log(this.state.invitedUsers)
               }}
               position="center"
             />
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   create_container: {
     flex: 1,
     marginTop: 30,
-    marginBottom: 10
+    marginBottom: 10,
   },
   item: {
     backgroundColor: 'lightpink',
@@ -136,15 +137,19 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: 'white',
-    textAlign: 'center',
-    alignSelf: 'center',
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 8
+    marginLeft: "15%",
+    marginRight: "15%",
+    marginTop: "5%",
+    borderWidth: 0
+  },
+  suggestionList: {
+    marginLeft: "15%",
+    marginRight: "15%",
+    borderWidth: 0
   },
   addButton: {
     marginBottom: 70,
-    marginTop: -25
+    marginTop: -10
   }
 
 });
