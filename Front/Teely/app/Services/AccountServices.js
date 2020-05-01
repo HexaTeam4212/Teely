@@ -176,6 +176,64 @@ class AccountServices {
         }
     }
 
+    async accountUpcomingTasks(callback) {
+
+        const username = await getToken()
+        const fullEndpoint = endpoint + "task/upcomming"
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: username
+                    }
+                })
+            const respBody = await response.json()
+            console.log("response : "+respBody.tasks)
+            if (response.status != 200) {
+                alert("Erreur lors de la récupération des tâches")
+            }
+            else {
+                callback(respBody.tasks)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    async accountAllTasks() {
+
+        const username = await getToken()
+        const fullEndpoint = endpoint + "task/all"
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: username
+                    }
+                })
+            const respBody = await response.json()
+            console.log(respBody.tasks)
+            if (response.status != 200) {
+                alert("Erreur lors de la récupération des tâches")
+            }
+            else {
+                callback(respBody.tasks)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+
+
     accountTasks() {
         const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-30', startingTime: '11:20', endingTime: '11:40' }
         const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-30', startingTime: '15:00', endingTime: '16:00' }
