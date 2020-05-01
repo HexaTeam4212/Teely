@@ -1,4 +1,4 @@
-// app/Views/PersonalCalendar.js
+// app/Views/GroupCalendar.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
@@ -15,7 +15,7 @@ LocaleConfig.locales['fr'] = {
 }
 
 LocaleConfig.defaultLocale = 'fr';
-export default class PersonalCalendar extends React.Component {
+export default class GroupCalendar extends React.Component {
   constructor(props) {
     super(props)
     this.tasks = {}
@@ -55,7 +55,7 @@ export default class PersonalCalendar extends React.Component {
     let end = moment(day.dateString).endOf('month')
     while (begin.isSameOrBefore(end)) {
       const currentDay = begin.format('YYYY-MM-DD')
-      let value = accountServices.tasksByDate(currentDay)
+      let value = accountServices.tasksByDate(currentDay) //Change for group services when back ok
       if (value.length) {
         this.tasks[currentDay] = Array.isArray(value) ? [...value] : []
       }

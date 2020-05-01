@@ -1,4 +1,4 @@
-// app/Views/SignUp.js
+// app/Views/Invitations.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList } from 'react-native'

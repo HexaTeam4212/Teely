@@ -41,6 +41,78 @@ class GroupServices {
         }
     }
 
+    async getGroupInfos(groupId, callback) {
+        const name = 'Democrateam'
+        const idImageGroup = 5
+        const description = "La meilleure équipe projet"
+        const  members = [ 'FatimaW', 'Louis', 'AndreaC', 'Shuyao', 'Lucie', 'Emmy', 'Baptiste' ]
+
+
+        let groupInfo = await {id: groupId, group_name: name, idImageGroup: idImageGroup, description: description, members: members}
+        /*const token = await getToken()
+        const fullEndpoint = endpoint+ '/'+groupId
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    }
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            const respBody = await response.json()
+            if (response.status != 200) {
+                httpError(response.status)
+            }
+            else {
+                callback(respBody)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }*/
+        callback(groupInfo)
+    }
+
+    async leaveGroup(groupId, callback) {
+        /*const token = await getToken()
+        const fullEndpoint = endpoint+ '/'+groupId+'/quit'
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    }
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            const respBody = await response.json()
+            if (response.status != 200) {
+                httpError(response.status)
+                callback(false)
+            }
+            else {
+                callback(true)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }*/
+        callback(true)
+    }
+
+    async inviteUser(groupId, username) {
+        
+    }
+
     async createGroup(groupName, description, invitedUsers, callback) {
         const requestBody = JSON.stringify({
             group_name: groupName,
