@@ -366,11 +366,10 @@ def group_task_all(id_group):
 def group_task_id(id_group, id_task):
     rep = TASK.select().where(TASK.taskId == id_task)
     taskData = []
-
-    dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
-
     dependanciesIds=[]
+
     try :
+        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
         for dep in dependancies :
             dependanciesIds.append(dep.taskConcerned)
     except :
@@ -380,7 +379,7 @@ def group_task_id(id_group, id_task):
         data = {"id": task.taskId,
         "description": task.Description,
         "taskedUsers": task.TaskUser_id,
-        "dueDate": task.Date,
+        "dueDate": str(task.Date),
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
         "duration": task.Duration,
@@ -440,15 +439,40 @@ def task_put(id_group,id_task):
         task.Date= content['date']
         task.PriorityLevel=content['priorityLevel']
         task.Duration = content['duration']
+        task.StartingTime = content['startingTime']
         task.save()
     except:
-        return sendError(400, "Bad Request: Make sure to send all parameters !")
-    task = TASK.get(TASK.taskId==id_task)
+            return sendError(400, "Bad Request 1: Make sure to send all parameters !")
+
+    try :
+            dependance = DEPENDANCE.get(DEPENDANCE.TaskConcerned==id_task)
+            dependance.TaskDependancies = content['dependancies']
+            dependance.save()
+    except :
+        try :
+            newDependance = DEPENDANCE(TaskConcerned=id_task, TaskDependancies = content['dependancies'])
+            newDependance.save()
+        except :
+            return sendError(400, "Bad Request 2: Make sure to send all parameters !")
+
+    try :
+        task = TASK.get(TASK.taskId==id_task)
+        dependancies = DEPENDANCE.get(DEPENDANCE.TaskConcerned==id_task)
+        dependanciesIds=[]
+        for dep in dependance :
+            dependanciesIds.append(dep.taskConcerned)
+    except :
+        dependanciesIds.append("")
+
     data = {"id": task.taskId,
     "description": task.Description,
     "taskedUsers": task.TaskUser_id,
+    "dueDate": str(task.Date),
     "frequency": task.Frequency,
     "priority": task.PriorityLevel,
-    "duration": task.Duration}
+    "duration": task.Duration,
+    "startingTime" : task.StartingTime,
+    "dependancies" : str(dependanciesIds)
+    }
     response_body =data
     return json.dumps(response_body), 200
