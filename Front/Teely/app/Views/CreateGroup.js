@@ -46,15 +46,10 @@ export default class CreateGroup extends React.Component {
           <FlatList data={this.state.invitedUsers}
             renderItem={({ item }) =>
               <View style={styles.item}>
-                <Text style={styles.itemText}>{item.username} </Text>
+                <Text style={styles.itemText}>{item.key} </Text>
               </View>
             }>
           </FlatList>
-          {/* <TextInput
-            style={styles.textInput}
-            onChangeText={text => this.setState({ usernameInput: text })}
-            value={this.state.usernameInput} placeholder={'Participant à inviter'}
-          /> */}
           <Autocomplete
             inputContainerStyle={styles.textInput}
             listContainerStyle={styles.suggestionList}
@@ -66,17 +61,17 @@ export default class CreateGroup extends React.Component {
               accountServices.getAccountUsernames(text, (usernameResults) => {
                 let newUsernameList = []
                 for (let i = 0; i<usernameResults.length; i++) {
-                  newUsernameList.push({id: i+1, username: usernameResults[i]})
+                  newUsernameList.push({key: usernameResults[i]})
                 }
                 this.setState({usernameList: newUsernameList})
               })
             }}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() =>{
-                 this.setState({ usernameInput: item.username })
+                 this.setState({ usernameInput: item.key })
                  this.setState({usernameList: []})
                  }}>
-                <Text>{item.username}</Text>
+                <Text>{item.key}</Text>
               </TouchableOpacity>
             )}
           />
@@ -84,19 +79,26 @@ export default class CreateGroup extends React.Component {
             <ActionButton
               buttonColor="pink"
               onPress={() => {
-                this.state.invitedUsers.push({ id: this.state.invitedUsers.length+1, username: this.state.usernameInput })
-                this.setState({
-                  refresh: !this.state.refresh
-                })
-                this.setState({ usernameInput: '' })
+                console.log(this.state.invitedUsers)
+                if (this.state.invitedUsers.some(item => item.key === this.state.usernameInput)) {
+                  alert("Cet utilisateur est déjà dans la liste des participants !")
+                }
+                else {
+                  this.state.invitedUsers.push({ key: this.state.usernameInput })
+                  this.setState({
+                    refresh: !this.state.refresh
+                  })
+                  this.setState({ usernameInput: '' })
+                }
               }}
               position="center"
             />
           </View>
           <View style={styles.create_container}>
             <CustomButton name='Créer groupe' onPress={() => {
-              groupServices.createGroup(this.groupName, this.description, this.state.invitations,
-                () => this.props.navigation.navigate("Groups"))
+              console.log(this.state.invitedUsers)
+              // groupServices.createGroup(this.groupName, this.description, this.state.invitedUsers,
+              //   () => this.props.navigation.navigate("Groups"))
             }}></CustomButton>
           </View>
         </KeyboardAwareScrollView>
