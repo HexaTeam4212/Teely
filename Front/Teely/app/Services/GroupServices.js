@@ -47,6 +47,7 @@ class GroupServices {
             description: description,
             guests: invitedUsers
         })
+        console.log(requestBody)
         const token = await getToken()
         try {
             const response = await fetch(backendURL + endpoint,

@@ -21,6 +21,7 @@ export default class CreateGroup extends React.Component {
       usernameList: [],
       invitedUsers: []
     }
+    this.isUsernameValid = true
   }
 
   callbackFunctionGroupName = (childData) => {
@@ -58,6 +59,7 @@ export default class CreateGroup extends React.Component {
             defaultValue={this.state.usernameInput}
             onChangeText={text => {
               this.setState({ usernameInput: text })
+              this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
               accountServices.getAccountUsernames(text, (usernameResults) => {
                 let newUsernameList = []
                 for (let i = 0; i<usernameResults.length; i++) {
@@ -70,6 +72,7 @@ export default class CreateGroup extends React.Component {
               <TouchableOpacity onPress={() =>{
                  this.setState({ usernameInput: item.key })
                  this.setState({usernameList: []})
+                 this.isUsernameValid = true
                  }}>
                 <Text>{item.key}</Text>
               </TouchableOpacity>
@@ -79,9 +82,11 @@ export default class CreateGroup extends React.Component {
             <ActionButton
               buttonColor="pink"
               onPress={() => {
-                console.log(this.state.invitedUsers)
                 if (this.state.invitedUsers.some(item => item.key === this.state.usernameInput)) {
                   alert("Cet utilisateur est déjà dans la liste des participants !")
+                }
+                else if (this.state.usernameList.some(item => item.key !== this.state.usernameInput) || !this.isUsernameValid) {
+                  alert ("Cet utilisateur n'existe pas !")
                 }
                 else {
                   this.state.invitedUsers.push({ key: this.state.usernameInput })
@@ -97,8 +102,13 @@ export default class CreateGroup extends React.Component {
           <View style={styles.create_container}>
             <CustomButton name='Créer groupe' onPress={() => {
               console.log(this.state.invitedUsers)
-              // groupServices.createGroup(this.groupName, this.description, this.state.invitedUsers,
-              //   () => this.props.navigation.navigate("Groups"))
+              let invitedUsersArray = []
+              for (let i=0; i<this.state.invitedUsers.length; i++) {
+                invitedUsersArray.push(this.state.invitedUsers[i].key)
+              }
+              console.log(invitedUsersArray)
+              groupServices.createGroup(this.groupName, this.description, invitedUsersArray,
+                () => this.props.navigation.navigate("Groups"))
             }}></CustomButton>
           </View>
         </KeyboardAwareScrollView>
