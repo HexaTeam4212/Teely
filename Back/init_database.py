@@ -25,19 +25,25 @@ class GROUP(BaseModel):
 	idImage = IntegerField(null = True)
 
 class PARTICIPATE_IN(BaseModel):
-	User = ForeignKeyField(PERSON, backref='+')
-	Group = ForeignKeyField(GROUP, backref='+')
+    User = ForeignKeyField(PERSON, backref='+')
+    Group = ForeignKeyField(GROUP, backref='+')
 
 class TASK(BaseModel):
-	taskId = AutoField(primary_key = True)
-	TaskUser = ForeignKeyField(PERSON, backref='+', null = True)
-	Name = CharField(max_length = 50, null = True)
-	Description = CharField(max_length = 500, null = True)
-	Frequency = IntegerField(null = True)
-	Group = ForeignKeyField(GROUP, backref='+')
-	Date = DateField(formats = '%Y-%m-%d', null = True)
-	PriorityLevel = IntegerField(null = True)
-	Duration = IntegerField()
+    taskId = AutoField(primary_key = True)
+    TaskUser = ForeignKeyField(PERSON, backref='+', null = True)
+    Name = CharField(max_length = 50, null = True)
+    Description = CharField(max_length = 500, null = True)
+    Frequency = IntegerField(null = True)
+    Group = ForeignKeyField(GROUP, backref='+')
+    Date = DateField(formats = '%Y-%m-%d', null = True)
+    PriorityLevel = IntegerField(null = True)
+    Duration = IntegerField()
+    Starting = IntegerField()
+
+class DEPENDANCE(BaseModel):
+    DependanceId = AutoField(primary_key = True)
+    TaskConcerned = ForeignKeyField(TASK)
+    TaskDependancies = ForeignKeyField(TASK, backref='+', null = True)
 
 class INVITATION(BaseModel):
 	invitationId = AutoField(primary_key = True)
@@ -47,4 +53,4 @@ class INVITATION(BaseModel):
 
 mysql_db.connect()
 
-mysql_db.create_tables([PERSON, GROUP, PARTICIPATE_IN, TASK, INVITATION])
+mysql_db.create_tables([PERSON, GROUP, PARTICIPATE_IN, TASK, INVITATION, DEPENDANCE])
