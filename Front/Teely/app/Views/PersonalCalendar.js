@@ -2,8 +2,10 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars'
-import { LocaleConfig } from 'react-native-calendars'
+import { Agenda, LocaleConfig } from 'react-native-calendars'
+import moment from "moment"
+import accountServices from '../Services/AccountServices'
+
 
 LocaleConfig.locales['fr'] = {
   monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
@@ -16,20 +18,11 @@ LocaleConfig.defaultLocale = 'fr';
 export default class PersonalCalendar extends React.Component {
   constructor(props) {
     super(props)
-    var today = new Date()
-    var thisYear = parseInt(today.getFullYear())
-    var thisMonth = parseInt(today.getMonth() + 1)
-    var thisDay = parseInt(today.getDate())
-    if (thisMonth < 10) {
-      thisMonth = "0" + thisMonth
+    this.tasks = {}
+    this.state = {
+      selectedDate: moment(new Date()).format("YYYY-MM-DD"),
+      isLoading: false
     }
-    if (thisDay < 10) {
-      thisDay = "0" + thisDay
-    }
-    this.currentDay = thisYear + "-" + thisMonth + "-" + thisDay
-    console.log(this.currentDay)
-    this.tasks = []
-    this.state = { isLoading: false }
   }
 
   displayLoading() {
@@ -42,74 +35,99 @@ export default class PersonalCalendar extends React.Component {
     }
   }
 
-  getTasks() {
-    this.tasks = accountServices.accountTasks()
+
+
+  renderKnob = () => {
+    return (
+      <View style={{ flex: 1, top: Platform.OS == 'ios' ? null : 5, }}>
+        <Image
+          source={require('../../assets/Images/down-arrow.png')} style={{ width: 20, height: 20 }}
+        />
+      </View>
+    );
+  }
+
+  loadItems = (day) => {
+    this.setState({ selectedDate: day })
+    if (!day)
+      return;
+    let begin = moment(day.dateString).startOf('month')
+    let end = moment(day.dateString).endOf('month')
+    while (begin.isSameOrBefore(end)) {
+      const currentDay = begin.format('YYYY-MM-DD')
+      let value = accountServices.tasksByDate(currentDay)
+      if (value.length) {
+        this.tasks[currentDay] = Array.isArray(value) ? [...value] : []
+      }
+      begin.add(1, 'days')
+    }
+    
   }
 
 
+  renderItem = (item) => {
+    return (
+      <View style={styles.task_container}>
+        <View><Text style={styles.time_text}>{item.startingTime}</Text></View>
+        <View><Text style={styles.name_text}>{item.name}</Text></View>
+        <View><Text style={styles.description_text}>{item.description}</Text></View>
+        <View><Text style={styles.time_text}>{item.endingTime}</Text></View>
+      </View>
+    );
+  }
+
+  renderEmptyData = () => {
+    return (
+      <View style={styles.emptyTask_container}>
+        <Image
+          source={require('../../assets/Images/cat.png')} style={{ height: 400, width: 275 }} />
+        <Text style={styles.emptyTask_text}>Rien à signaler pour le moment.. </Text>
+      </View>
+    );
+  }
 
 
   render() {
     return (
       <View style={styles.main_container}>
         <Agenda
-         items={{
-          '2020-04-22': [{name: 'item 1 - any js object'}],
-          '2020-04-23': [{name: 'item 2 - any js object', height: 80}],
-          '2020-04-24': [],
-          '2020-04-25': [{name: 'item 3 - any js object'}, {name: 'any js object'}]
-        }}
-          loadItemsForMonth={(month) => { console.log('trigger items loading') }}
-          onCalendarToggled={(calendarOpened) => { console.log(calendarOpened) }}
-          onDayPress={(day) => { console.log('day pressed') }}
-          onDayChange={(day) => { }}
-          selected={this.currentDay}
+          items={this.tasks}
+          loadItemsForMonth={this.loadItems}
+          selected={this.state.currentDate}
           pastScrollRange={50}
           futureScrollRange={50}
-          renderKnob={() => {
-            return (
-              <View style={{ flex: 1, top: Platform.OS == 'ios' ? null : 5, }}>
-                <Image
-                  source={require('../../assets/Images/down-arrow.png')} style={{ width: 20, height: 20 }}
-                />
-              </View>
-            );
-          }}
+          renderKnob={this.renderKnob}
           // Specify how each item should be rendered in agenda
-          renderItem={(item, firstItemInDay) => { return (<View />); }}
-          // Specify how each date should be rendered. day can be undefined if the item is not first in that day.
-          renderDay={(day, item) => { return (<View />); }}
-          renderEmptyData={() => {
-            return (
-              <View style={styles.content}>
-                <Image style={{ height: 150, width: 100 }} source={require('../../assets/Images/cat.png')} />
-              </View>
-            );
-          }}
+          renderItem={this.renderItem}
+          renderEmptyData={this.renderEmptyData}
           hideKnob={false}
           onRefresh={() => console.log('refreshing...')}
           refreshing={false}
           refreshControl={null}
           theme={{
-            backgroundColor: '#f1f2f6',
-            calendarBackground: '#ffffff',
+            backgroundColor: '#78e1db',
+            calendarBackground: 'white',
             textSectionTitleColor: '#b6c1cd',
             selectedDayBackgroundColor: '#ffb4e2',
             selectedDayTextSize: 20,
+            selectedDayTextColor: 'white',
             todayTextColor: '#78e1db',
             dayTextColor: '#2d4150',
+            dayTextFontSize: 30,
+            dayBackgroundColor: 'white',
             textDisabledColor: '#d9e1e8',
             dotColor: '#ffdb58',
-            selectedDotColor: 'green',
+            selectedDotColor: 'white',
             arrowColor: 'orange',
             indicatorColor: 'blue',
             textMonthFontWeight: 'bold',
             textDayFontSize: 17,
             textMonthFontSize: 17,
-            agendaDayTextColor: 'yellow',
+
+            agendaDayTextColor: 'black',
+            agendaDayTextFontSize : 40,
             agendaDayNumColor: 'black',
-            agendaTodayColor: 'red',
-            agendaKnobColor: 'blue',
+            agendaTodayColor: 'white',
           }}
           style={styles.content_container}
         />
@@ -123,16 +141,60 @@ const styles = StyleSheet.create({
     backgroundColor: '#78e1db',
     flex: 1
   },
-  emptyData_container: {
-    flex: 1
+  emptyTask_container: {
+    backgroundColor: '#78e1db',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  task_container: {
+    backgroundColor: 'white',
+    flex: 1,
+    flexDirection: 'column',
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 17
   },
   content_container: {
     flex: 1,
     marginTop: 30,
     marginBottom: 10,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
   },
+  emptyTask_text: {
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    color: 'white',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+    fontSize: 24,
+    textAlign: 'center',
+    flexWrap: 'wrap'
+  },
+  name_text: {
+    fontWeight: 'bold',
+    fontFamily: Platform.OS === 'ios' ? 'Noteworthy' : 'Roboto',
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#2d4150',
+    flexWrap: 'wrap',
+    marginBottom: 5
+  },
+  description_text: {
+    fontWeight: 'bold',
+    fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'Roboto',
+    fontSize: 16,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    color: '#2d4150',
+    flexWrap: 'wrap',
+    marginBottom: 5
+  },
+  time_text: {
+    fontSize: 14,
+    textAlign: 'left',
+    color: 'grey',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+  }
 
 });

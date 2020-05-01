@@ -84,7 +84,6 @@ def account_update():
         user.LastName = content["lastName"]
         user.Name = content["name"]
         user.BirthDate = content["birthdate"]
-        user.idImage = content["idImage"]
         if "bio" in content:
             user.Bio = content["bio"]
         user.save()
@@ -216,12 +215,12 @@ def account_upcomming_tasks_for_user():
 
 @app.route('/group', methods=['GET', 'POST'])
 def group():
-    content = request.get_json()
     reponse_body = {}
 
     if 'username' not in session:
         return sendError("User is not logged in", 401)
     elif request.method == 'POST':
+        content = request.get_json()
         code = 204
         user = PERSON.get(PERSON.Username == session['username'])
         try:
@@ -244,7 +243,10 @@ def group():
     elif request.method == 'GET':
         code=200
         user = PERSON.get(PERSON.Username == session['username'])
-        rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
+        try:
+            rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
+        except:
+            return sendError(404, "Groups not found")
         res = ()
         for groupId in rep:
             res += str(groupId) ,

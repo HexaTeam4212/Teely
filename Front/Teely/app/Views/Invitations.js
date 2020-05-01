@@ -10,50 +10,54 @@ export default class Invitations extends React.Component {
     super(props)
     this.invitations = []
     this.selectedInvit;
-    this.firstLoad = true
     this.state = {
-      isLoading: false,
+      isLoading: true,
       tabInvit: []
     }
+
+    this.getInvitations()
   }
 
   resultChoice = (choiceOk) => {
     this.setState({ isLoading: false })
     if (choiceOk) {
       const pos = this.invitations.indexOf(this.selectedInvit)
-      this.invitations.splice(pos,1)
-      this.setState({tabInvit: this.invitations})
+      this.invitations.splice(pos, 1)
+      this.setState({ tabInvit: this.invitations })
     }
   }
 
   acceptInvitation = (invit) => {
     this.selectedInvit = invit;
-    const invitationId = this.selectedInvit.id
-    
+    const invitationId = this.selectedInvit.invitationId
+
     this.setState({ isLoading: true })
-    accountServices.accountInvitationChoice(invitationId,'accept',this.resultChoice)
+    accountServices.accountInvitationChoice(invitationId, 'accept', this.resultChoice)
   }
 
   declineInvitation = (invit) => {
     this.selectedInvit = invit;
-    const invitationId = invit.id
+    const invitationId = invit.invitationId
 
     this.setState({ isLoading: true })
-    accountServices.accountInvitationChoice(invitationId,'decline',this.resultChoice)
+    accountServices.accountInvitationChoice(invitationId, 'decline', this.resultChoice)
   }
-  
-  getInvitations(){
-    if(this.firstLoad){
-      console.log("first load")
-      this.invitations = accountServices.accountInvitations()
-      this.setState({tabInvit: this.invitations})
-      this.firstLoad = false
-    }
+
+  updateInvitations = (dataInvit) => {
+    this.invitations = dataInvit
+    this.setState({
+      tabInvit: dataInvit, isLoading: false
+    })
+
+  }
+
+  getInvitations() {
+    accountServices.accountInvitations(this.updateInvitations)
   }
 
 
   displayInvitations() {
-    this.getInvitations()
+    console.log("invit : "+this.invitations.length)
     if (!(this.invitations.length)) {
       return (
         <View style={styles.noInvit_container}>
@@ -72,10 +76,10 @@ export default class Invitations extends React.Component {
 
           <FlatList
             data={this.state.tabInvit}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.invitationId.toString()}
             renderItem={({ item }) =>
-                <InvitationItem invitation={item} parentCallbackAccept={this.acceptInvitation} 
-                parentCallbackDecline={this.declineInvitation}/>
+              <InvitationItem invitation={item} parentCallbackAccept={this.acceptInvitation}
+                parentCallbackDecline={this.declineInvitation} />
             }
           />
 
@@ -89,7 +93,7 @@ export default class Invitations extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-          <Text style={styles.title_text}>Invitations en attente</Text>
+        <Text style={styles.title_text}>Invitations en attente</Text>
         <View style={styles.content_container}>
           {this.displayInvitations()}
         </View>

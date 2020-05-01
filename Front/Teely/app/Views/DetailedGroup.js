@@ -6,16 +6,17 @@ import { StyleSheet, Text, View, Image, ActivityIndicator} from 'react-native'
 export default class DetailedGroup extends React.Component {
   constructor(props) {
     super(props)
-    //console.log("idGroup : "+this.props.navigation.navigate('idGroup'))
   }
 
 
 
 
   render() {
-    /*const {params} = this.props.navigation.state;
-    const idGroup = params? params.idGroup : null
-    console.log("idGroup : "+idGroup)*/
+    //const {params} = this.props.navigation.state;
+    console.log("params : "+this.props.navigation.state)
+    console.log("params2 : "+this.props.navigation)
+    //const idGroup = params? params.idGroup : null
+    //console.log("idGroup : "+idGroup)
     return(
     <View style={styles.main_container}>
       <KeyboardAwareScrollView 
