@@ -3,7 +3,7 @@ from flask_cors import CORS
 from peewee import *
 import json
 import datetime
-from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION
+from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPENDANCE
 from wrapper import sendError, authenticate
 app = Flask(__name__)
 
@@ -27,7 +27,7 @@ def account_inscription():
     except:
         return sendError(400, "Bad Request: Make sure to send all parameters !")
 
-    try:    
+    try:
         newUser.save()
     except:
         return sendError(409, "Conflict: This username or email already exist in database !")
@@ -214,9 +214,9 @@ def account_upcomming_tasks_for_user():
 # Group endpoints
 
 @app.route('/group', methods=['GET', 'POST'])
-def group(): 
+def group():
     reponse_body = {}
-    
+
     if 'username' not in session:
         return sendError("User is not logged in", 401)
     elif request.method == 'POST':
@@ -227,19 +227,19 @@ def group():
             newGroup = GROUP(Name = content['group_name'], Description = content['description'])
         except:
             return sendError(400, "Make sure to send all the parameters")
-        
-        try:    
+
+        try:
            newGroup.save()
         except:
             return sendError(409, "This group couldn't be added to the database !")
-       
+
         if 'guests' in content:
             for username in content['guests'] :
                 recipient = PERSON.get(PERSON.Username == username)
                 INVITATION.insert(Sender_id=user.personId ,Recipient_id=recipient.personId,Group_id=newGroup.groupId).execute()
-                
+
         PARTICIPATE_IN.insert(User_id=user.personId,Group_id=newGroup.groupId).execute()
-        return jsonify(reponse_body), code    
+        return jsonify(reponse_body), code
     elif request.method == 'GET':
         code=200
         user = PERSON.get(PERSON.Username == session['username'])
@@ -271,7 +271,7 @@ def get_group(id_group):
 '''
 
 @app.route('/group/<id_group>/invite', methods=['DELETE'])
-def delete_invite(id_group): 
+def delete_invite(id_group):
     content = request.get_json()
     reponse_body = {}
     code = 204
@@ -282,42 +282,42 @@ def delete_invite(id_group):
         print(invitation)
         INVITATION.delete().where(INVITATION.invitationId == invitation).execute()
     return jsonify(reponse_body), code
-    
+
 
 @app.route('/group/<id_group>/invite', methods=['GET'])
-def create_invite(id_group): 
+def create_invite(id_group):
     reponse_body = {}
     code = 204
     userId = 1
     rep = PERSON.select().where(PERSON.Username == request.args.get('username'))
     for user in rep:
         resultat = INVITATION.select().where( (INVITATION.Recipient_id == user.personId) & (INVITATION.Group_id == id_group) )
-        for invitation in resultat : 
+        for invitation in resultat :
             code = 409
             reponse_body = {
                 "error": "Conflict: The request could not be completed due to conflict. User may have already been invited."
-            }   
+            }
         resultat = PARTICIPATE_IN.select().where( (PARTICIPATE_IN.User_id == user.personId) & (PARTICIPATE_IN.Group_id == id_group) )
-        for participant in resultat : 
+        for participant in resultat :
             code = 409
             reponse_body = {
                 "error": "Conflict: The request could not be completed due to conflict. User is already in the group."
-            }  
+            }
         INVITATION.insert(Sender_id=userId ,Recipient_id=user.personId ,Group_id=id_group).execute()
     return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/accept', methods=['GET'])
-def accept_invite(id_group): 
+def accept_invite(id_group):
     reponse_body = {}
     code = 204
     rep = INVITATION.select().where(INVITATION.invitationId == request.args.get('invite_id'))
-    for invitation in rep : 
+    for invitation in rep :
         PARTICIPATE_IN.insert(User_id=invitation.Recipient_id , Group_id=invitation.Group_id).execute()
     INVITATION.delete().where(INVITATION.invitationId == request.args.get('invite_id')).execute()
     return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/quit', methods=['GET'])
-def quit_group(id_group): 
+def quit_group(id_group):
     reponse_body = {}
     code = 204
     userId = 1
@@ -333,11 +333,25 @@ def group_task_all(id_group):
     manque la DATE
     '''
     for task in rep:
+
+        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
+
+        dependanciesIds=[]
+        try :
+            for dep in dependancies :
+                dependanciesIds.append(dep.taskConcerned)
+        except :
+            dependanciesIds.append("")
+
         data = {"id": task.taskId,
+            "name": task.Name,
             "taskedUsers": task.TaskUser_id,
+            "dueDate" : str(task.Date),
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
-            "duration": task.Duration
+            "duration": task.Duration,
+            "startingTime" : str(task.StartingTime),
+            "dependancies" : dependanciesIds
         }
 
         taskData.append(data)
@@ -352,7 +366,16 @@ def group_task_all(id_group):
 def group_task_id(id_group, id_task):
     rep = TASK.select().where(TASK.taskId == id_task)
     taskData = []
-    ''' manque des éléments à rajouter '''
+
+    dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
+
+    dependanciesIds=[]
+    try :
+        for dep in dependancies :
+            dependanciesIds.append(dep.taskConcerned)
+    except :
+        dependanciesIds.append("")
+
     for task in rep:
         data = {"id": task.taskId,
         "description": task.Description,
@@ -360,7 +383,9 @@ def group_task_id(id_group, id_task):
         "dueDate": task.Date,
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
-        "duration": task.Duration
+        "duration": task.Duration,
+        "startingTime" : str(task.StartingTime),
+        "dependancies" : dependanciesIds
         }
 
         taskData.append(data)
@@ -374,11 +399,20 @@ def group_task(id_group):
     reponse_body = {}
     ''' verification que le groupe existe ?'''
     try :
-        newTask = TASK(TaskUser=content['taskUser'], Description = content['description'], Frequency=content['frequency'],Group=id_group, Date= content['date'], PriorityLevel=content['priorityLevel'],Duration = content['duration'])
+        newTask = TASK(TaskUser=content['taskUser'], Description = content['description'], Frequency=content['frequency'],Group=id_group, Date= content['date'], PriorityLevel=content['priorityLevel'],Duration = content['duration'],StartingTime = content['startingTime'])
     except:
         return sendError(400, "Make sure to send all the parameters")
     try:
        newTask.save()
+    except:
+        return sendError(409, "This task couldn't be add in the database !")
+
+    try :
+        newDependance = DEPENDANCE(TaskConcerned=newTask.taskId, TaskDependancies = content['dependancies'])
+    except:
+        return sendError(400, "Make sure to send all the parameters")
+    try:
+       newDependance.save()
     except:
         return sendError(409, "This task couldn't be add in the database !")
 
@@ -418,4 +452,3 @@ def task_put(id_group,id_task):
     "duration": task.Duration}
     response_body =data
     return json.dumps(response_body), 200
- 
