@@ -343,11 +343,6 @@ def group_task_all(id_group):
         except :
             dependanciesIds.append("")
 
-        '''
-
-            "dependancies" : str(dependancies)
-        '''
-
         data = {"id": task.taskId,
             "name": task.Name,
             "taskedUsers": task.TaskUser_id,
@@ -355,7 +350,7 @@ def group_task_all(id_group):
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
             "duration": task.Duration,
-            "startingTime" : str(task.Starting),
+            "startingTime" : str(task.StartingTime),
             "dependancies" : dependanciesIds
         }
 
@@ -371,6 +366,16 @@ def group_task_all(id_group):
 def group_task_id(id_group, id_task):
     rep = TASK.select().where(TASK.taskId == id_task)
     taskData = []
+
+    dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
+
+    dependanciesIds=[]
+    try :
+        for dep in dependancies :
+            dependanciesIds.append(dep.taskConcerned)
+    except :
+        dependanciesIds.append("")
+
     for task in rep:
         data = {"id": task.taskId,
         "description": task.Description,
@@ -379,7 +384,8 @@ def group_task_id(id_group, id_task):
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
         "duration": task.Duration,
-        "startingTime" : task.Starting
+        "startingTime" : str(task.StartingTime),
+        "dependancies" : dependanciesIds
         }
 
         taskData.append(data)
@@ -393,11 +399,20 @@ def group_task(id_group):
     reponse_body = {}
     ''' verification que le groupe existe ?'''
     try :
-        newTask = TASK(TaskUser=content['taskUser'], Description = content['description'], Frequency=content['frequency'],Group=id_group, Date= content['date'], PriorityLevel=content['priorityLevel'],Duration = content['duration'])
+        newTask = TASK(TaskUser=content['taskUser'], Description = content['description'], Frequency=content['frequency'],Group=id_group, Date= content['date'], PriorityLevel=content['priorityLevel'],Duration = content['duration'],StartingTime = content['startingTime'])
     except:
         return sendError(400, "Make sure to send all the parameters")
     try:
        newTask.save()
+    except:
+        return sendError(409, "This task couldn't be add in the database !")
+
+    try :
+        newDependance = DEPENDANCE(TaskConcerned=newTask.taskId, TaskDependancies = content['dependancies'])
+    except:
+        return sendError(400, "Make sure to send all the parameters")
+    try:
+       newDependance.save()
     except:
         return sendError(409, "This task couldn't be add in the database !")
 

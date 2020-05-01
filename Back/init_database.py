@@ -38,7 +38,7 @@ class TASK(BaseModel):
     Date = DateField(formats = '%Y-%m-%d', null = True)
     PriorityLevel = IntegerField(null = True)
     Duration = IntegerField()
-    Starting = IntegerField()
+    StartingTime = IntegerField()
 
 class DEPENDANCE(BaseModel):
     DependanceId = AutoField(primary_key = True)
