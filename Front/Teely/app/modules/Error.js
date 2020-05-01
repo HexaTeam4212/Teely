@@ -12,6 +12,9 @@ export function httpError(statusCode) {
         case 503:
             alert("Le serveur n'est pas disponible. Veuillez réessayer plus tard.")
             break
+        default:
+            alert("Erreur non répertoriée")
+            break
     }
     
 }

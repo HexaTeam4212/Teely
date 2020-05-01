@@ -16,7 +16,6 @@ YellowBox.ignoreWarnings([
 export default class Profile extends React.Component {
     constructor(props) {
         super(props)
-        this.tasks = []
         this.state = {
             isLoading: true,
             username: "",
@@ -24,7 +23,8 @@ export default class Profile extends React.Component {
             lastName: "",
             birthDate: "",
             biography: "",
-            idImage: 1
+            idImage: 1,
+            tasks: []
         }
         this.getDataProfile()
 
@@ -40,8 +40,7 @@ export default class Profile extends React.Component {
         }
     }
     displayUpcomingTasks() {
-        this.tasks = accountServices.accountTasks().slice(0, 3) //On affiche max les 3 prochaines
-        if (!(this.tasks.length)) {
+        if (!(this.state.tasks.length)) {
             return (
                 <View style={styles.emptyTasks_container}>
                     <Text style={styles.bio_text}>Rien à signaler pour le moment.. </Text>
@@ -54,7 +53,7 @@ export default class Profile extends React.Component {
                 <SafeAreaView style={styles.tasks_container}>
                     <Text style={styles.name_text}>A venir :</Text>
                     <FlatList
-                        data={this.tasks}
+                        data={this.state.tasks}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => <TaskItem task={item} />}
                     />
@@ -63,11 +62,19 @@ export default class Profile extends React.Component {
         }
     }
 
+    updateTasksList = (tasksList) => {
+        this.setState({
+            tasks : tasksList, isLoading: false
+        })
+        console.log("tasks : "+ this.state.tasks)
+    }
+
     updateDataProfile = (dataProfile) => {
         this.setState({
             username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
-            birthDate: this.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage, isLoading: false
+            birthDate: this.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage
         })
+        accountServices.accountUpcomingTasks(this.updateTasksList)
     }
 
     getDataProfile = () => {
@@ -100,7 +107,6 @@ export default class Profile extends React.Component {
 
 
     render() {
-        console.log("params profile : " + this.props.navigation)
         return (
             <View style={styles.main_container}>
                 <LogoutButton></LogoutButton>
@@ -224,7 +230,7 @@ const styles = StyleSheet.create({
     bio_text: {
         fontStyle: 'italic',
         color: 'white',
-        fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+        fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'Roboto',
         fontSize: 20,
         textAlign: 'left',
         flexWrap: 'wrap'

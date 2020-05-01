@@ -6,9 +6,9 @@ export default class DateTimePickerTester extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isDateTimePickerVisible: false
+            isDateTimePickerVisible: false,
+            name : this.props.name
         };
-        this.name=this.props.name;
     }
 
     showDateTimePicker = () => {
@@ -27,17 +27,17 @@ export default class DateTimePickerTester extends Component {
         const data = this.formatDate(date)
         this.props.parentCallback(data)
         this.hideDateTimePicker();
-        this.name = data;
+        this.setState({name : data});
     };
 
 
     render() {
-        this.name=this.props.name;
+        //this.name=this.props.name;
         const marginRight = this.props.marginRight
         return (
             <View style={styles.main_container}>
                 <TouchableOpacity style={[styles.button, {marginRight:marginRight}]} onPress={this.showDateTimePicker}>
-                    <Text style={styles.buttonText}> {this.name} </Text>
+                    <Text style={styles.buttonText}> {this.state.name} </Text>
                 </TouchableOpacity>
                 <DateTimePicker
                     isVisible={this.state.isDateTimePickerVisible}

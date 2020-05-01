@@ -3,7 +3,7 @@ import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
 import { storeToken, getToken, removeToken } from '../modules/TokenStorage.js'
 
-const endpoint = "/account/"
+const endpoint = "/account"
 
 class AccountServices {
 
@@ -17,7 +17,7 @@ class AccountServices {
             name: name,
             idImage: idImage
         })
-        const fullEndpoint = endpoint + "inscription"
+        const fullEndpoint = endpoint + "/inscription"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -59,7 +59,7 @@ class AccountServices {
             username: username,
             password: password,
         })
-        const fullEndpoint = endpoint + "login"
+        const fullEndpoint = endpoint + "/login"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -120,7 +120,7 @@ class AccountServices {
             name: name,
             bio: biography,
         })
-        const fullEndpoint = endpoint + "update"
+        const fullEndpoint = endpoint + "/update"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -152,7 +152,7 @@ class AccountServices {
     async dataProfile(callback) {
 
         const username = await getToken()
-        const fullEndpoint = endpoint + "info"
+        const fullEndpoint = endpoint + "/info"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -176,6 +176,64 @@ class AccountServices {
         }
     }
 
+    async accountUpcomingTasks(callback) {
+
+        const username = await getToken()
+        const fullEndpoint = endpoint + "task/upcomming"
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: username
+                    }
+                })
+            const respBody = await response.json()
+            console.log("response : "+respBody.tasks)
+            if (response.status != 200) {
+                alert("Erreur lors de la récupération des tâches")
+            }
+            else {
+                callback(respBody.tasks)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    async accountAllTasks() {
+
+        const username = await getToken()
+        const fullEndpoint = endpoint + "task/all"
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: username
+                    }
+                })
+            const respBody = await response.json()
+            console.log(respBody.tasks)
+            if (response.status != 200) {
+                alert("Erreur lors de la récupération des tâches")
+            }
+            else {
+                callback(respBody.tasks)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+
+
     accountTasks() {
         const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-30', startingTime: '11:20', endingTime: '11:40' }
         const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-30', startingTime: '15:00', endingTime: '16:00' }
@@ -185,7 +243,7 @@ class AccountServices {
 
         let accountTasks = [task1, task2, task3, task4]
         /*let accountTasks = []
-        const fullEndpoint = endpoint + "task/all"
+        const fullEndpoint = endpoint + "/task/all"
 
         try {
             const response = await fetch(backendURL + fullEndpoint, 
@@ -237,7 +295,7 @@ class AccountServices {
         let accountInvitations = [invit1, invit2, invit3, invit4]
 
         const username = await getToken()
-        const fullEndpoint = endpoint + "invitation"
+        const fullEndpoint = endpoint + "/invitation"
 
         try {
             const response = await fetch(backendURL + fullEndpoint, 
@@ -251,7 +309,8 @@ class AccountServices {
             })
             const respBody = await response.json()
             if (response.status != 200) {
-                    alert("Erreur lors de la récupération des invitations")
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 alert("Récupération des invitations réussie :)")
@@ -270,7 +329,7 @@ class AccountServices {
             choice: choice,
             
         })
-        const fullEndpoint = endpoint + "invitation/choice"
+        const fullEndpoint = endpoint + "/invitation/choice"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -300,6 +359,32 @@ class AccountServices {
         callback(true)
     }
 
+    async getAccountUsernames(usernameParam, callback) {
+        const username = await getToken()
+        const fullEndpoint = endpoint + "?username=" + usernameParam
+        try {
+            const response = await fetch(backendURL + fullEndpoint, 
+            {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: username
+                }
+            })
+            const respBody = await response.json()
+            if (response.status != 200) {
+                httpError(response.status)
+                console.error(response.error)
+            }
+            else {
+                callback(respBody.users)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 const accountServices = new AccountServices()
