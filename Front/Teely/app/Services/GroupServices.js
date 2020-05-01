@@ -72,6 +72,7 @@ class GroupServices {
                 else {
                     httpError(response.status)
                 }
+                console.error(response.error)
             }
             else {
                 callback()

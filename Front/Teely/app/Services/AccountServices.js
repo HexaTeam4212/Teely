@@ -3,7 +3,7 @@ import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
 import { storeToken, getToken, removeToken } from '../modules/TokenStorage.js'
 
-const endpoint = "/account/"
+const endpoint = "/account"
 
 class AccountServices {
 
@@ -17,7 +17,7 @@ class AccountServices {
             name: name,
             idImage: idImage
         })
-        const fullEndpoint = endpoint + "inscription"
+        const fullEndpoint = endpoint + "/inscription"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -59,7 +59,7 @@ class AccountServices {
             username: username,
             password: password,
         })
-        const fullEndpoint = endpoint + "login"
+        const fullEndpoint = endpoint + "/login"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -120,7 +120,7 @@ class AccountServices {
             name: name,
             bio: biography,
         })
-        const fullEndpoint = endpoint + "update"
+        const fullEndpoint = endpoint + "/update"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -152,7 +152,7 @@ class AccountServices {
     async dataProfile(callback) {
 
         const username = await getToken()
-        const fullEndpoint = endpoint + "info"
+        const fullEndpoint = endpoint + "/info"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -185,7 +185,7 @@ class AccountServices {
 
         let accountTasks = [task1, task2, task3, task4]
         /*let accountTasks = []
-        const fullEndpoint = endpoint + "task/all"
+        const fullEndpoint = endpoint + "/task/all"
 
         try {
             const response = await fetch(backendURL + fullEndpoint, 
@@ -237,7 +237,7 @@ class AccountServices {
         let accountInvitations = [invit1, invit2, invit3, invit4]
 
         const username = await getToken()
-        const fullEndpoint = endpoint + "invitation"
+        const fullEndpoint = endpoint + "/invitation"
 
         try {
             const response = await fetch(backendURL + fullEndpoint, 
@@ -251,7 +251,8 @@ class AccountServices {
             })
             const respBody = await response.json()
             if (response.status != 200) {
-                    alert("Erreur lors de la récupération des invitations")
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 alert("Récupération des invitations réussie :)")
@@ -270,7 +271,7 @@ class AccountServices {
             choice: choice,
             
         })
-        const fullEndpoint = endpoint + "invitation/choice"
+        const fullEndpoint = endpoint + "/invitation/choice"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -298,6 +299,34 @@ class AccountServices {
             console.error(error)
         }*/
         callback(true)
+    }
+
+    async getAccountUsernames(usernameParam, callback) {
+        const username = await getToken()
+        const fullEndpoint = endpoint + "?username=" + usernameParam
+        try {
+            const response = await fetch(backendURL + fullEndpoint, 
+            {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: username
+                }
+            })
+            const respBody = await response.json()
+            if (response.status != 200) {
+                httpError(response.status)
+                console.error(response.error)
+            }
+            else {
+                console.log("resp users "+respBody.users)
+                callback(respBody.users)
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }
     }
 
 }
