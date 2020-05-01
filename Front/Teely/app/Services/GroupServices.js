@@ -6,38 +6,39 @@ const endpoint = "/group"
 
 class GroupServices {
     
-    async dataGroupsUser() {
-        //alert("Récupération groupes utilisateur")
+    async getGroupsUser(callback) {
 
-        const group1 = { id: 1, name: 'Le meilleur groupe de travail', idImage: '0' }
-        const group2 = { id: 2, name: 'En famille !', idImage: '1' }
-        const group3 = { id: 3, name: 'Vacaciones', idImage: '2'}
-        const group4 = { id: 4, name: 'Les poteaux', idImage: '3' }
+        // const group1 = { id: 1, name: 'Le meilleur groupe de travail', idImage: '0' }
+        // const group2 = { id: 2, name: 'En famille !', idImage: '1' }
+        // const group3 = { id: 3, name: 'Vacaciones', idImage: '2'}
+        // const group4 = { id: 4, name: 'Les poteaux', idImage: '3' }
     
-        let accountGroups = [group1, group2, group3, group4]
-        /*let accountGroups = []
-        const fullEndpoint = endpoint
+        // let accountGroups = [group1, group2, group3, group4]
+        const token = await getToken()
         try {
-            const response = await fetch(backendURL + fullEndpoint, 
-            {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            })
+            const response = await fetch(backendURL + endpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    }
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            const respBody = await response.json()
             if (response.status != 200) {
-                    alert("Erreur lors de la récupération des groupes")
+                httpError(response.status)
             }
             else {
-                alert("Récupération des groupes réussie :)")
-                accountGroups.push(response.groups)
+                callback(respBody.groups)
             }
         }
         catch (error) {
             console.error(error)
-        }*/
-        return accountGroups
+        }
     }
 
     async createGroup(groupName, description, invitedUsers, callback) {
@@ -46,8 +47,7 @@ class GroupServices {
             description: description,
             guests: invitedUsers
         })
-        console.log(requestBody)
-        const token = await getToken();
+        const token = await getToken()
         try {
             const response = await fetch(backendURL + endpoint,
                 {

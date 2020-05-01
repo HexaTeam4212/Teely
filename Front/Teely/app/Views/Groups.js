@@ -21,7 +21,7 @@ export default class Groups extends React.Component {
 
     this.getInvitations()
     this.getDataProfile()
-    
+
   }
 
   displayLoading() {
@@ -36,7 +36,7 @@ export default class Groups extends React.Component {
 
   updateDataProfile = (dataProfile) => {
     this.idImage = dataProfile.idImage
-    this.setState({ isLoading: false })
+    // this.setState({ isLoading: false })
   }
 
   getDataProfile = () => {
@@ -49,39 +49,43 @@ export default class Groups extends React.Component {
     )
   }
 
- 
   displayGroups() {
-    this.groups = groupServices.dataGroupsUser()
-    if (!(this.groups.length)) {
-      return (
-        <View style={styles.noGroup_container}>
-          <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
-          <Image style={styles.image_group} source={require('../../assets/Images/noGroup.png')} />
-          <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvez créer votre propre groupe !</Text>
-        </View>
-      )
-    }
-    else {
+    groupServices.getGroupsUser((groupIds) => {
+      this.groups = groupIds
+      console.log("hi " + this.groups)
+      console.log(this.groups.length)
 
-      return (
-        <KeyboardAwareScrollView
-          contentContainerstyle={styles.content_container}
-          resetScrollToCoords={{ x: 0, y: 0 }}
-          scrollEnabled={true}
-          enableAutomaticScroll={(Platform.OS === 'ios')}
-          enableOnAndroid={true}>
-          <FlatList
-            data={this.groups}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) =>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.id })}>
-                <GroupItem group={item.name} image={ImagesGp[item.idImage]} />
-              </TouchableOpacity>}
-          />
-        </KeyboardAwareScrollView>
-      )
-
-    }
+      if (!(this.groups.length)) {
+        return (
+          <View style={styles.noGroup_container}>
+            <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
+            <Image style={styles.image_group} source={require('../../assets/Images/noGroup.png')} />
+            <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvez créer votre propre groupe !</Text>
+          </View>
+        )
+      }
+      else {
+        //pour l'instant rien ne s'affiche c'est normal
+        // car il n'y a pas d'attribut id dans this.groups
+        return (
+          <KeyboardAwareScrollView
+            contentContainerstyle={styles.content_container}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            enableAutomaticScroll={(Platform.OS === 'ios')}
+            enableOnAndroid={true}>
+            <FlatList
+              data={this.groups}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) =>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.id })}>
+                  <GroupItem group={item.name} image={ImagesGp[item.idImage]} />
+                </TouchableOpacity>}
+            />
+          </KeyboardAwareScrollView>
+        )
+      }
+    })
   }
 
   updateInvitations = (dataInvit) => {
@@ -124,7 +128,7 @@ export default class Groups extends React.Component {
         <View style={styles.invit_container}>
           {this.displayInvitations()}
         </View>
-        {this.displayLoading()}
+        {/* {this.displayLoading()} */}
       </View>
     )
   }
