@@ -85,7 +85,7 @@ export default class CreateGroup extends React.Component {
                 if (this.state.invitedUsers.some(item => item.key === this.state.usernameInput)) {
                   alert("Cet utilisateur est déjà dans la liste des participants !")
                 }
-                else if (this.state.usernameList.some(item => item.key !== this.state.usernameInput) || !this.isUsernameValid) {
+                else if (this.state.usernameList.some(item => item.key !== this.state.usernameInput) || !this.isUsernameValid || this.state.usernameInput.length === 0) {
                   alert ("Cet utilisateur n'existe pas !")
                 }
                 else {
@@ -101,12 +101,10 @@ export default class CreateGroup extends React.Component {
           </View>
           <View style={styles.create_container}>
             <CustomButton name='Créer groupe' onPress={() => {
-              console.log(this.state.invitedUsers)
               let invitedUsersArray = []
               for (let i=0; i<this.state.invitedUsers.length; i++) {
                 invitedUsersArray.push(this.state.invitedUsers[i].key)
               }
-              console.log(invitedUsersArray)
               groupServices.createGroup(this.groupName, this.description, invitedUsersArray,
                 () => this.props.navigation.navigate("Groups"))
             }}></CustomButton>
