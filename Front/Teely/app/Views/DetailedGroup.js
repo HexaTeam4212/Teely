@@ -1,10 +1,12 @@
-// app/Views/DatailedGroup.js
+// app/Views/DetailedGroup.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, FlatList, KeyboardAvoidingView } from 'react-native'
 import groupServices from '../Services/GroupServices'
-import Images from '../modules/ImageProfile'
+import ImagesProfile from '../modules/ImageProfile'
+import ImagesGroup from '../modules/ImageGroup'
 import ImageWithText from '../Components/ImageWithText'
+import ProfileIcon from '../Components/ProfileIcon'
 import Dialog, { SlideAnimation, DialogContent, DialogTitle, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 import accountServices from '../Services/AccountServices'
 import Autocomplete from 'react-native-autocomplete-input'
@@ -18,9 +20,10 @@ export default class DetailedGroup extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      idImageProfile: 18,
       name: "",
       description: "",
-      idImage: 1,
+      idImageGroup: 18,
       members: [],
       isLoading: true,
       visibleInvitationDialog: false,
@@ -32,6 +35,7 @@ export default class DetailedGroup extends React.Component {
     this.isUsernameValid = true
     this.groupId = 1
     //this.getGroupId() //Corriger quand back OK
+    //this.getDataProfile()
     this.getGroupInfos()
   }
 
@@ -175,7 +179,7 @@ export default class DetailedGroup extends React.Component {
 
   updateGroupInfos = (data) => {
     this.setState({
-      name: data.group_name, description: data.description, idImage: data.idImageGroup,
+      name: data.group_name, description: data.description, idImageGroup: data.idImageGroup,
       members: data.members, isLoading: false
     });
   }
@@ -191,16 +195,33 @@ export default class DetailedGroup extends React.Component {
   inviteMembers = () => {
     this.setState({ visibleInvitationDialog: true })
   }
+
   imageGroup = () => {
     return (
-      <Image style={styles.groupPic} source={Images[this.state.idImage]} />
+      <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
     )
   }
+
+  updateDataProfile = (dataProfile) => {
+    this.idImageProfile = dataProfile.idImage
+  }
+
+  getDataProfile = () => {
+    accountServices.dataProfile(this.updateDataProfile)
+  }
+
+  imageProfile = () => {
+    return (
+      <Image style={styles.profilePic} source={ImagesProfile[this.idImageProfile]} />
+    )
+  }
+
 
 
   render() {
     return (
       <View style={styles.main_container}>
+        <ProfileIcon idImage={this.state.idImageProfile}/>
         <View style={styles.head_container}>
           {this.imageGroup()}
           <Text style={styles.name_text}>{this.state.name}</Text>
@@ -218,7 +239,8 @@ export default class DetailedGroup extends React.Component {
           <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}*/>
             <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
           </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupMembers")}*/>
+          <TouchableOpacity style={{ flex: 1 }} 
+          onPress={() => this.props.navigation.navigate("GroupMembers", {idGroup: this.groupId})}>
             <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
           </TouchableOpacity>
         </View>

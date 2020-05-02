@@ -149,9 +149,8 @@ class AccountServices {
     }
 
 
-    async dataProfile(callback) {
-
-        const username = await getToken()
+    async dataProfile(callback, username=getToken()) {
+        const token = await getToken()
         const fullEndpoint = endpoint + "/info"
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -160,7 +159,8 @@ class AccountServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: username
+                        Authorization: token
+                        //parameters: username
                     }
                 })
             const respBody = await response.json()

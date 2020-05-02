@@ -107,10 +107,6 @@ class GroupServices {
 
     async inviteUser(groupId, username) {
         const token = await getToken()
-        const requestParameters = JSON.stringify({
-            username: username
-            
-        })
         const fullEndpoint = endpoint+ '/'+groupId+'/invite'
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -121,7 +117,7 @@ class GroupServices {
                         'Content-Type': 'application/json',
                         Authorization: token
                     },
-                    parameters: requestParameters
+                    parameters: username
                 })
                 .catch(err => {
                     console.log("Promise error : " + err)
@@ -143,11 +139,12 @@ class GroupServices {
         }
     }
 
-    async createGroup(groupName, description, invitedUsers, callback) {
+    async createGroup(groupName, description, invitedUsers, idImageGroup, callback) {
         const requestBody = JSON.stringify({
             group_name: groupName,
             description: description,
-            guests: invitedUsers
+            guests: invitedUsers,
+            idImageGroup: idImageGroup
         })
         console.log(requestBody)
         const token = await getToken()
@@ -213,21 +210,7 @@ class GroupServices {
         }
     }
 
-    getGrouptasksByDate(groupId, day) {
-        let tasksForDay = []
-        let tasks=this.getGroupTasks(groupId)
-        const arr = Object.keys(tasks);
-        for (let i = 0; i < arr.length; ++i) {
-            let task = {...tasks[arr[i]]}
-            if (task.dueDate==day) {
-                // let result = Array.isArray(tasksForDay[day]) ? tasksForDay[day] : []
-                // tasksForDay[day] = [task, ...result]
-                tasksForDay.push(task)
-            }
-        }
-        return tasksForDay      
-        
-    }
+
 
 }
 const groupServices = new GroupServices()

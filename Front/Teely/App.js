@@ -15,6 +15,8 @@ import Invitations from './app/Views/Invitations'
 import CreateGroup from './app/Views/CreateGroup'
 import EditGroup from './app/Views/EditGroup'
 import GroupCalendar from './app/Views/GroupCalendar'
+import GroupMembers from './app/Views/GroupMembers'
+
 
 export default function App() {
 
@@ -41,7 +43,6 @@ export default function App() {
             headerLeft:null
           }}
         />
-        
         <Stack.Screen
           name="Profile"
           component={Profile}
@@ -210,6 +211,23 @@ export default function App() {
               fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
               fontWeight: 'bold',
               fontSize: 17,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="GroupMembers"
+          component={GroupMembers}
+          options={{
+            title: 'Participants',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+              fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
             },
           }}
         />

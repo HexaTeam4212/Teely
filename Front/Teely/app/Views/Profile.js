@@ -76,11 +76,11 @@ export default class Profile extends React.Component {
             username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
             birthDate: this.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage
         })
-        accountServices.accountUpcomingTasks(this.updateTasksList)
+        //accountServices.accountUpcomingTasks(this.updateTasksList)
     }
 
     getDataProfile = () => {
-        //accountServices.dataProfile(this.updateDataProfile)
+        accountServices.dataProfile(this.updateDataProfile)
     }
 
     imageProfile = () => {

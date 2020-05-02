@@ -16,6 +16,7 @@ export default class CreateGroup extends React.Component {
     super(props)
     this.groupName = ""
     this.description = ""
+    this.idImageGroup = 18
     this.state = {
       usernameInput: "",
       usernameList: [],
@@ -30,6 +31,11 @@ export default class CreateGroup extends React.Component {
 
   callbackFunctionDescription = (childData) => {
     this.description = childData
+  }
+
+  pickImageGroup = () => {
+    let max = 5
+    this.idImageGroup = Math.floor(Math.random() * max)
   }
 
   render() {
@@ -60,6 +66,7 @@ export default class CreateGroup extends React.Component {
             onChangeText={text => {
               this.setState({ usernameInput: text })
               this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
+              this.pickImageGroup()
               accountServices.getAccountUsernames(text, (usernameResults) => {
                 let newUsernameList = []
                 for (let i = 0; i<usernameResults.length; i++) {
@@ -105,7 +112,7 @@ export default class CreateGroup extends React.Component {
               for (let i=0; i<this.state.invitedUsers.length; i++) {
                 invitedUsersArray.push(this.state.invitedUsers[i].key)
               }
-              groupServices.createGroup(this.groupName, this.description, invitedUsersArray,
+              groupServices.createGroup(this.groupName, this.description, invitedUsersArray, this.idImageGroup,
                 () => this.props.navigation.navigate("Groups"))
             }}></CustomButton>
           </View>
