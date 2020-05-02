@@ -21,6 +21,7 @@ export default class Groups extends React.Component {
 
     this.getInvitations()
     this.getDataProfile()
+    this.getGroups()
 
   }
 
@@ -35,53 +36,12 @@ export default class Groups extends React.Component {
   }
 
   updateDataProfile = (dataProfile) => {
-    console.log("update "+ dataProfile.idImage)
     this.setState({idImageProfile : dataProfile.idImage})
-    // this.setState({ isLoading: false })
+    this.setState({ isLoading: false })
   }
 
   getDataProfile = () => {
     accountServices.dataProfile(this.updateDataProfile)
-  }
-
-
-  displayGroups() {
-    groupServices.getGroupsUser((groupIds) => {
-      this.groups = groupIds
-      console.log("hi " + this.groups)
-      console.log(this.groups.length)
-
-      if (!(this.groups.length)) {
-        return (
-          <View style={styles.noGroup_container}>
-            <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
-            <Image style={styles.image_group} source={require('../../assets/Images/noGroup.png')} />
-            <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvez créer votre propre groupe !</Text>
-          </View>
-        )
-      }
-      else {
-        //pour l'instant rien ne s'affiche c'est normal
-        // car il n'y a pas d'attribut id dans this.groups
-        return (
-          <KeyboardAwareScrollView
-            contentContainerstyle={styles.content_container}
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}>
-            <FlatList
-              data={this.groups}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) =>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.id })}>
-                  <GroupItem group={item.name} image={ImagesGroup[item.idImage]} />
-                </TouchableOpacity>}
-            />
-          </KeyboardAwareScrollView>
-        )
-      }
-    })
   }
 
   updateInvitations = (dataInvit) => {
@@ -90,6 +50,13 @@ export default class Groups extends React.Component {
 
   getInvitations() {
     accountServices.accountInvitations(this.updateInvitations)
+  }
+
+  getGroups() {
+    groupServices.getGroupsUser((groupIds) => {
+      this.groups = groupIds
+      this.setState({ isLoading: false })
+    })
   }
 
   displayInvitations() {
@@ -104,9 +71,43 @@ export default class Groups extends React.Component {
     )
   }
 
+  displayGroups() {
+    if (this.groups.length === 0) {
+      console.log("zero")
+      return (
+        <View style={styles.noGroup_container}>
+          <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
+          <Image style={styles.image_group} source={require('../../assets/Images/noGroup.png')} />
+          <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvez créer votre propre groupe !</Text>
+        </View>
+      )
+    }
+    else {
+      console.log("else")
+      console.log(JSON.stringify(this.groups))
+
+      return (
+        <KeyboardAwareScrollView
+          contentContainerstyle={styles.content_container}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          scrollEnabled={true}
+          enableAutomaticScroll={(Platform.OS === 'ios')}
+          enableOnAndroid={true}>
+          <FlatList
+            data={this.groups}
+            keyExtractor={(item) => item.groupId}
+            renderItem={({ item }) =>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.groupId })}>
+                <GroupItem group={item.group_name} image={ImagesGroup[item.idImageGroup]} />
+              </TouchableOpacity>}
+          />
+        </KeyboardAwareScrollView>
+      )
+    }
+  }
+
 
   render() {
-
     return (
       <View style={styles.main_container}>
         <ProfileIcon idImage={this.state.idImageProfile}/>
@@ -122,7 +123,7 @@ export default class Groups extends React.Component {
         <View style={styles.invit_container}>
           {this.displayInvitations()}
         </View>
-        {/* {this.displayLoading()} */}
+        {this.displayLoading()}
       </View>
     )
   }

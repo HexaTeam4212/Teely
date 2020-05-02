@@ -309,7 +309,7 @@ class AccountServices {
                 console.error(response.error)
             }
             else {
-                alert("Récupération des invitations réussie :)")
+                // alert("Récupération des invitations réussie :)")
                 //callback(respBody)
                 callback(accountInvitations)
             }

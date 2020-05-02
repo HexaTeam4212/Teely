@@ -29,6 +29,7 @@ class GroupServices {
                     console.error("Promise error : " + err)
                 })
             const respBody = await response.json()
+            // console.log("service : "+JSON.stringify(respBody))
             if (response.status != 200) {
                 httpError(response.status)
             }
