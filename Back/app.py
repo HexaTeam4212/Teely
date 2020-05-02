@@ -224,7 +224,7 @@ def group():
         code = 204
         user = PERSON.get(PERSON.Username == session['username'])
         try:
-            newGroup = GROUP(Name = content['group_name'], Description = content['description'])
+            newGroup = GROUP(Name = content['group_name'], Description = content['description'], idImage=content['idImageGroup'])
         except:
             return sendError(400, "Make sure to send all the parameters")
 
