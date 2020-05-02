@@ -1,11 +1,18 @@
 // app/Views/DatailedGroup.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, TextInput } from 'react-native'
+import { YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, FlatList, KeyboardAvoidingView } from 'react-native'
 import groupServices from '../Services/GroupServices'
 import Images from '../modules/ImageProfile'
 import ImageWithText from '../Components/ImageWithText'
 import Dialog, { SlideAnimation, DialogContent, DialogTitle, DialogFooter, DialogButton } from 'react-native-popup-dialog';
+import accountServices from '../Services/AccountServices'
+import Autocomplete from 'react-native-autocomplete-input'
+
+
+YellowBox.ignoreWarnings([
+  'componentWillReceiveProps has been renamed, and is not recommended for use'
+])
 
 export default class DetailedGroup extends React.Component {
   constructor(props) {
@@ -18,9 +25,12 @@ export default class DetailedGroup extends React.Component {
       isLoading: true,
       visibleInvitationDialog: false,
       visibleLeaveGroupDialog: false,
+      usernameInput: "",
+      usernameList: [],
+      invitedUser: []
     }
-    this.invitationInput = ""
-    this.groupId = 1 
+    this.isUsernameValid = true
+    this.groupId = 1
     //this.getGroupId() Corriger quand back OK
     this.getGroupInfos()
   }
@@ -42,11 +52,6 @@ export default class DetailedGroup extends React.Component {
   displayInvitationDialog = () => {
     return (
       <View>
-        <KeyboardAwareScrollView
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}>
         <Dialog dialogStyle={styles.dialog_container}
           visible={this.state.visibleInvitationDialog}
           onTouchOutside={() => {
@@ -54,7 +59,7 @@ export default class DetailedGroup extends React.Component {
           }}
           footer={
             <DialogFooter bordered={false} style={styles.dialog_footer} >
-              <DialogButton text="Annuler" textStyle={styles.dialog_text} style={styles.cancelButton}
+              <DialogButton text="Annuler" textStyle={styles.dialogButton_text} style={styles.cancelButton}
                 onPress={() => { this.setState({ visibleInvitationDialog: false }) }} />
               <DialogButton text="Inviter" textStyle={styles.confirmInvite_text} style={styles.confirmInviteButton}
                 onPress={this.confirmMemberInvitation} />
@@ -63,18 +68,39 @@ export default class DetailedGroup extends React.Component {
           dialogAnimation={new SlideAnimation({
             slideFrom: 'bottom',
           })}
-
         >
+
           <DialogContent style={styles.dialogContent_container}>
             <Text style={styles.dialog_text}> Nom d'utilisateur : </Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={text => { this.invitationInput = text }}
-              value={this.state.invitationInput} placeholder={'Participant à inviter'}
+            <Autocomplete
+              inputContainerStyle={styles.textInput}
+              listContainerStyle={styles.suggestionList}
+              placeholder="Participant à inviter"
+              data={this.state.usernameList}
+              defaultValue={this.state.usernameInput}
+              onChangeText={text => {
+                this.setState({ usernameInput: text })
+                this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
+                accountServices.getAccountUsernames(text, (usernameResults) => {
+                  let newUsernameList = []
+                  for (let i = 0; i < usernameResults.length; i++) {
+                    newUsernameList.push({ key: usernameResults[i] })
+                  }
+                  this.setState({ usernameList: newUsernameList })
+                })
+              }}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => {
+                  this.setState({ usernameInput: item.key })
+                  this.setState({ usernameList: [] })
+                  this.isUsernameValid = true
+                }}>
+                  <Text>{item.key}</Text>
+                </TouchableOpacity>
+              )}
             />
           </DialogContent>
         </Dialog>
-        </KeyboardAwareScrollView>
       </View>
     )
   }
@@ -83,32 +109,32 @@ export default class DetailedGroup extends React.Component {
     return (
       <View>
         <KeyboardAwareScrollView
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}>
-        <Dialog dialogStyle={styles.dialog_container}
-          visible={this.state.visibleLeaveGroupDialog}
-          onTouchOutside={() => {
-            this.setState({ visibleLeaveGroupDialog: false })
-          }}
-          footer={
-            <DialogFooter bordered={false} style={styles.dialog_footer} >
-              <DialogButton text="Annuler" textStyle={styles.dialog_text} style={styles.cancelButton}
-                onPress={() => { this.setState({ visibleLeaveGroupDialog: false }) }} />
-              <DialogButton text="Oui" textStyle={styles.dialog_text} style={styles.confirmButton}
-                onPress={this.confirmLeavingGroup} />
-            </DialogFooter>
-          }
-          dialogAnimation={new SlideAnimation({
-            slideFrom: 'bottom',
-          })}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          scrollEnabled={false}
+          enableAutomaticScroll={(Platform.OS === 'ios')}
+          enableOnAndroid={true}>
+          <Dialog dialogStyle={styles.dialog_container}
+            visible={this.state.visibleLeaveGroupDialog}
+            onTouchOutside={() => {
+              this.setState({ visibleLeaveGroupDialog: false })
+            }}
+            footer={
+              <DialogFooter bordered={false} style={styles.dialog_footer} >
+                <DialogButton text="Annuler" textStyle={styles.dialogButton_text} style={styles.cancelButton}
+                  onPress={() => { this.setState({ visibleLeaveGroupDialog: false }) }} />
+                <DialogButton text="Oui" textStyle={styles.dialogButton_text} style={styles.confirmButton}
+                  onPress={this.confirmLeavingGroup} />
+              </DialogFooter>
+            }
+            dialogAnimation={new SlideAnimation({
+              slideFrom: 'bottom',
+            })}
 
-        >
-          <DialogContent style={styles.dialogContent_container}>
-            <Text style={styles.dialog_text}> Etes-vous sûrs de vouloir quitter ce groupe ?</Text>
-          </DialogContent>
-        </Dialog>
+          >
+            <DialogContent style={styles.dialogContent_container}>
+              <Text style={styles.dialog_text}> Etes-vous sûrs de vouloir quitter ce groupe ?</Text>
+            </DialogContent>
+          </Dialog>
         </KeyboardAwareScrollView>
       </View>
     )
@@ -128,8 +154,19 @@ export default class DetailedGroup extends React.Component {
 
   confirmMemberInvitation = () => {
     console.log("participant : " + this.invitationInput)
-    this.setState({ visibleInvitationDialog: false})
-    //this.setState({ visibleInvitationDialog: false, isLoading: true })
+    if (this.state.usernameList.some(item => item.key !== this.state.usernameInput) || !this.isUsernameValid) {
+      alert("Cet utilisateur n'existe pas !")
+    }
+    else {
+      this.setState({
+        invitedUser: this.state.usernameInput, refresh: !this.state.refresh,
+        usernameInput: '', visibleInvitationDialog: false, isLoading: true
+      })
+
+      //groupServices.inviteUser(this.groupId, this.state.invitedUser)
+
+    }
+
 
   }
 
@@ -161,38 +198,38 @@ export default class DetailedGroup extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-          <View style={styles.head_container}>
-            {this.imageGroup()}
-            <Text style={styles.name_text}>{this.state.name}</Text>
-            <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
-            <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
-            <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditGroup")}>
-              <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
-            </TouchableOpacity>
-          </View>
+        <View style={styles.head_container}>
+          {this.imageGroup()}
+          <Text style={styles.name_text}>{this.state.name}</Text>
+          <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
+          <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
+          <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditGroup")}>
+            <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.arrows_container}>
-            <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar")}>
-              <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
-              <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
-              <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.buttons_container}>
-            <TouchableOpacity style={styles.leaveGroupButton} onPress={this.leaveGroup}>
-              <Text style={styles.button_text}>Quitter le groupe</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.inviteButton} onPress={this.inviteMembers}>
-              <Text style={styles.inviteButtonText}>Inviter des participants</Text>
-            </TouchableOpacity>
-          </View>
-          {this.displayLoading()}
-          {this.displayLeaveGroupDialog()}
-          {this.displayInvitationDialog()}
+        <View style={styles.arrows_container}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar")}>
+            <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
+            <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
+            <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttons_container}>
+          <TouchableOpacity style={styles.leaveGroupButton} onPress={this.leaveGroup}>
+            <Text style={styles.button_text}>Quitter le groupe</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.inviteButton} onPress={this.inviteMembers}>
+            <Text style={styles.inviteButtonText}>Inviter des participants</Text>
+          </TouchableOpacity>
+        </View>
+        {this.displayLoading()}
+        {this.displayLeaveGroupDialog()}
+        {this.displayInvitationDialog()}
       </View >
     )
   }
@@ -261,7 +298,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dialog_footer: {
-    margin: 10
+    margin: 5
   },
   groupPic: {
     marginTop: 5,
@@ -322,19 +359,25 @@ const styles = StyleSheet.create({
     color: 'white',
     alignSelf: 'center'
   },
+  dialogButton_text: {
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
+    color: 'white',
+    alignSelf: 'center'
+  },
   confirmInvite_text: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 15,
     textAlign: 'center',
     color: 'black'
   },
   textInput: {
     backgroundColor: 'white',
-    textAlign: 'center',
-    height: 50,
+    height: 40,
     width: 200,
-    borderRadius: 10,
     alignSelf: 'center',
     marginTop: 20
   },
@@ -354,16 +397,12 @@ const styles = StyleSheet.create({
     borderRadius: 35,
   },
   confirmButton: {
-    width: 50,
-    height: 60,
     margin: 5,
     padding: 5,
     borderRadius: 40,
-    backgroundColor: '#3eff3a',
+    backgroundColor: '#3bd137',
   },
   cancelButton: {
-    width: 50,
-    height: 60,
     margin: 5,
     padding: 5,
     borderRadius: 40,
@@ -379,12 +418,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 5
   },
   confirmInviteButton: {
-    width: 50,
-    height: 60,
     margin: 5,
     padding: 5,
     borderRadius: 40,
-    backgroundColor: 'white',
-  }
+    backgroundColor: 'white'
+  },
+  suggestionList: {
+    marginLeft: "15%",
+    marginRight: "15%",
+    borderWidth: 0
+  },
 
-});
+})

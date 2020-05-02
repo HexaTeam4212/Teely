@@ -42,6 +42,23 @@ export default function App() {
           }}
         />
         <Stack.Screen
+          name="DetailedGroup"
+          component={DetailedGroup}
+          options={{
+            title: 'Détails du groupe',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+              fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
           name="Profile"
           component={Profile}
           options={{
@@ -76,23 +93,7 @@ export default function App() {
             },
           }}
         />
-        <Stack.Screen
-          name="DetailedGroup"
-          component={DetailedGroup}
-          options={{
-            title: 'Détails du groupe',
-            headerStyle: {
-              backgroundColor: '#78e1db',
-            },
-            headerTruncatedBackTitle: true,
-            headerTintColor: 'white',
-            headerTitleStyle: {
-              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
-              fontWeight: 'bold',
-              fontSize: 17,fontWeight: 'bold',
-            },
-          }}
-        />
+        
         <Stack.Screen
           name="PersonalCalendar"
           component={PersonalCalendar}

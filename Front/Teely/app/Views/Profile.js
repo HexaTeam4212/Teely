@@ -17,7 +17,8 @@ export default class Profile extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            isLoading: true,
+            //isLoading: true, //a corriger quand back ok
+            isLoading: false,
             username: "",
             name: "",
             lastName: "",
@@ -78,7 +79,7 @@ export default class Profile extends React.Component {
     }
 
     getDataProfile = () => {
-        accountServices.dataProfile(this.updateDataProfile)
+        //accountServices.dataProfile(this.updateDataProfile)
     }
 
     imageProfile = () => {
