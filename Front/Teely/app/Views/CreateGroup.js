@@ -143,7 +143,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 50,
   },
   itemText: {
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontSize: 18,
+    color: 'white',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+    fontWeight: 'bold',
+    flexWrap: 'wrap',
+    textAlign: 'center',
   },
   textInput: {
     backgroundColor: 'white',

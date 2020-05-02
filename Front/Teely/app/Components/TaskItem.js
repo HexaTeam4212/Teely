@@ -4,6 +4,13 @@ import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 
 class TaskItem extends React.Component {
+
+    formatDate(dateString){
+        var date = new Date(dateString); 
+        var formattedDate= moment(date).format("DD/MM/YYYY")
+        return formattedDate
+    }
+
     render() {
         const task = this.props.task
         return (
@@ -12,7 +19,7 @@ class TaskItem extends React.Component {
                     <Text style={styles.name_text}>{task.name}</Text>
                 </View>
                 <View style={styles.date_container}>
-                    <Text style={styles.date_text}>Le {task.dueDate} à {task.startingTime}</Text>
+                    <Text style={styles.date_text}>Le {this.formatDate(task.dueDate)} à {task.startingTime}</Text>
                 </View>
             </View>
         )

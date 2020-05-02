@@ -39,6 +39,7 @@ class GroupServices {
         catch (error) {
             console.error(error)
         }
+        
     }
 
     async getGroupInfos(groupId, callback) {
@@ -79,7 +80,7 @@ class GroupServices {
     }
 
     async leaveGroup(groupId, callback) {
-        /*const token = await getToken()
+        const token = await getToken()
         const fullEndpoint = endpoint+ '/'+groupId+'/quit'
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -95,22 +96,51 @@ class GroupServices {
                     console.error("Promise error : " + err)
                 })
             const respBody = await response.json()
-            if (response.status != 200) {
+            if (response.status != 204) {
                 httpError(response.status)
-                callback(false)
-            }
-            else {
-                callback(true)
             }
         }
         catch (error) {
             console.error(error)
-        }*/
-        callback(true)
+        }
     }
 
     async inviteUser(groupId, username) {
-        
+        const token = await getToken()
+        const requestParameters = JSON.stringify({
+            username: username
+            
+        })
+        const fullEndpoint = endpoint+ '/'+groupId+'/invite'
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    },
+                    parameters: requestParameters
+                })
+                .catch(err => {
+                    console.log("Promise error : " + err)
+                })
+            const respBody = await response.json()
+            if (response.status != 200) {
+                if (response.status == 409) {
+                    alert("Cet utilisateur est déjà dans le groupe ou a déjà été invité !")
+                }
+                httpError(response.status)
+            }
+            else {
+                callback(true)
+                alert("L'invitation a bien été envoyée à "+ username)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
     }
 
     async createGroup(groupName, description, invitedUsers, callback) {
@@ -154,6 +184,49 @@ class GroupServices {
         catch (error) {
             console.error(error)
         }
+    }
+
+    async getGroupTasks(groupId, callback) {
+        const token = await getToken()
+        const fullEndpoint = endpoint+ '/'+groupId+'/task/all'
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    }
+                })
+            const respBody = await response.json()
+            console.log("response : "+respBody.tasks)
+            if (response.status != 200) {
+                alert("Erreur lors de la récupération des tâches")
+            }
+            else {
+                callback(respBody.tasks)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    getGrouptasksByDate(groupId, day) {
+        let tasksForDay = []
+        let tasks=this.getGroupTasks(groupId)
+        const arr = Object.keys(tasks);
+        for (let i = 0; i < arr.length; ++i) {
+            let task = {...tasks[arr[i]]}
+            if (task.dueDate==day) {
+                // let result = Array.isArray(tasksForDay[day]) ? tasksForDay[day] : []
+                // tasksForDay[day] = [task, ...result]
+                tasksForDay.push(task)
+            }
+        }
+        return tasksForDay      
+        
     }
 
 }

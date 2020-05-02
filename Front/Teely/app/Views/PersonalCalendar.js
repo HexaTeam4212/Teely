@@ -23,6 +23,7 @@ export default class PersonalCalendar extends React.Component {
       selectedDate: moment(new Date()).format("YYYY-MM-DD"),
       isLoading: false
     }
+    this.currentTasksLists={}
   }
 
   displayLoading() {
@@ -55,15 +56,18 @@ export default class PersonalCalendar extends React.Component {
     let end = moment(day.dateString).endOf('month')
     while (begin.isSameOrBefore(end)) {
       const currentDay = begin.format('YYYY-MM-DD')
-      let value = accountServices.tasksByDate(currentDay)
+      accountServices.accountTasks(this.updateTasksLists)
+      let value = accountServices.orderTasksByDate(currentDay, this.currentTasksLists)
       if (value.length) {
         this.tasks[currentDay] = Array.isArray(value) ? [...value] : []
       }
       begin.add(1, 'days')
     }
-    
   }
 
+  updateTasksLists = (data) => {
+    this.currentTasksLists=data
+  }
 
   renderItem = (item) => {
     return (

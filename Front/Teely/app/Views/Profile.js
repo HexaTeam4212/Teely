@@ -9,6 +9,7 @@ import TaskItem from '../Components/TaskItem'
 import LogoutButton from '../Components/LogoutButton'
 import { YellowBox } from 'react-native'
 import moment from 'moment'
+
 YellowBox.ignoreWarnings([
     'VirtualizedLists should never be nested', // TODO: Remove when fixed
 ])

@@ -234,11 +234,11 @@ class AccountServices {
 
 
 
-    accountTasks() {
-        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-30', startingTime: '11:20', endingTime: '11:40' }
-        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-30', startingTime: '15:00', endingTime: '16:00' }
-        const task3 = { id: 501, name: 'Convention de stage', description: 'remplir avenant convention de stage', dueDate: '2020-04-30', startingTime: '16:10', endingTime: '16:30' }
-        const task4 = { id: 321, name: 'Courses', description: 'Faire les courses pour la semaine', dueDate: '2020-04-29', startingTime: '13:00', endingTime: '15:00' }
+    async accountTasks(callback) {
+        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-30', startingTime: '11:20', endingTime: '11:40', taskedUsers:[] }
+        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-30', startingTime: '15:00', endingTime: '16:00', taskedUsers: ['Fatima']}
+        const task3 = { id: 501, name: 'Convention de stage', description: 'remplir avenant convention de stage', dueDate: '2020-04-30', startingTime: '16:10', endingTime: '16:30', taskedUsers:['Lucie', 'Baptiste', 'Emmy'] }
+        const task4 = { id: 321, name: 'Courses', description: 'Faire les courses pour la semaine', dueDate: '2020-04-29', startingTime: '13:00', endingTime: '15:00', taskedUsers:[] }
     
 
         let accountTasks = [task1, task2, task3, task4]
@@ -260,29 +260,25 @@ class AccountServices {
                     alert("Erreur lors de la récupération des tâches")
             }
             else {
-                callback(respBody)
+                callback(respBody.tasks)
             }
         }
         catch (error) {
             console.error(error)
         }*/
-        return accountTasks
+        callback(accountTasks)
     }
 
-    tasksByDate(day) {
+    orderTasksByDate(day, tasks) {
         let tasksForDay = []
-        let tasks=this.accountTasks()
         const arr = Object.keys(tasks);
         for (let i = 0; i < arr.length; ++i) {
             let task = {...tasks[arr[i]]}
             if (task.dueDate==day) {
-                // let result = Array.isArray(tasksForDay[day]) ? tasksForDay[day] : []
-                // tasksForDay[day] = [task, ...result]
                 tasksForDay.push(task)
             }
         }
-        return tasksForDay      
-        
+        return tasksForDay
     }
 
     async accountInvitations(callback) {
@@ -341,7 +337,7 @@ class AccountServices {
                     body: requestBody
                 })
                 .catch(err => {
-                    console.error("Promise error : " + err)
+                    console.log("Promise error : " + err)
                 })
             if (response.status != 201) {
                 alert("Une erreur s'est produite")

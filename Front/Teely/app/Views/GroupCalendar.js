@@ -4,6 +4,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
+import groupServices from '../Services/GroupServices'
 import accountServices from '../Services/AccountServices'
 
 
@@ -18,18 +19,26 @@ LocaleConfig.defaultLocale = 'fr';
 export default class GroupCalendar extends React.Component {
   constructor(props) {
     super(props)
+    this.groupId=2
     this.tasks = {}
     this.state = {
       selectedDate: moment(new Date()).format("YYYY-MM-DD"),
       isLoading: false
     }
+    this.currentTasksLists={}
+    //this.getGroupId() //Corriger quand back OK
+  }
+
+  getGroupId() {
+    let params = this.props.route.params
+    this.groupId = params.idGroup
   }
 
   displayLoading() {
     if (this.state.isLoading) {
       return (
         <View style={styles.loading_container}>
-          <ActivityIndicator color='#ffb4e2' size='large' />
+          <ActivityIndicator color='#ffb4e2' size='large'/>
         </View>
       )
     }
@@ -55,13 +64,19 @@ export default class GroupCalendar extends React.Component {
     let end = moment(day.dateString).endOf('month')
     while (begin.isSameOrBefore(end)) {
       const currentDay = begin.format('YYYY-MM-DD')
-      let value = accountServices.tasksByDate(currentDay) //Change for group services when back ok
+      accountServices.accountTasks(this.updateTasksLists) //change for groupServices when back OK
+      let value = accountServices.orderTasksByDate(currentDay, this.currentTasksLists)
+      //let value= groupServices.tasksByDate(currentDay)
       if (value.length) {
         this.tasks[currentDay] = Array.isArray(value) ? [...value] : []
       }
       begin.add(1, 'days')
     }
     
+  }
+
+  updateTasksLists = (data) => {
+    this.currentTasksLists=data
   }
 
 
@@ -72,8 +87,28 @@ export default class GroupCalendar extends React.Component {
         <View><Text style={styles.name_text}>{item.name}</Text></View>
         <View><Text style={styles.description_text}>{item.description}</Text></View>
         <View><Text style={styles.time_text}>{item.endingTime}</Text></View>
-      </View>
+         {this.renderTaskedUsers(item.taskedUsers)}
+        </View>
+
     );
+  }
+
+  renderTaskedUsers = (usersList) => {
+    if (usersList.length) {
+      return (
+        <View style={styles.taskedUsers_container}>
+          <Text style={styles.taskedUser_text}>Par : {usersList.toString()} </Text>
+        </View>
+      );
+    } 
+    else {
+      return (
+        <View style={styles.taskedUsers_container}>
+          <Text style={styles.taskedUser_text}>Non assignée </Text>
+          
+        </View>
+      );
+    }  
   }
 
   renderEmptyData = () => {
@@ -162,6 +197,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
   },
+  taskedUsers_container: {
+    marginTop: 5,
+    borderColor: '#ffdb58',
+    borderTopWidth : 2
+  },
   emptyTask_text: {
     fontStyle: 'italic',
     fontWeight: 'bold',
@@ -194,6 +234,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'left',
     color: 'grey',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+  },
+  taskedUser_text: {
+    fontSize: 17,
+    textAlign: 'left',
+    color: '#2d4150',
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
   }
 

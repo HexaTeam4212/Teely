@@ -31,13 +31,16 @@ export default class DetailedGroup extends React.Component {
     }
     this.isUsernameValid = true
     this.groupId = 1
-    //this.getGroupId() Corriger quand back OK
+    //this.getGroupId() //Corriger quand back OK
     this.getGroupInfos()
   }
 
   getGroupId() {
-    let params = this.props.navigation.state.params
+    console.log(this.props)
+    console.log("get group Id")
+    let params = this.props.route.params
     this.groupId = params.idGroup
+    console.log(this.groupId)
   }
   displayLoading() {
     if (this.state.isLoading) {
@@ -209,13 +212,13 @@ export default class DetailedGroup extends React.Component {
         </View>
 
         <View style={styles.arrows_container}>
-          <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar")}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar", {idGroup : this.groupId})}>
             <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
           </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
+          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}*/>
             <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
           </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
+          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupMembers")}*/>
             <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
           </TouchableOpacity>
         </View>
