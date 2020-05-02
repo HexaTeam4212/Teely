@@ -214,9 +214,9 @@ def account_upcomming_tasks_for_user():
 # Group endpoints
 
 @app.route('/group', methods=['GET', 'POST'])
+@authenticate
 def group():
     reponse_body = {}
-
     if 'username' not in session:
         return sendError("User is not logged in", 401)
     elif request.method == 'POST':
@@ -248,8 +248,8 @@ def group():
         except:
             return sendError(404, "Groups not found")
         res = ()
-        for groupId in rep:
-            res += str(groupId) ,
+        for participate_in in rep:
+            res += str(participate_in.Group_id) ,
         response_body = {"groups" : res }
         return json.dumps(response_body),code
 '''
@@ -272,39 +272,45 @@ def get_group(id_group):
 
 @app.route('/group/<id_group>/invite', methods=['DELETE'])
 def delete_invite(id_group):
-    content = request.get_json()
     reponse_body = {}
-    code = 204
-    userId = 2
-    rep = INVITATION.select().where( (INVITATION.Group_id == id_group) & (INVITATION.Recipient_id == userId) )
-    print(rep)
-    for invitation in rep :
-        print(invitation)
-        INVITATION.delete().where(INVITATION.invitationId == invitation).execute()
-    return jsonify(reponse_body), code
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
+        user = PERSON.get(PERSON.Username == session['username'])
+        code = 204
+        rep = INVITATION.select().where( (INVITATION.Group_id == id_group) & (INVITATION.Recipient_id == user.personId) )
+        for invitation in rep :
+            INVITATION.delete().where(INVITATION.invitationId == invitation).execute()
+        return jsonify(reponse_body), code
 
 
 @app.route('/group/<id_group>/invite', methods=['GET'])
+@authenticate
 def create_invite(id_group):
     reponse_body = {}
-    code = 204
-    userId = 1
-    rep = PERSON.select().where(PERSON.Username == request.args.get('username'))
-    for user in rep:
-        resultat = INVITATION.select().where( (INVITATION.Recipient_id == user.personId) & (INVITATION.Group_id == id_group) )
-        for invitation in resultat :
-            code = 409
-            reponse_body = {
-                "error": "Conflict: The request could not be completed due to conflict. User may have already been invited."
-            }
-        resultat = PARTICIPATE_IN.select().where( (PARTICIPATE_IN.User_id == user.personId) & (PARTICIPATE_IN.Group_id == id_group) )
-        for participant in resultat :
-            code = 409
-            reponse_body = {
-                "error": "Conflict: The request could not be completed due to conflict. User is already in the group."
-            }
-        INVITATION.insert(Sender_id=userId ,Recipient_id=user.personId ,Group_id=id_group).execute()
-    return jsonify(reponse_body), code
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
+        user = PERSON.get(PERSON.Username == session['username'])
+        code = 204
+        rep = PERSON.select().where(PERSON.Username == request.args.get('username'))
+        for guest in rep:
+            resultat = INVITATION.select().where( (INVITATION.Recipient_id == guest.personId) & (INVITATION.Group_id == id_group) )
+            for invitation in resultat :
+                code = 409
+                reponse_body = {
+                    "error": "Conflict: The request could not be completed due to conflict. User may have already been invited."
+                }
+                return jsonify(reponse_body), code            
+            resultat = PARTICIPATE_IN.select().where( (PARTICIPATE_IN.User_id == guest.personId) & (PARTICIPATE_IN.Group_id == id_group) )
+            for participant in resultat :
+                code = 409
+                reponse_body = {
+                    "error": "Conflict: The request could not be completed due to conflict. User is already in the group."
+                }
+                return jsonify(reponse_body), code
+            INVITATION.insert(Sender_id=user.personId ,Recipient_id=guest.personId ,Group_id=id_group).execute()
+        return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/accept', methods=['GET'])
 def accept_invite(id_group):
@@ -317,12 +323,16 @@ def accept_invite(id_group):
     return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/quit', methods=['GET'])
+@authenticate
 def quit_group(id_group):
     reponse_body = {}
     code = 204
-    userId = 1
-    PARTICIPATE_IN.delete().where( (PARTICIPATE_IN.User_id == userId) & (PARTICIPATE_IN.Group_id == id_group) ).execute()
-    return jsonify(reponse_body), code
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
+        user = PERSON.get(PERSON.Username == session['username'])
+        PARTICIPATE_IN.delete().where( (PARTICIPATE_IN.User_id == user.personId) & (PARTICIPATE_IN.Group_id == id_group) ).execute()
+        return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/task/all', methods=['GET'])
 def group_task_all(id_group):
