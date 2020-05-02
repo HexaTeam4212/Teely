@@ -241,34 +241,61 @@ def group():
         PARTICIPATE_IN.insert(User_id=user.personId,Group_id=newGroup.groupId).execute()
         return jsonify(reponse_body), code
     elif request.method == 'GET':
-        code=200
         user = PERSON.get(PERSON.Username == session['username'])
         try:
             rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
         except:
             return sendError(404, "Groups not found")
-        res = ()
+
+        groupsData = []
+
         for participate_in in rep:
-            res += str(participate_in.Group_id) ,
-        response_body = {"groups" : res }
-        return json.dumps(response_body),code
-'''
+            data = {
+                    "groupId":participate_in.Group_id,
+                    "group_name": participate_in.Group.Name,
+                    "idImageGroup": participate_in.Group.idImage
+                }
+            groupsData.append(data)
+        reponse_body = {
+            "groups" : groupsData
+        }
+        return jsonify(reponse_body), 200
+
 @app.route('/group/<id_group>', methods=['GET'])
+@authenticate
 def get_group(id_group):
+    code= 200
     group = GROUP.get(GROUP.groupId == id_group)
     rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.Group_id == id_group)
     res = ()
-    for userId in rep:
-        member = PERSON.get(PERSON.personId == userId)
-        res += str(member.username) ,
-    reponse_body = {
+    for participate_in in rep:
+        member = PERSON.get(PERSON.personId == participate_in.User_id)
+        res += str(member.Username) ,
+    response_body = {
         "id": group.groupId,
         "group_name": group.Name,
         "description": group.Description,
-        "members": res
+        "members": res,
+        "idImageGroup": group.idImage
     }
     return json.dumps(response_body),code
-'''
+
+@app.route('/group/<id_group>/update',  methods=['PUT'])
+@authenticate
+def group_update(id_group):
+    content = request.get_json()
+    code = 204
+    reponse_body = {}
+
+    try:
+        group = GROUP.get(GROUP.groupId == id_group)
+        group.Name = content["group_name"]
+        group.Description = content["description"]
+        group.save()
+    except:
+        return sendError(400, "Bad Request: Make sure to send all parameters !")
+
+    return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/invite', methods=['DELETE'])
 def delete_invite(id_group):
