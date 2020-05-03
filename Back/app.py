@@ -78,15 +78,25 @@ def account_update():
 
     try:
         user = PERSON.get(PERSON.Username == session['username'])
-        user.Username = content["username"]
-        user.Email = content["email"]
-        user.Password = content["password"]
-        user.LastName = content["lastName"]
-        user.Name = content["name"]
-        user.BirthDate = content["birthdate"]
-        if "bio" in content:
-            user.Bio = content["bio"]
-        user.save()
+
+        if user.Password == content["current_password"]:
+            if "username" in content:
+                user.Username = content["username"]
+            if "email" in content:
+                user.Email = content["email"]
+            if "password" in content:
+                user.Password = content["password"]
+            if "lastName" in content:
+                user.LastName = content["lastName"]
+            if "name" in content:
+                user.Name = content["name"]
+            if "birthdate" in content:
+                user.BirthDate = content["birthdate"]
+            if "bio" in content:
+                user.Bio = content["bio"]
+            user.save()
+        else:
+            return sendError(403, "Password mismatch, you are not allowed to modify the profil !")
     except:
         return sendError(400, "Bad Request: Make sure to send all parameters !")
 
