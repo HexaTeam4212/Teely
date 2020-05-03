@@ -187,16 +187,17 @@ def account_list():
 @authenticate
 def account_all_tasks_for_user():
 
-    tasks_rep = TASK.select().where(TASK.TaskUser.Username == session["username"])
+    user = PERSON.get(PERSON.Username == session["username"])
+    tasks_rep = TASK.select().where(TASK.TaskUser == user)
     tasks_list = []
 
     for task in tasks_rep:
         data = {
             "name": task.Name,
             "description": task.Description,
-            "taskedUser": task.TaskUser,
-            "dueDate": task.Date,
-            "duration": task.Duration,
+            "taskUser": task.TaskUser.Username,
+            "datetimeStart": task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel
         }
@@ -454,27 +455,28 @@ def group_task_id(id_group, id_task):
 @app.route('/group/<id_group>/task', methods=['POST'])
 def group_task(id_group):
     content = request.get_json()
-    reponse_body = {}
-    ''' verification que le groupe existe ?'''
-    try :
-        newTask = TASK(TaskUser=content['taskUser'], Description = content['description'], Frequency=content['frequency'],Group=id_group, Date= content['date'], PriorityLevel=content['priorityLevel'],Duration = content['duration'],StartingTime = content['startingTime'])
-    except:
-        return sendError(400, "Make sure to send all the parameters")
+    
     try:
-       newTask.save()
+        userTask = PERSON.get(PERSON.Username == content['taskUser'])
+        group = GROUP.get(GROUP.groupId == id_group)
     except:
-        return sendError(409, "This task couldn't be add in the database !")
+        return sendError(404, "User or group not found !")
 
     try :
-        newDependance = DEPENDANCE(TaskConcerned=newTask.taskId, TaskDependancies = content['dependancies'])
+        newTask = TASK(TaskUser=userTask, Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"])
+        newTask.save()
     except:
         return sendError(400, "Make sure to send all the parameters")
-    try:
-       newDependance.save()
-    except:
-        return sendError(409, "This task couldn't be add in the database !")
 
-    return jsonify(reponse_body), 200
+    try :
+        for dep in content["dependencies"]:
+            taskDep = TASK.get(TASK.taskId == dep)
+            newDependance = DEPENDANCE(TaskConcerned = newTask, TaskDependency = taskDep)
+            newDependance.save()
+    except:
+        return sendError(400, "Fail to add dependencies. Make sure to send the dependencies field with correct task value !")
+
+    return jsonify({}), 200
 
 
 @app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])

@@ -41,8 +41,8 @@ class TASK(BaseModel):
 
 class DEPENDANCE(BaseModel):
     DependanceId = AutoField(primary_key = True)
-    TaskConcerned = ForeignKeyField(TASK)
-    TaskDependancies = ForeignKeyField(TASK, backref='+', null = True)
+    TaskConcerned = ForeignKeyField(TASK, backref='+')
+    TaskDependency = ForeignKeyField(TASK, backref='+')
 
 class INVITATION(BaseModel):
 	invitationId = AutoField(primary_key = True)
