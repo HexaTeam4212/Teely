@@ -26,7 +26,6 @@ export default class DetailedGroup extends React.Component {
       idImageGroup: 18,
       members: [],
       isLoading: true,
-      visibleInvitationDialog: false,
       visibleLeaveGroupDialog: false,
       usernameInput: "",
       usernameList: [],
@@ -52,62 +51,6 @@ export default class DetailedGroup extends React.Component {
         </View>
       )
     }
-  }
-
-  displayInvitationDialog = () => {
-    return (
-      <View>
-        <Dialog dialogStyle={styles.dialog_container}
-          visible={this.state.visibleInvitationDialog}
-          onTouchOutside={() => {
-            this.setState({ visibleInvitationDialog: false })
-          }}
-          footer={
-            <DialogFooter bordered={false} style={styles.dialog_footer} >
-              <DialogButton text="Annuler" textStyle={styles.dialogButton_text} style={styles.cancelButton}
-                onPress={() => { this.setState({ visibleInvitationDialog: false }) }} />
-              <DialogButton text="Inviter" textStyle={styles.confirmInvite_text} style={styles.confirmInviteButton}
-                onPress={this.confirmMemberInvitation} />
-            </DialogFooter>
-          }
-          dialogAnimation={new SlideAnimation({
-            slideFrom: 'bottom',
-          })}
-        >
-
-          <DialogContent style={styles.dialogContent_container}>
-            <Text style={styles.dialog_text}> Nom d'utilisateur : </Text>
-            <Autocomplete
-              inputContainerStyle={styles.textInput}
-              listContainerStyle={styles.suggestionList}
-              placeholder="Participant à inviter"
-              data={this.state.usernameList}
-              defaultValue={this.state.usernameInput}
-              onChangeText={text => {
-                this.setState({ usernameInput: text })
-                this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
-                accountServices.getAccountUsernames(text, (usernameResults) => {
-                  let newUsernameList = []
-                  for (let i = 0; i < usernameResults.length; i++) {
-                    newUsernameList.push({ key: usernameResults[i] })
-                  }
-                  this.setState({ usernameList: newUsernameList })
-                })
-              }}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => {
-                  this.setState({ usernameInput: item.key })
-                  this.setState({ usernameList: [] })
-                  this.isUsernameValid = true
-                }}>
-                  <Text>{item.key}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </DialogContent>
-        </Dialog>
-      </View>
-    )
   }
 
   displayLeaveGroupDialog = () => {
@@ -157,23 +100,6 @@ export default class DetailedGroup extends React.Component {
     groupServices.leaveGroup(this.groupId, this.redirect)
   }
 
-  confirmMemberInvitation = () => {
-    console.log("participant : " + this.invitationInput)
-    if (this.state.usernameList.some(item => item.key !== this.state.usernameInput) || !this.isUsernameValid) {
-      alert("Cet utilisateur n'existe pas !")
-    }
-    else {
-      this.setState({
-        invitedUser: this.state.usernameInput, refresh: !this.state.refresh,
-        usernameInput: '', visibleInvitationDialog: false, isLoading: true
-      })
-
-      groupServices.inviteUser(this.groupId, this.state.invitedUser)
-
-    }
-
-
-  }
 
   updateGroupInfos = (data) => {
     this.setState({
@@ -190,9 +116,6 @@ export default class DetailedGroup extends React.Component {
     this.setState({ visibleLeaveGroupDialog: true })
   }
 
-  inviteMembers = () => {
-    this.setState({ visibleInvitationDialog: true })
-  }
 
   imageGroup = () => {
     return (
@@ -252,7 +175,6 @@ export default class DetailedGroup extends React.Component {
         </View>
         {this.displayLoading()}
         {this.displayLeaveGroupDialog()}
-        {this.displayInvitationDialog()}
       </View >
     )
   }
@@ -310,13 +232,13 @@ const styles = StyleSheet.create({
   dialog_container: {
     backgroundColor: '#ffb4e2',
     borderColor: '#78e1db',
-    borderWidth: 4,
+    borderWidth: 3,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
   },
   dialogContent_container: {
-    margin: 10,
+    margin: 20,
     flexDirection: 'column',
     justifyContent: 'center',
   },
@@ -376,7 +298,7 @@ const styles = StyleSheet.create({
   },
   dialog_text: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
     fontSize: 20,
     textAlign: 'center',
     color: 'white',
@@ -389,13 +311,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     alignSelf: 'center'
-  },
-  confirmInvite_text: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
-    fontWeight: 'bold',
-    fontSize: 15,
-    textAlign: 'center',
-    color: 'black'
   },
   textInput: {
     backgroundColor: 'white',
@@ -439,12 +354,6 @@ const styles = StyleSheet.create({
     borderColor: '#737373',
     borderRightWidth: 3,
     borderBottomWidth: 5
-  },
-  confirmInviteButton: {
-    margin: 5,
-    padding: 5,
-    borderRadius: 40,
-    backgroundColor: 'white'
   },
   suggestionList: {
     borderWidth: 0
