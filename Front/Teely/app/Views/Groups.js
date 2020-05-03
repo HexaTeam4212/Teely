@@ -73,7 +73,6 @@ export default class Groups extends React.Component {
 
   displayGroups() {
     if (this.groups.length === 0) {
-      console.log("zero")
       return (
         <View style={styles.noGroup_container}>
           <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
@@ -83,9 +82,6 @@ export default class Groups extends React.Component {
       )
     }
     else {
-      console.log("else")
-      console.log(JSON.stringify(this.groups))
-
       return (
         <KeyboardAwareScrollView
           contentContainerstyle={styles.content_container}
@@ -95,7 +91,7 @@ export default class Groups extends React.Component {
           enableOnAndroid={true}>
           <FlatList
             data={this.groups}
-            keyExtractor={(item) => item.groupId}
+            keyExtractor={(item) => item.groupId.toString()}
             renderItem={({ item }) =>
               <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.groupId })}>
                 <GroupItem group={item.group_name} image={ImagesGroup[item.idImageGroup]} />
@@ -108,6 +104,7 @@ export default class Groups extends React.Component {
 
 
   render() {
+    console.log(this.props)
     return (
       <View style={styles.main_container}>
         <ProfileIcon idImage={this.state.idImageProfile}/>

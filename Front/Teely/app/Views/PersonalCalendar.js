@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
 import accountServices from '../Services/AccountServices'
-
+import generalServices from '../Services/GeneralServices'
 
 LocaleConfig.locales['fr'] = {
   monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
@@ -21,9 +21,16 @@ export default class PersonalCalendar extends React.Component {
     this.tasks = {}
     this.state = {
       selectedDate: moment(new Date()).format("YYYY-MM-DD"),
-      isLoading: false
+      isLoading: true,
+      currentTasksLists: {}
     }
-    this.currentTasksLists={}
+
+    this.getAllTasks()
+    
+  }
+
+  getAllTasks() {
+    accountServices.accountAllTasks(this.updateTasksLists)
   }
 
   displayLoading() {
@@ -36,8 +43,6 @@ export default class PersonalCalendar extends React.Component {
     }
   }
 
-
-
   renderKnob = () => {
     return (
       <View style={{ flex: 1, top: Platform.OS == 'ios' ? null : 5, }}>
@@ -48,16 +53,15 @@ export default class PersonalCalendar extends React.Component {
     );
   }
 
-  loadItems = (day) => {
-    this.setState({ selectedDate: day })
+  loadItems = (day) =>{
+    this.setState({selectedDate: day })
     if (!day)
       return;
     let begin = moment(day.dateString).startOf('month')
     let end = moment(day.dateString).endOf('month')
     while (begin.isSameOrBefore(end)) {
       const currentDay = begin.format('YYYY-MM-DD')
-      accountServices.accountTasks(this.updateTasksLists)
-      let value = accountServices.orderTasksByDate(currentDay, this.currentTasksLists)
+      let value = generalServices.orderTasksByDate(currentDay, this.state.currentTasksLists)
       if (value.length) {
         this.tasks[currentDay] = Array.isArray(value) ? [...value] : []
       }
@@ -66,16 +70,17 @@ export default class PersonalCalendar extends React.Component {
   }
 
   updateTasksLists = (data) => {
-    this.currentTasksLists=data
+    this.setState({currentTasksLists: data, isLoading: false})
+    this.loadItems(this.state.selectedDate)
   }
 
   renderItem = (item) => {
     return (
       <View style={styles.task_container}>
-        <View><Text style={styles.time_text}>{item.startingTime}</Text></View>
+        <View><Text style={styles.time_text}> {generalServices.formatTime(item.datetimeStart)}</Text></View>
         <View><Text style={styles.name_text}>{item.name}</Text></View>
         <View><Text style={styles.description_text}>{item.description}</Text></View>
-        <View><Text style={styles.time_text}>{item.endingTime}</Text></View>
+        <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
       </View>
     );
   }
@@ -97,11 +102,10 @@ export default class PersonalCalendar extends React.Component {
         <Agenda
           items={this.tasks}
           loadItemsForMonth={this.loadItems}
-          selected={this.state.currentDate}
+          selected={this.state.selectedDate}
           pastScrollRange={50}
           futureScrollRange={50}
           renderKnob={this.renderKnob}
-          // Specify how each item should be rendered in agenda
           renderItem={this.renderItem}
           renderEmptyData={this.renderEmptyData}
           hideKnob={false}
@@ -135,6 +139,7 @@ export default class PersonalCalendar extends React.Component {
           }}
           style={styles.content_container}
         />
+        {this.displayLoading()}
       </View>
     )
   }
@@ -166,6 +171,15 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
   },
+  loading_container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 100,
+    alignItems: 'center',
+    justifyContent: 'center'
+},
   emptyTask_text: {
     fontStyle: 'italic',
     fontWeight: 'bold',

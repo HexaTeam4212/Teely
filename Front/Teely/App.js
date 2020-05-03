@@ -16,6 +16,7 @@ import CreateGroup from './app/Views/CreateGroup'
 import EditGroup from './app/Views/EditGroup'
 import GroupCalendar from './app/Views/GroupCalendar'
 import GroupMembers from './app/Views/GroupMembers'
+import InviteMembers from './app/Views/InviteMembers'
 
 
 export default function App() {
@@ -221,6 +222,23 @@ export default function App() {
             title: 'Participants',
             headerStyle: {
               backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+              fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="InviteMembers"
+          component={InviteMembers}
+          options={{
+            title: 'Inviter des membres',
+            headerStyle: {
+              backgroundColor: '#ffb4e2',
             },
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',

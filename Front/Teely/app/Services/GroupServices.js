@@ -7,13 +7,6 @@ const endpoint = "/group"
 class GroupServices {
     
     async getGroupsUser(callback) {
-
-        // const group1 = { id: 1, name: 'Le meilleur groupe de travail', idImage: '0' }
-        // const group2 = { id: 2, name: 'En famille !', idImage: '1' }
-        // const group3 = { id: 3, name: 'Vacaciones', idImage: '2'}
-        // const group4 = { id: 4, name: 'Les poteaux', idImage: '3' }
-    
-        // let accountGroups = [group1, group2, group3, group4]
         const token = await getToken()
         try {
             const response = await fetch(backendURL + endpoint,
@@ -44,14 +37,7 @@ class GroupServices {
     }
 
     async getGroupInfos(groupId, callback) {
-        const name = 'Democrateam'
-        const idImageGroup = 5
-        const description = "La meilleure équipe projet"
-        const  members = [ 'FatimaW', 'Louis', 'AndreaC', 'Shuyao', 'Lucie', 'Emmy', 'Baptiste' ]
-
-
-        let groupInfo = await {id: groupId, group_name: name, idImageGroup: idImageGroup, description: description, members: members}
-        /*const token = await getToken()
+        const token = await getToken()
         const fullEndpoint = endpoint+ '/'+groupId
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -76,8 +62,7 @@ class GroupServices {
         }
         catch (error) {
             console.error(error)
-        }*/
-        callback(groupInfo)
+        }
     }
 
     async leaveGroup(groupId, callback) {
@@ -96,9 +81,11 @@ class GroupServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
-            const respBody = await response.json()
             if (response.status != 204) {
                 httpError(response.status)
+                callback(false)
+            }else {
+                callback(true)
             }
         }
         catch (error) {
@@ -108,7 +95,7 @@ class GroupServices {
 
     async inviteUser(groupId, username) {
         const token = await getToken()
-        const fullEndpoint = endpoint+ '/'+groupId+'/invite'
+        const fullEndpoint = endpoint+ '/'+groupId+'/invite?username=' + username
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -118,21 +105,18 @@ class GroupServices {
                         'Content-Type': 'application/json',
                         Authorization: token
                     },
-                    parameters: username
                 })
                 .catch(err => {
                     console.log("Promise error : " + err)
                 })
-            const respBody = await response.json()
             if (response.status != 200) {
                 if (response.status == 409) {
-                    alert("Cet utilisateur est déjà dans le groupe ou a déjà été invité !")
+                    alert(username +" est déjà dans le groupe ou a déjà été invité !")
                 }
                 httpError(response.status)
             }
             else {
                 callback(true)
-                alert("L'invitation a bien été envoyée à "+ username)
             }
         }
         catch (error) {

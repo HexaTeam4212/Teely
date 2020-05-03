@@ -2,14 +2,9 @@
 
 import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
+import generalServices from '../Services/GeneralServices'
 
 class TaskItem extends React.Component {
-
-    formatDate(dateString){
-        var date = new Date(dateString); 
-        var formattedDate= moment(date).format("DD/MM/YYYY")
-        return formattedDate
-    }
 
     render() {
         const task = this.props.task
@@ -19,7 +14,7 @@ class TaskItem extends React.Component {
                     <Text style={styles.name_text}>{task.name}</Text>
                 </View>
                 <View style={styles.date_container}>
-                    <Text style={styles.date_text}>Le {this.formatDate(task.dueDate)} à {task.startingTime}</Text>
+                    <Text style={styles.date_text}>Le {generalServices.formatDate(task.datetimeStart)} à {generalServices.formatTime(task.datetimeStart)} </Text>
                 </View>
             </View>
         )
@@ -47,7 +42,7 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline'
     },
     date_text: {
-        fontSize: 14,
+        fontSize: 16,
         textAlign: 'right',
         color: 'white',
         fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',

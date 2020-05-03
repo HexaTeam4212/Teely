@@ -33,19 +33,17 @@ export default class DetailedGroup extends React.Component {
       invitedUser: []
     }
     this.isUsernameValid = true
-    this.groupId = 1
-    //this.getGroupId() //Corriger quand back OK
-    //this.getDataProfile()
+    this.groupId = ""
+    this.getGroupId() 
+    this.getDataProfile()
     this.getGroupInfos()
   }
 
   getGroupId() {
-    console.log(this.props)
-    console.log("get group Id")
     let params = this.props.route.params
     this.groupId = params.idGroup
-    console.log(this.groupId)
   }
+
   displayLoading() {
     if (this.state.isLoading) {
       return (
@@ -170,7 +168,7 @@ export default class DetailedGroup extends React.Component {
         usernameInput: '', visibleInvitationDialog: false, isLoading: true
       })
 
-      //groupServices.inviteUser(this.groupId, this.state.invitedUser)
+      groupServices.inviteUser(this.groupId, this.state.invitedUser)
 
     }
 
@@ -203,7 +201,7 @@ export default class DetailedGroup extends React.Component {
   }
 
   updateDataProfile = (dataProfile) => {
-    this.idImageProfile = dataProfile.idImage
+    this.setState({idImageProfile: dataProfile.idImage})
   }
 
   getDataProfile = () => {
@@ -248,7 +246,7 @@ export default class DetailedGroup extends React.Component {
           <TouchableOpacity style={styles.leaveGroupButton} onPress={this.leaveGroup}>
             <Text style={styles.button_text}>Quitter le groupe</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.inviteButton} onPress={this.inviteMembers}>
+          <TouchableOpacity style={styles.inviteButton} onPress={() => {this.props.navigation.navigate("InviteMembers", { idGroup: this.groupId})}}>
             <Text style={styles.inviteButtonText}>Inviter des participants</Text>
           </TouchableOpacity>
         </View>
@@ -449,8 +447,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   suggestionList: {
-    marginLeft: "15%",
-    marginRight: "15%",
     borderWidth: 0
   },
 

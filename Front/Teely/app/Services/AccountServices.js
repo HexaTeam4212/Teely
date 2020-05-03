@@ -1,7 +1,8 @@
-//app/Services/SignUpService.js
+//app/Services/AccountServices.js
 import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
 import { storeToken, getToken, removeToken } from '../modules/TokenStorage.js'
+import generalServices from '../Services/GeneralServices'
 
 const endpoint = "/account"
 
@@ -177,9 +178,9 @@ class AccountServices {
     }
 
     async accountUpcomingTasks(callback) {
-
         const username = await getToken()
-        const fullEndpoint = endpoint + "task/upcomming"
+        const fullEndpoint = endpoint + "/task/upcomming"
+        console.log("full url "+ backendURL + fullEndpoint)
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -204,10 +205,10 @@ class AccountServices {
         }
     }
 
-    async accountAllTasks() {
+    async accountAllTasks(callback) {
 
         const username = await getToken()
-        const fullEndpoint = endpoint + "task/all"
+        const fullEndpoint = endpoint + "/task/all"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -219,7 +220,7 @@ class AccountServices {
                     }
                 })
             const respBody = await response.json()
-            console.log(respBody.tasks)
+            //console.log(respBody.tasks)
             if (response.status != 200) {
                 alert("Erreur lors de la récupération des tâches")
             }
@@ -269,17 +270,6 @@ class AccountServices {
         callback(accountTasks)
     }
 
-    orderTasksByDate(day, tasks) {
-        let tasksForDay = []
-        const arr = Object.keys(tasks);
-        for (let i = 0; i < arr.length; ++i) {
-            let task = {...tasks[arr[i]]}
-            if (task.dueDate==day) {
-                tasksForDay.push(task)
-            }
-        }
-        return tasksForDay
-    }
 
     async accountInvitations(callback) {
 

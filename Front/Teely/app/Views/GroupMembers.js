@@ -19,16 +19,10 @@ export default class DetailedGroup extends React.Component {
             idImageGroup: 18,
             members: [],
             isLoading: true,
-            visibleInvitationDialog: false,
-            visibleLeaveGroupDialog: false,
-            usernameInput: "",
-            usernameList: [],
-            invitedUser: []
         }
-        this.isUsernameValid = true
-        this.groupId = 1
-        //this.getGroupId() //Corriger quand back OK
-        //this.getDataProfile() //Corriger quand back OK
+        this.groupId = ""
+        this.getGroupId() 
+        this.getDataProfile() 
         this.getGroupInfos()
     }
 
@@ -43,11 +37,8 @@ export default class DetailedGroup extends React.Component {
     }
 
     getGroupId() {
-        console.log(this.props)
-        console.log("get group Id")
         let params = this.props.route.params
         this.groupId = params.idGroup
-        console.log(this.groupId)
     }
 
     updateGroupInfos = (data) => {
@@ -68,7 +59,7 @@ export default class DetailedGroup extends React.Component {
     }
 
     updateDataProfile = (dataProfile) => {
-        this.idImageProfile = dataProfile.idImage
+        this.setState({idImageProfile: dataProfile.idImage})
     }
 
     getDataProfile = () => {
@@ -79,7 +70,6 @@ export default class DetailedGroup extends React.Component {
         return (
             <View style={styles.main_container}>
                 <ProfileIcon idImage={this.state.idImageProfile}/>
-
                 <View >
                     <KeyboardAwareScrollView
                         contentContainerstyle={styles.content_container}

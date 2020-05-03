@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
 import groupServices from '../Services/GroupServices'
-import accountServices from '../Services/AccountServices'
+import generalServices from '../Services/GeneralServices'
 
 
 LocaleConfig.locales['fr'] = {
@@ -19,14 +19,19 @@ LocaleConfig.defaultLocale = 'fr';
 export default class GroupCalendar extends React.Component {
   constructor(props) {
     super(props)
-    this.groupId=2
+    this.groupId=""
     this.tasks = {}
     this.state = {
       selectedDate: moment(new Date()).format("YYYY-MM-DD"),
-      isLoading: false
+      isLoading: true,
+      currentTasksLists: {}
     }
-    this.currentTasksLists={}
-    //this.getGroupId() //Corriger quand back OK
+    this.getGroupId() 
+    this.getAllTasks()
+  }
+
+  getAllTasks() {
+    groupServices.getGroupTasks(this.groupId,this.updateTasksLists)
   }
 
   getGroupId() {
@@ -57,16 +62,14 @@ export default class GroupCalendar extends React.Component {
   }
 
   loadItems = (day) => {
-    this.setState({ selectedDate: day })
+    this.setState({selectedDate: day })
     if (!day)
       return;
     let begin = moment(day.dateString).startOf('month')
     let end = moment(day.dateString).endOf('month')
     while (begin.isSameOrBefore(end)) {
       const currentDay = begin.format('YYYY-MM-DD')
-      accountServices.accountTasks(this.updateTasksLists) //change for groupServices when back OK
-      let value = accountServices.orderTasksByDate(currentDay, this.currentTasksLists)
-      //let value= groupServices.tasksByDate(currentDay)
+      let value = generalServices.orderTasksByDate(currentDay, this.state.currentTasksLists)
       if (value.length) {
         this.tasks[currentDay] = Array.isArray(value) ? [...value] : []
       }
@@ -76,18 +79,19 @@ export default class GroupCalendar extends React.Component {
   }
 
   updateTasksLists = (data) => {
-    this.currentTasksLists=data
+    this.setState({currentTasksLists: data, isLoading: false})
+    this.loadItems(this.state.selectedDate)
   }
 
 
   renderItem = (item) => {
     return (
       <View style={styles.task_container}>
-        <View><Text style={styles.time_text}>{item.startingTime}</Text></View>
+        <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeStart)}</Text></View>
         <View><Text style={styles.name_text}>{item.name}</Text></View>
         <View><Text style={styles.description_text}>{item.description}</Text></View>
-        <View><Text style={styles.time_text}>{item.endingTime}</Text></View>
-         {this.renderTaskedUsers(item.taskedUsers)}
+        <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
+         {this.renderTaskedUsers(item.taskUser)}
         </View>
 
     );
@@ -128,11 +132,10 @@ export default class GroupCalendar extends React.Component {
         <Agenda
           items={this.tasks}
           loadItemsForMonth={this.loadItems}
-          selected={this.state.currentDate}
+          selected={this.state.selectedDate}
           pastScrollRange={50}
           futureScrollRange={50}
           renderKnob={this.renderKnob}
-          // Specify how each item should be rendered in agenda
           renderItem={this.renderItem}
           renderEmptyData={this.renderEmptyData}
           hideKnob={false}
