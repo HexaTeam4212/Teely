@@ -81,9 +81,21 @@ def account_update():
 
         if user.Password == content["current_password"]:
             if "username" in content:
-                user.Username = content["username"]
+                #Test if username is already taken
+                try:
+                    #This throw an error if there is no user found with this username
+                    u = PERSON.get(PERSON.Username == content["username"])
+                    return sendError(409, "Username already taken !")
+                except:
+                    user.Username = content["username"]
             if "email" in content:
-                user.Email = content["email"]
+                #Test if email is already taken
+                try:
+                    #This throw an error if there is no user found with this email
+                    u = PERSON.get(PERSON.Email == content["email"])
+                    return sendError(409, "Email already taken !")
+                except:
+                    user.Email = content["email"]
             if "password" in content:
                 user.Password = content["password"]
             if "lastName" in content:
