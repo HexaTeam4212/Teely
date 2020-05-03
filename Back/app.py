@@ -192,14 +192,21 @@ def account_all_tasks_for_user():
     tasks_list = []
 
     for task in tasks_rep:
+        dependanciesIds=[]
+        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
+        for dep in dependancies :
+            dependanciesIds.append(dep.TaskConcerned.taskId)
+
         data = {
+            "taskId": task.taskId,
             "name": task.Name,
             "description": task.Description,
             "taskUser": task.TaskUser.Username,
-            "datetimeStart": task.DatetimeStart,
-            "datetimeEnd": task.DatetimeEnd,
             "frequency": task.Frequency,
-            "priority": task.PriorityLevel
+            "priority": task.PriorityLevel,
+            "datetimeStart" : task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
+            "dependancies" : dependanciesIds
         }
         tasks_list.append(data)
 
@@ -220,14 +227,21 @@ def account_upcomming_tasks_for_user():
     tasks_list = []
 
     for task in tasks_rep:
+        dependanciesIds=[]
+        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
+        for dep in dependancies :
+            dependanciesIds.append(dep.TaskConcerned.taskId)
+
         data = {
+            "taskId": task.taskId,
             "name": task.Name,
             "description": task.Description,
             "taskUser": task.TaskUser.Username,
-            "datetimeStart": task.DatetimeStart,
-            "datetimeEnd": task.DatetimeEnd,
             "frequency": task.Frequency,
-            "priority": task.PriorityLevel
+            "priority": task.PriorityLevel,
+            "datetimeStart" : task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
+            "dependancies" : dependanciesIds
         }
 
         if task.DatetimeStart is not None:
@@ -397,9 +411,7 @@ def group_task_all(id_group):
     rep = TASK.select().where(TASK.Group_id == id_group)
     response_body = {}
     taskData = []
-    ''' manque des éléments à rajouter"description":
-    manque la DATE
-    '''
+
     for task in rep:
 
         dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
@@ -411,14 +423,14 @@ def group_task_all(id_group):
         except :
             dependanciesIds.append("")
 
-        data = {"id": task.taskId,
+        data = {
+            "taskId": task.taskId,
             "name": task.Name,
-            "taskedUsers": task.TaskUser_id,
-            "dueDate" : str(task.Date),
+            "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
-            "duration": task.Duration,
-            "startingTime" : str(task.StartingTime),
+            "datetimeStart" : task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
             "dependancies" : dependanciesIds
         }
 
@@ -428,37 +440,35 @@ def group_task_all(id_group):
         "tasks" : taskData
     }
 
-    return json.dumps(response_body),200
+    return jsonify(response_body),200
 
 @app.route('/group/<id_group>/task/<id_task>', methods=['GET'])
 def group_task_id(id_group, id_task):
-    rep = TASK.select().where(TASK.taskId == id_task)
-    taskData = []
+    try:
+        task = TASK.get(TASK.taskId == id_task)
+    except:
+        return sendError(404, "Task not found !")
+    
     dependanciesIds=[]
+    dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
+    for dep in dependancies :
+        dependanciesIds.append(dep.TaskConcerned.taskId)
 
-    try :
-        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
-        for dep in dependancies :
-            dependanciesIds.append(dep.taskConcerned)
-    except :
-        dependanciesIds.append("")
-
-    for task in rep:
-        data = {"id": task.taskId,
+    data = {
+        "taskId": task.taskId,
+        "name": task.Name,
         "description": task.Description,
-        "taskedUsers": task.TaskUser_id,
-        "dueDate": str(task.Date),
+        "taskUser": task.TaskUser.Username,
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
-        "duration": task.Duration,
-        "startingTime" : str(task.StartingTime),
+        "datetimeStart" : task.DatetimeStart,
+        "datetimeEnd": task.DatetimeEnd,
         "dependancies" : dependanciesIds
-        }
+    }
 
-        taskData.append(data)
-    response_body = {"task" : taskData}
+    response_body = {"task" : data}
 
-    return json.dumps(response_body),200
+    return jsonify(response_body),200
 
 @app.route('/group/<id_group>/task', methods=['POST'])
 def group_task(id_group):
@@ -551,4 +561,4 @@ def task_put(id_group,id_task):
     "dependancies" : str(dependanciesIds)
     }
     response_body =data
-    return json.dumps(response_body), 200
+    return jsonify(response_body), 200
