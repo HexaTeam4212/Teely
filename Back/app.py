@@ -213,20 +213,28 @@ def account_all_tasks_for_user():
 @authenticate
 def account_upcomming_tasks_for_user():
 
-    tasks_rep = TASK.select().where(TASK.TaskUser.Username == session["username"] & TASK.Date > datetime.datetime.now())
+    user = PERSON.get(PERSON.Username == session["username"])
+    current_date = datetime.datetime.now()
+    tasks_rep = TASK.select().where(TASK.TaskUser)
+
     tasks_list = []
 
     for task in tasks_rep:
         data = {
             "name": task.Name,
             "description": task.Description,
-            "taskedUser": task.TaskUser,
-            "dueDate": task.Date,
-            "duration": task.Duration,
+            "taskUser": task.TaskUser.Username,
+            "datetimeStart": task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel
         }
-        tasks_list.append(data)
+
+        if task.DatetimeStart is not None:
+            if task.DatetimeStart.year >= current_date.year:
+                if task.DatetimeStart.month >= current_date.month or task.DatetimeStart.year > current_date.year:
+                    if task.DatetimeStart.day >= current_date.day or task.DatetimeStart.month > current_date.month or task.DatetimeStart.year > current_date.year:
+                        tasks_list.append(data)
 
     reponse_body = {
         "tasks": tasks_list
@@ -464,9 +472,16 @@ def group_task(id_group):
 
     try :
         newTask = TASK(TaskUser=userTask, Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"])
-        newTask.save()
     except:
         return sendError(400, "Make sure to send all the parameters")
+
+    #optional field
+    if "startDatetime" in content:
+        newTask.DatetimeStart = content["startDatetime"]
+    if "endDatetime" in content:
+        newTask.DatetimeEnd = content["endDatetime"]
+
+    newTask.save()
 
     try :
         for dep in content["dependencies"]:
