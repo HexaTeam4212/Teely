@@ -35,10 +35,9 @@ class TASK(BaseModel):
     Description = CharField(max_length = 500, null = True)
     Frequency = IntegerField(null = True)
     Group = ForeignKeyField(GROUP, backref='+')
-    Date = DateField(formats = '%Y-%m-%d', null = True)
+    DatetimeStart = DateTimeField(formats = '%Y-%m-%d %H:%M:%S', null = True)
+    DatetimeEnd = DateTimeField(formats = '%Y-%m-%d %H:%M:%S', null = True)
     PriorityLevel = IntegerField(null = True)
-    Duration = IntegerField()
-    StartingTime = IntegerField()
 
 class DEPENDANCE(BaseModel):
     DependanceId = AutoField(primary_key = True)
