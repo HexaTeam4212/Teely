@@ -92,7 +92,6 @@ def account_update():
                         pass
                     user.Username = content["username"]
                     session["username"] = content["username"]
-                    print(session["username"])
             if "email" in content:
                 if content["email"] != "":
                     #Test if email is already taken
