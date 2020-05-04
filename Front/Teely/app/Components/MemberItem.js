@@ -40,8 +40,7 @@ export default class MemberItem extends React.Component {
     }
 
     getDataProfile = () => {
-        //accountServices.dataProfile(this.updateDataProfile, this.state.username) //A corriger quand back ok
-        accountServices.dataProfile(this.updateDataProfile)
+        accountServices.dataProfile(this.updateDataProfile, this.state.username) 
     }
 
     formatDate(dateString) {

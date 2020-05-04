@@ -150,9 +150,13 @@ class AccountServices {
     }
 
 
-    async dataProfile(callback, username=getToken()) {
+    async dataProfile(callback, username) {
+        if (username=="") {
+            username = await (await getToken()).toString()
+        }
         const token = await getToken()
-        const fullEndpoint = endpoint + "/info"
+        const fullEndpoint = endpoint + "/info?username="+username
+        console.log(backendURL + fullEndpoint)
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -161,7 +165,6 @@ class AccountServices {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
                         Authorization: token
-                        //parameters: username
                     }
                 })
             const respBody = await response.json()
@@ -206,7 +209,6 @@ class AccountServices {
     }
 
     async accountAllTasks(callback) {
-
         const username = await getToken()
         const fullEndpoint = endpoint + "/task/all"
         try {
@@ -220,7 +222,6 @@ class AccountServices {
                     }
                 })
             const respBody = await response.json()
-            //console.log(respBody.tasks)
             if (response.status != 200) {
                 alert("Erreur lors de la récupération des tâches")
             }
@@ -232,44 +233,6 @@ class AccountServices {
             console.error(error)
         }
     }
-
-
-
-    async accountTasks(callback) {
-        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-30', startingTime: '11:20', endingTime: '11:40', taskedUsers:[] }
-        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-30', startingTime: '15:00', endingTime: '16:00', taskedUsers: ['Fatima']}
-        const task3 = { id: 501, name: 'Convention de stage', description: 'remplir avenant convention de stage', dueDate: '2020-04-30', startingTime: '16:10', endingTime: '16:30', taskedUsers:['Lucie', 'Baptiste', 'Emmy'] }
-        const task4 = { id: 321, name: 'Courses', description: 'Faire les courses pour la semaine', dueDate: '2020-04-29', startingTime: '13:00', endingTime: '15:00', taskedUsers:[] }
-    
-
-        let accountTasks = [task1, task2, task3, task4]
-        /*let accountTasks = []
-        const fullEndpoint = endpoint + "/task/all"
-
-        try {
-            const response = await fetch(backendURL + fullEndpoint, 
-            {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization : username
-                }
-            })
-            const respBody = await response.json()
-            if (response.status != 200) {
-                    alert("Erreur lors de la récupération des tâches")
-            }
-            else {
-                callback(respBody.tasks)
-            }
-        }
-        catch (error) {
-            console.error(error)
-        }*/
-        callback(accountTasks)
-    }
-
 
     async accountInvitations(callback) {
 

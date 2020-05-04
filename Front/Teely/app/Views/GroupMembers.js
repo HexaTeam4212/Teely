@@ -2,10 +2,10 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, FlatList, KeyboardAvoidingView } from 'react-native'
-import ImagesGroup from '../modules/ImageGroup'
 import accountServices from '../Services/AccountServices'
 import groupServices from '../Services/GroupServices'
 import ProfileIcon from '../Components/ProfileIcon'
+import GroupIcon from '../Components/GroupIcon'
 import MemberItem from '../Components/MemberItem'
 
 
@@ -21,8 +21,8 @@ export default class DetailedGroup extends React.Component {
             isLoading: true,
         }
         this.groupId = ""
-        this.getGroupId() 
-        this.getDataProfile() 
+        this.getGroupId()
+        this.getDataProfile()
         this.getGroupInfos()
     }
 
@@ -52,24 +52,18 @@ export default class DetailedGroup extends React.Component {
         groupServices.getGroupInfos(this.groupId, this.updateGroupInfos)
     }
 
-    imageGroup = () => {
-        return (
-            <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
-        )
-    }
-
     updateDataProfile = (dataProfile) => {
-        this.setState({idImageProfile: dataProfile.idImage})
+        this.setState({ idImageProfile: dataProfile.idImage })
     }
 
     getDataProfile = () => {
-        accountServices.dataProfile(this.updateDataProfile)
+        accountServices.dataProfile(this.updateDataProfile, "")
     }
 
     render() {
         return (
             <View style={styles.main_container}>
-                <ProfileIcon idImage={this.state.idImageProfile}/>
+                <ProfileIcon idImage={this.state.idImageProfile} />
                 <View >
                     <KeyboardAwareScrollView
                         contentContainerstyle={styles.content_container}
@@ -78,7 +72,7 @@ export default class DetailedGroup extends React.Component {
                         enableAutomaticScroll={(Platform.OS === 'ios')}
                         enableOnAndroid={true}>
                         <View style={styles.head_container}>
-                            {this.imageGroup()}
+                            <GroupIcon idImage={this.state.idImageGroup} />
                             <Text style={styles.name_text}>{this.state.name}</Text>
                             <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
                             <Text style={styles.participant_text}>{this.state.members.length} participants</Text>

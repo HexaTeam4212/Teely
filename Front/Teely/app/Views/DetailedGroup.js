@@ -3,13 +3,12 @@ import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, FlatList, KeyboardAvoidingView } from 'react-native'
 import groupServices from '../Services/GroupServices'
-import ImagesProfile from '../modules/ImageProfile'
 import ImagesGroup from '../modules/ImageGroup'
 import ImageWithText from '../Components/ImageWithText'
 import ProfileIcon from '../Components/ProfileIcon'
+import GroupIcon from '../Components/GroupIcon'
 import Dialog, { SlideAnimation, DialogContent, DialogTitle, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 import accountServices from '../Services/AccountServices'
-import Autocomplete from 'react-native-autocomplete-input'
 
 
 YellowBox.ignoreWarnings([
@@ -128,27 +127,21 @@ export default class DetailedGroup extends React.Component {
   }
 
   getDataProfile = () => {
-    accountServices.dataProfile(this.updateDataProfile)
+    accountServices.dataProfile(this.updateDataProfile, "")
   }
-
-  imageProfile = () => {
-    return (
-      <Image style={styles.profilePic} source={ImagesProfile[this.idImageProfile]} />
-    )
-  }
-
-
 
   render() {
     return (
       <View style={styles.main_container}>
         <ProfileIcon idImage={this.state.idImageProfile}/>
         <View style={styles.head_container}>
-          {this.imageGroup()}
+          <GroupIcon idImage={this.state.idImageGroup}/>
           <Text style={styles.name_text}>{this.state.name}</Text>
           <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
           <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
-          <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditGroup")}>
+          <TouchableOpacity style={styles.editButton} onPress={() => 
+            this.props.navigation.navigate("EditGroup", {idGroup: this.groupId, idImageProfile: this.state.idImageProfile, description: this.state.description,
+                                                          idImageGroup: this.state.idImageGroup, name: this.state.name})}>
             <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
           </TouchableOpacity>
         </View>
@@ -244,17 +237,6 @@ const styles = StyleSheet.create({
   },
   dialog_footer: {
     margin: 5
-  },
-  groupPic: {
-    marginTop: 5,
-    alignSelf: 'center',
-    resizeMode: 'contain',
-    width: 120,
-    height: 120,
-    borderColor: '#ffb4e2',
-    borderWidth: 3,
-    borderRadius: 60,
-    marginBottom: 10
   },
   name_text: {
     fontWeight: 'bold',

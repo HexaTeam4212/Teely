@@ -41,7 +41,7 @@ export default class Groups extends React.Component {
   }
 
   getDataProfile = () => {
-    accountServices.dataProfile(this.updateDataProfile)
+    accountServices.dataProfile(this.updateDataProfile, "")
   }
 
   updateInvitations = (dataInvit) => {
