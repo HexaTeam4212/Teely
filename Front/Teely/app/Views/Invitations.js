@@ -1,7 +1,7 @@
 // app/Views/Invitations.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList } from 'react-native'
+import { StyleSheet, Text, View, FlatList, RefreshControl, ActivityIndicator } from 'react-native'
 import accountServices from '../Services/AccountServices';
 import InvitationItem from '../Components/InvitationItem'
 
@@ -12,10 +12,25 @@ export default class Invitations extends React.Component {
     this.selectedInvit;
     this.state = {
       isLoading: true,
+      refreshing: false,
       tabInvit: []
     }
-
     this.getInvitations()
+  }
+
+  onRefresh = () => {
+    this.setState({ refreshing: true })
+    this.getInvitations()
+  }
+
+  displayLoading() {
+    if (this.state.isLoading) {
+        return (
+            <View style={styles.loading_container}>
+                <ActivityIndicator color='#ffb4e2' size='large' />
+            </View>
+        )
+    }
   }
 
   resultChoice = (choiceOk) => {
@@ -46,7 +61,7 @@ export default class Invitations extends React.Component {
   updateInvitations = (dataInvit) => {
     this.invitations = dataInvit
     this.setState({
-      tabInvit: dataInvit, isLoading: false
+      tabInvit: dataInvit, isLoading: false, refreshing: false
     })
 
   }
@@ -57,7 +72,7 @@ export default class Invitations extends React.Component {
 
 
   displayInvitations() {
-    console.log("invit : "+this.invitations.length)
+    console.log("invit : " + this.invitations.length)
     if (!(this.invitations.length)) {
       return (
         <View style={styles.noInvit_container}>
@@ -93,11 +108,22 @@ export default class Invitations extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-        <Text style={styles.title_text}>Invitations en attente</Text>
-        <View style={styles.content_container}>
-          {this.displayInvitations()}
+        <View style={{ flex: 1 }}>
+          <KeyboardAwareScrollView
+            contentContainerStyle={{ flex: 1 }}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            enableAutomaticScroll={(Platform.OS === 'ios')}
+            enableOnAndroid={true}
+            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+          >
+            <Text style={styles.title_text}>Invitations en attente</Text>
+            <View style={styles.content_container}>
+              {this.displayInvitations()}
+            </View>
+          </KeyboardAwareScrollView>
+          {this.displayLoading()}
         </View>
-
       </View>
     )
   }

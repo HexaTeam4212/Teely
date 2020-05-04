@@ -1,7 +1,7 @@
 // app/Views/GroupCalendar.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, Image, ActivityIndicator, RefreshControl } from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
 import groupServices from '../Services/GroupServices'
@@ -19,19 +19,26 @@ LocaleConfig.defaultLocale = 'fr';
 export default class GroupCalendar extends React.Component {
   constructor(props) {
     super(props)
-    this.groupId=""
+    this.groupId = ""
     this.tasks = {}
     this.state = {
       selectedDate: moment(new Date()).format("YYYY-MM-DD"),
       isLoading: true,
+      refreshing: false,
       currentTasksLists: {}
     }
-    this.getGroupId() 
+    this.getGroupId()
     this.getAllTasks()
   }
 
+  onRefresh = () => {
+    this.setState({ refreshing: true })
+    this.getGroupId()
+    this.getAllTasks()
+  }
+  
   getAllTasks() {
-    groupServices.getGroupTasks(this.groupId,this.updateTasksLists)
+    groupServices.getGroupTasks(this.groupId, this.updateTasksLists)
   }
 
   getGroupId() {
@@ -43,7 +50,7 @@ export default class GroupCalendar extends React.Component {
     if (this.state.isLoading) {
       return (
         <View style={styles.loading_container}>
-          <ActivityIndicator color='#ffb4e2' size='large'/>
+          <ActivityIndicator color='#ffb4e2' size='large' />
         </View>
       )
     }
@@ -62,7 +69,7 @@ export default class GroupCalendar extends React.Component {
   }
 
   loadItems = (day) => {
-    this.setState({selectedDate: day })
+    this.setState({ selectedDate: day })
     if (!day)
       return;
     let begin = moment(day.dateString).startOf('month')
@@ -75,11 +82,11 @@ export default class GroupCalendar extends React.Component {
       }
       begin.add(1, 'days')
     }
-    
+
   }
 
   updateTasksLists = (data) => {
-    this.setState({currentTasksLists: data, isLoading: false})
+    this.setState({ currentTasksLists: data, isLoading: false, refreshing:false})
     this.loadItems(this.state.selectedDate)
   }
 
@@ -91,8 +98,8 @@ export default class GroupCalendar extends React.Component {
         <View><Text style={styles.name_text}>{item.name}</Text></View>
         <View><Text style={styles.description_text}>{item.description}</Text></View>
         <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
-         {this.renderTaskedUsers(item.taskUser)}
-        </View>
+        {this.renderTaskedUsers(item.taskUser)}
+      </View>
 
     );
   }
@@ -104,15 +111,15 @@ export default class GroupCalendar extends React.Component {
           <Text style={styles.taskedUser_text}>Par : {usersList.toString()} </Text>
         </View>
       );
-    } 
+    }
     else {
       return (
         <View style={styles.taskedUsers_container}>
           <Text style={styles.taskedUser_text}>Non assignée </Text>
-          
+
         </View>
       );
-    }  
+    }
   }
 
   renderEmptyData = () => {
@@ -129,46 +136,57 @@ export default class GroupCalendar extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-        <Agenda
-          items={this.tasks}
-          loadItemsForMonth={this.loadItems}
-          selected={this.state.selectedDate}
-          pastScrollRange={50}
-          futureScrollRange={50}
-          renderKnob={this.renderKnob}
-          renderItem={this.renderItem}
-          renderEmptyData={this.renderEmptyData}
-          hideKnob={false}
-          onRefresh={() => console.log('refreshing...')}
-          refreshing={false}
-          refreshControl={null}
-          theme={{
-            backgroundColor: '#78e1db',
-            calendarBackground: 'white',
-            textSectionTitleColor: '#b6c1cd',
-            selectedDayBackgroundColor: '#ffb4e2',
-            selectedDayTextSize: 20,
-            selectedDayTextColor: 'white',
-            todayTextColor: '#78e1db',
-            dayTextColor: '#2d4150',
-            dayTextFontSize: 30,
-            dayBackgroundColor: 'white',
-            textDisabledColor: '#d9e1e8',
-            dotColor: '#ffdb58',
-            selectedDotColor: 'white',
-            arrowColor: 'orange',
-            indicatorColor: 'blue',
-            textMonthFontWeight: 'bold',
-            textDayFontSize: 17,
-            textMonthFontSize: 17,
+        <View style={{ flex: 1 }}>
+          <KeyboardAwareScrollView
+            contentContainerStyle={{ flex: 1 }}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            enableAutomaticScroll={(Platform.OS === 'ios')}
+            enableOnAndroid={true}
+            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+          >
+            <Agenda
+              items={this.tasks}
+              loadItemsForMonth={this.loadItems}
+              selected={this.state.selectedDate}
+              pastScrollRange={50}
+              futureScrollRange={50}
+              renderKnob={this.renderKnob}
+              renderItem={this.renderItem}
+              renderEmptyData={this.renderEmptyData}
+              hideKnob={false}
+              onRefresh={() => console.log('refreshing...')}
+              refreshing={false}
+              refreshControl={null}
+              theme={{
+                backgroundColor: '#78e1db',
+                calendarBackground: 'white',
+                textSectionTitleColor: '#b6c1cd',
+                selectedDayBackgroundColor: '#ffb4e2',
+                selectedDayTextSize: 20,
+                selectedDayTextColor: 'white',
+                todayTextColor: '#78e1db',
+                dayTextColor: '#2d4150',
+                dayTextFontSize: 30,
+                dayBackgroundColor: 'white',
+                textDisabledColor: '#d9e1e8',
+                dotColor: '#ffdb58',
+                selectedDotColor: 'white',
+                arrowColor: 'orange',
+                indicatorColor: 'blue',
+                textMonthFontWeight: 'bold',
+                textDayFontSize: 17,
+                textMonthFontSize: 17,
 
-            agendaDayTextColor: 'black',
-            agendaDayTextFontSize : 40,
-            agendaDayNumColor: 'black',
-            agendaTodayColor: 'white',
-          }}
-          style={styles.content_container}
-        />
+                agendaDayTextColor: 'black',
+                agendaDayTextFontSize: 40,
+                agendaDayNumColor: 'black',
+                agendaTodayColor: 'white',
+              }}
+              style={styles.content_container}
+            />
+          </KeyboardAwareScrollView>
+        </View>
       </View>
     )
   }
@@ -203,7 +221,7 @@ const styles = StyleSheet.create({
   taskedUsers_container: {
     marginTop: 5,
     borderColor: '#ffdb58',
-    borderTopWidth : 2
+    borderTopWidth: 2
   },
   emptyTask_text: {
     fontStyle: 'italic',

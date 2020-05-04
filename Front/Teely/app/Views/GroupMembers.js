@@ -1,7 +1,7 @@
 // app/Views/GroupMembers.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, FlatList, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, Text, View, RefreshControl, ActivityIndicator, FlatList} from 'react-native'
 import accountServices from '../Services/AccountServices'
 import groupServices from '../Services/GroupServices'
 import ProfileIcon from '../Components/ProfileIcon'
@@ -19,9 +19,16 @@ export default class DetailedGroup extends React.Component {
             idImageGroup: 18,
             members: [],
             isLoading: true,
+            refreshing: false
         }
         this.groupId = ""
         this.getGroupId()
+        this.getDataProfile()
+        this.getGroupInfos()
+    }
+
+    onRefresh = () => {
+        this.setState({ refreshing: true })
         this.getDataProfile()
         this.getGroupInfos()
     }
@@ -44,7 +51,7 @@ export default class DetailedGroup extends React.Component {
     updateGroupInfos = (data) => {
         this.setState({
             name: data.group_name, description: data.description, idImageGroup: data.idImageGroup,
-            members: data.members, isLoading: false
+            members: data.members, isLoading: false, refreshing:false
         });
     }
 
@@ -64,13 +71,15 @@ export default class DetailedGroup extends React.Component {
         return (
             <View style={styles.main_container}>
                 <ProfileIcon idImage={this.state.idImageProfile} />
-                <View >
+                <View style={{ flex: 1 }}>
                     <KeyboardAwareScrollView
-                        contentContainerstyle={styles.content_container}
+                        contentContainerStyle={{ flex: 1 }}
                         resetScrollToCoords={{ x: 0, y: 0 }}
                         scrollEnabled={true}
                         enableAutomaticScroll={(Platform.OS === 'ios')}
-                        enableOnAndroid={true}>
+                        enableOnAndroid={true}
+                        refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+                    >
                         <View style={styles.head_container}>
                             <GroupIcon idImage={this.state.idImageGroup} />
                             <Text style={styles.name_text}>{this.state.name}</Text>

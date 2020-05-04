@@ -1,13 +1,12 @@
 // app/Views/SignUp.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, ActivityIndicator, Image, Platform, TouchableOpacity, FlatList, SafeAreaView } from 'react-native'
+import { YellowBox, RefreshControl, StyleSheet, Text, View, ActivityIndicator, Image, Platform, TouchableOpacity, FlatList, SafeAreaView } from 'react-native'
 import ImageWithText from '../Components/ImageWithText'
 import accountServices from '../Services/AccountServices'
 import Images from '../modules/ImageProfile'
 import TaskItem from '../Components/TaskItem'
 import LogoutButton from '../Components/LogoutButton'
-import { YellowBox } from 'react-native'
 import generalServices from '../Services/GeneralServices'
 
 YellowBox.ignoreWarnings([
@@ -19,6 +18,7 @@ export default class Profile extends React.Component {
         super(props)
         this.state = {
             isLoading: true,
+            refreshing: false,
             username: "",
             name: "",
             lastName: "",
@@ -29,6 +29,11 @@ export default class Profile extends React.Component {
         }
         this.getDataProfile()
 
+    }
+
+    onRefresh = () => {
+        this.setState({ refreshing: true })
+        this.getDataProfile()
     }
 
     displayLoading() {
@@ -65,7 +70,7 @@ export default class Profile extends React.Component {
 
     updateTasksList = (tasksList) => {
         this.setState({
-            tasks : tasksList, isLoading: false
+            tasks: tasksList, isLoading: false, refreshing: false
         })
     }
 
@@ -105,41 +110,52 @@ export default class Profile extends React.Component {
         return (
             <View style={styles.main_container}>
                 <LogoutButton></LogoutButton>
-                <View style={styles.head_container}>
-                    {this.imageProfile()}
-                    <View style={styles.headerInfo_container}>
-                        <View style={styles.labels_container}>
-                            <Text style={styles.name_text}>{this.state.name} {this.state.lastName}</Text>
-                            <Text style={styles.username_text}> ({this.state.username}) </Text>
-                        </View>
-                        <View style={styles.bio_container}>
-                            {this.displayBiography()}
-                        </View>
-                        <View style={styles.foot_container}>
-                            <Text style={styles.date_text}>Né(e) le : {this.state.birthDate}</Text>
-                            <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditProfile")}>
-                                <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-                <TouchableOpacity style={{ flex: 3 }} onPress={() => this.props.navigation.navigate("PersonalCalendar")}>
-                    <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='MON CALENDRIER' />
-                </TouchableOpacity>
-                <View style={styles.content_container}>
+                <View style={{ flex: 1 }}>
                     <KeyboardAwareScrollView
-                        contentContainerstyle={styles.content_container}
+                        contentContainerStyle={{ flex: 1 }}
                         resetScrollToCoords={{ x: 0, y: 0 }}
                         scrollEnabled={true}
                         enableAutomaticScroll={(Platform.OS === 'ios')}
-                        enableOnAndroid={true}>
-                        {this.displayUpcomingTasks()}
+                        enableOnAndroid={true}
+                        refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+                    >
+                        <View style={styles.head_container}>
+                            {this.imageProfile()}
+                            <View style={styles.headerInfo_container}>
+                                <View style={styles.labels_container}>
+                                    <Text style={styles.name_text}>{this.state.name} {this.state.lastName}</Text>
+                                    <Text style={styles.username_text}> ({this.state.username}) </Text>
+                                </View>
+                                <View style={styles.bio_container}>
+                                    {this.displayBiography()}
+                                </View>
+                                <View style={styles.foot_container}>
+                                    <Text style={styles.date_text}>Né(e) le : {this.state.birthDate}</Text>
+                                    <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditProfile")}>
+                                        <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={{ flex: 3 }} onPress={() => this.props.navigation.navigate("PersonalCalendar")}>
+                            <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='MON CALENDRIER' />
+                        </TouchableOpacity>
+                        <View style={styles.content_container}>
+                            <KeyboardAwareScrollView
+                                contentContainerstyle={styles.content_container}
+                                resetScrollToCoords={{ x: 0, y: 0 }}
+                                scrollEnabled={true}
+                                enableAutomaticScroll={(Platform.OS === 'ios')}
+                                enableOnAndroid={true}>
+                                {this.displayUpcomingTasks()}
+                            </KeyboardAwareScrollView>
+                        </View>
+                        <TouchableOpacity style={{ flex: 3, marginBottom: 1 }} onPress={() => this.props.navigation.navigate("Groups")}>
+                            <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='MES GROUPES' />
+                        </TouchableOpacity>
+                        {this.displayLoading()}
                     </KeyboardAwareScrollView>
                 </View>
-                <TouchableOpacity style={{ flex: 3, marginBottom: 1 }} onPress={() => this.props.navigation.navigate("Groups")}>
-                    <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='MES GROUPES' />
-                </TouchableOpacity>
-                {this.displayLoading()}
             </View>
         )
     }

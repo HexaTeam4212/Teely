@@ -1,12 +1,11 @@
 // app/Views/Groups.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { RefreshControl, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
 
 import groupServices from '../Services/GroupServices';
 import accountServices from '../Services/AccountServices';
 import ImagesGroup from '../modules/ImageGroup'
-import ImagesProfile from '../modules/ImageProfile'
 import GroupItem from '../Components/GroupItem'
 import ImageWithText from '../Components/ImageWithText'
 import ProfileIcon from '../Components/ProfileIcon'
@@ -17,12 +16,18 @@ export default class Groups extends React.Component {
     this.groups = []
     this.invitations = []
     this.firstload = true
-    this.state = { isLoading: true, idImageProfile: 18}
+    this.state = { isLoading: true, refreshing: false, idImageProfile: 18 }
 
     this.getInvitations()
     this.getDataProfile()
     this.getGroups()
 
+  }
+
+  onRefresh = () => {
+    this.setState({ refreshing: true })
+    this.getInvitations()
+    this.getGroups()
   }
 
   displayLoading() {
@@ -36,7 +41,7 @@ export default class Groups extends React.Component {
   }
 
   updateDataProfile = (dataProfile) => {
-    this.setState({idImageProfile : dataProfile.idImage})
+    this.setState({ idImageProfile: dataProfile.idImage })
     this.setState({ isLoading: false })
   }
 
@@ -55,7 +60,7 @@ export default class Groups extends React.Component {
   getGroups() {
     groupServices.getGroupsUser((groupIds) => {
       this.groups = groupIds
-      this.setState({ isLoading: false })
+      this.setState({ isLoading: false, refreshing:false })
     })
   }
 
@@ -93,7 +98,7 @@ export default class Groups extends React.Component {
             data={this.groups}
             keyExtractor={(item) => item.groupId.toString()}
             renderItem={({ item }) =>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.groupId})}>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.groupId })}>
                 <GroupItem group={item.group_name} image={ImagesGroup[item.idImageGroup]} />
               </TouchableOpacity>}
           />
@@ -106,18 +111,29 @@ export default class Groups extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-        <ProfileIcon idImage={this.state.idImageProfile}/>
-          <View style={styles.title_container}>
-            <Text style={styles.title_text}>Mes groupes</Text>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
-              <Image style={styles.image_plus} source={require('../../assets/Images/plus.png')} />
-            </TouchableOpacity>
-          </View>
-        <View style={styles.content_container}>
-          {this.displayGroups()}
-        </View>
-        <View style={styles.invit_container}>
-          {this.displayInvitations()}
+        <View style={{ flex: 1 }}>
+          <KeyboardAwareScrollView
+            contentContainerStyle={{ flex: 1 }}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            enableAutomaticScroll={(Platform.OS === 'ios')}
+            enableOnAndroid={true}
+            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+          >
+            <ProfileIcon idImage={this.state.idImageProfile} />
+            <View style={styles.title_container}>
+              <Text style={styles.title_text}>Mes groupes</Text>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
+                <Image style={styles.image_plus} source={require('../../assets/Images/plus.png')} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.content_container}>
+              {this.displayGroups()}
+            </View>
+            <View style={styles.invit_container}>
+              {this.displayInvitations()}
+            </View>
+          </KeyboardAwareScrollView>
         </View>
         {this.displayLoading()}
       </View>
@@ -179,7 +195,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: '#60dbd3',
   },
- 
+
   title_text: {
     fontWeight: 'bold',
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',

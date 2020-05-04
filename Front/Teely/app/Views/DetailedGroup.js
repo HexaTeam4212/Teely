@@ -1,13 +1,13 @@
 // app/Views/DetailedGroup.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, FlatList, KeyboardAvoidingView } from 'react-native'
+import { RefreshControl, YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
 import groupServices from '../Services/GroupServices'
 import ImagesGroup from '../modules/ImageGroup'
 import ImageWithText from '../Components/ImageWithText'
 import ProfileIcon from '../Components/ProfileIcon'
 import GroupIcon from '../Components/GroupIcon'
-import Dialog, { SlideAnimation, DialogContent, DialogTitle, DialogFooter, DialogButton } from 'react-native-popup-dialog';
+import Dialog, { SlideAnimation, DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 import accountServices from '../Services/AccountServices'
 
 
@@ -21,11 +21,11 @@ export default class DetailedGroup extends React.Component {
     this.state = {
       idImageProfile: 18,
       name: "",
-      firstLoad: true,
       description: "",
       idImageGroup: 18,
       members: [],
       isLoading: true,
+      refreshing: false,
       visibleLeaveGroupDialog: false,
       usernameInput: "",
       usernameList: [],
@@ -34,10 +34,19 @@ export default class DetailedGroup extends React.Component {
     this.isUsernameValid = true
     let params = this.props.route.params
     this.groupId = params.idGroup
-    this.reload= params.reload
+    this.reload = params.reload
+    this.getDataProfile()
+    this.getGroupInfos()
+
+  }
+
+  onRefresh = () => {
+    this.setState({ refreshing: true })
     this.getDataProfile()
     this.getGroupInfos()
   }
+
+
 
   displayLoading() {
     if (this.state.isLoading) {
@@ -56,7 +65,8 @@ export default class DetailedGroup extends React.Component {
           resetScrollToCoords={{ x: 0, y: 0 }}
           scrollEnabled={false}
           enableAutomaticScroll={(Platform.OS === 'ios')}
-          enableOnAndroid={true}>
+          enableOnAndroid={true}
+        >
           <Dialog dialogStyle={styles.dialog_container}
             visible={this.state.visibleLeaveGroupDialog}
             onTouchOutside={() => {
@@ -100,7 +110,7 @@ export default class DetailedGroup extends React.Component {
   updateGroupInfos = (data) => {
     this.setState({
       name: data.group_name, description: data.description, idImageGroup: data.idImageGroup,
-      members: data.members, isLoading: false, firstLoad: false
+      members: data.members, isLoading: false, refreshing: false
     });
   }
 
@@ -120,7 +130,7 @@ export default class DetailedGroup extends React.Component {
   }
 
   updateDataProfile = (dataProfile) => {
-    this.setState({idImageProfile: dataProfile.idImage})
+    this.setState({ idImageProfile: dataProfile.idImage })
   }
 
   getDataProfile = () => {
@@ -130,41 +140,53 @@ export default class DetailedGroup extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-        <ProfileIcon idImage={this.state.idImageProfile}/>
-        <View style={styles.head_container}>
-          <GroupIcon idImage={this.state.idImageGroup}/>
-          <Text style={styles.name_text}>{this.state.name}</Text>
-          <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
-          <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
-          <TouchableOpacity style={styles.editButton} onPress={() => 
-            this.props.navigation.navigate("EditGroup", {idGroup: this.groupId, idImageProfile: this.state.idImageProfile, description: this.state.description,
-                                                          idImageGroup: this.state.idImageGroup, name: this.state.name})}>
-            <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
-          </TouchableOpacity>
-        </View>
+        <ProfileIcon idImage={this.state.idImageProfile} />
+        <View style={{ flex: 1 }}>
+          <KeyboardAwareScrollView
+            contentContainerStyle={{ flex: 1 }}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            enableAutomaticScroll={(Platform.OS === 'ios')}
+            enableOnAndroid={true}
+            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+          >
+            <GroupIcon idImage={this.state.idImageGroup} />
+            <Text style={styles.name_text}>{this.state.name}</Text>
+            <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
+            <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
+            <TouchableOpacity style={styles.editButton} onPress={() =>
+              this.props.navigation.navigate("EditGroup", {
+                idGroup: this.groupId, idImageProfile: this.state.idImageProfile, description: this.state.description,
+                idImageGroup: this.state.idImageGroup, name: this.state.name
+              })}>
+              <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
+            </TouchableOpacity>
 
-        <View style={styles.arrows_container}>
-          <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar", {idGroup : this.groupId})}>
-            <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}*/>
-            <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1 }} 
-          onPress={() => this.props.navigation.navigate("GroupMembers", {idGroup: this.groupId})}>
-            <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
-          </TouchableOpacity>
+
+            <View style={styles.arrows_container}>
+              <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar", { idGroup: this.groupId })}>
+                <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}*/>
+                <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ flex: 1 }}
+                onPress={() => this.props.navigation.navigate("GroupMembers", { idGroup: this.groupId })}>
+                <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.buttons_container}>
+              <TouchableOpacity style={styles.leaveGroupButton} onPress={this.leaveGroup}>
+                <Text style={styles.button_text}>Quitter le groupe</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.inviteButton} onPress={() => { this.props.navigation.navigate("InviteMembers", { idGroup: this.groupId }) }}>
+                <Text style={styles.inviteButtonText}>Inviter des participants</Text>
+              </TouchableOpacity>
+            </View>
+            </KeyboardAwareScrollView>
+            {this.displayLoading()}
+            {this.displayLeaveGroupDialog()}
         </View>
-        <View style={styles.buttons_container}>
-          <TouchableOpacity style={styles.leaveGroupButton} onPress={this.leaveGroup}>
-            <Text style={styles.button_text}>Quitter le groupe</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.inviteButton} onPress={() => {this.props.navigation.navigate("InviteMembers", { idGroup: this.groupId})}}>
-            <Text style={styles.inviteButtonText}>Inviter des participants</Text>
-          </TouchableOpacity>
-        </View>
-        {this.displayLoading()}
-        {this.displayLeaveGroupDialog()}
       </View >
     )
   }

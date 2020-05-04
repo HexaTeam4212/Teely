@@ -121,7 +121,7 @@ export default class CreateGroup extends React.Component {
                   invitedUsersArray.push(this.state.invitedUsers[i].key)
                 }
                 groupServices.createGroup(this.groupName, this.description, invitedUsersArray, this.idImageGroup,
-                  () => this.props.navigation.navigate("Groups"))
+                  () => this.props.navigation.navigate("Groups", {refresh: true}))
               }
             }}></CustomButton>
           </View>
