@@ -487,9 +487,9 @@ def group_task(id_group):
 
     #optional field
     if "startDatetime" in content:
-        newTask.DatetimeStart = content["startDatetime"]
+        newTask.DatetimeStart = content["datetimeStart"]
     if "endDatetime" in content:
-        newTask.DatetimeEnd = content["endDatetime"]
+        newTask.DatetimeEnd = content["datetimeEnd"]
 
     newTask.save()
 
@@ -506,59 +506,63 @@ def group_task(id_group):
 
 @app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])
 def delete_task(id_group,id_task):
-    reponse_body = {}
-    code = 204
     TASK.delete().where( (TASK.taskId == id_task) ).execute()
-    return jsonify(reponse_body), code
+    return jsonify({}), 204
 
 @app.route('/group/<id_group>/task/<id_task>',  methods=['PUT'])
 def task_put(id_group,id_task):
     content = request.get_json()
     code = 204
     response_body ={}
+    
     try:
-        task = TASK.get(TASK.taskId==id_task)
-        task.TaskUser=content['taskUser']
-        task.Description = content['description']
-        task.Frequency=content['frequency']
-        task.Group=id_group
-        task.Date= content['date']
-        task.PriorityLevel=content['priorityLevel']
-        task.Duration = content['duration']
-        task.StartingTime = content['startingTime']
+        task = TASK.get(TASK.taskId == id_task)
+        task.Group = id_group
+        if 'taskUser' in content:
+            task.TaskUser = content['taskUser']
+        if 'description' in content:
+            task.Description = content['description']
+        if 'frequency' in content:
+            task.Frequency = content['frequency']
+        if 'name' in content:
+            task.Name = content['name']
+        if 'datetimeStart' in content:
+            task.DatetimeStart = content['datetimeStart']
+        if 'datetimeEnd' in content:
+            task.DatetimeEnd = content['datetimeEnd']
+        if 'priority' in content:
+            task.PriorityLevel = content['priority']
+        
         task.save()
     except:
-            return sendError(400, "Bad Request 1: Make sure to send all parameters !")
+        return sendError(404, "Task not found !")
 
-    try :
-            dependance = DEPENDANCE.get(DEPENDANCE.TaskConcerned==id_task)
-            dependance.TaskDependancies = content['dependancies']
-            dependance.save()
-    except :
-        try :
-            newDependance = DEPENDANCE(TaskConcerned=id_task, TaskDependancies = content['dependancies'])
+    if 'dependancies' in content:
+        dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
+        for dep in dependancies:
+            dep.delete()
+        
+        for idDep in content['dependancies']:
+            taskDep = TASK.get(TASK.taskId == id_task)
+            newDependance = DEPENDANCE(TaskConcerned = task, TaskDependency = taskDep)
             newDependance.save()
-        except :
-            return sendError(400, "Bad Request 2: Make sure to send all parameters !")
 
-    try :
-        task = TASK.get(TASK.taskId==id_task)
-        dependancies = DEPENDANCE.get(DEPENDANCE.TaskConcerned==id_task)
-        dependanciesIds=[]
-        for dep in dependance :
-            dependanciesIds.append(dep.taskConcerned)
-    except :
-        dependanciesIds.append("")
 
-    data = {"id": task.taskId,
-    "description": task.Description,
-    "taskedUsers": task.TaskUser_id,
-    "dueDate": str(task.Date),
-    "frequency": task.Frequency,
-    "priority": task.PriorityLevel,
-    "duration": task.Duration,
-    "startingTime" : task.StartingTime,
-    "dependancies" : str(dependanciesIds)
+    dependanciesIds = []
+    dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
+    for dep in dependancies:
+        dependanciesIds.append(dep.TaskDependency.taskId)
+
+    data = {
+        "taskId": task.taskId,
+        "name": task.Name,
+        "description": task.Description,
+        "taskUser": task.TaskUser.Username,
+        "frequency": task.Frequency,
+        "priority": task.PriorityLevel,
+        "datetimeStart" : task.DatetimeStart,
+        "datetimeEnd": task.DatetimeEnd,
+        "dependancies" : dependanciesIds
     }
-    response_body =data
+    response_body = data
     return jsonify(response_body), 200
