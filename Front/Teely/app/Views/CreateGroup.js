@@ -40,7 +40,7 @@ export default class CreateGroup extends React.Component {
 
   render() {
     return (
-      
+
       <View style={styles.main_container}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
@@ -69,18 +69,18 @@ export default class CreateGroup extends React.Component {
               this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
               accountServices.getAccountUsernames(text, (usernameResults) => {
                 let newUsernameList = []
-                for (let i = 0; i<usernameResults.length; i++) {
-                    newUsernameList.push({key: usernameResults[i]})
+                for (let i = 0; i < usernameResults.length; i++) {
+                  newUsernameList.push({ key: usernameResults[i] })
                 }
-                this.setState({usernameList: newUsernameList})
+                this.setState({ usernameList: newUsernameList })
               })
             }}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() =>{
-                 this.setState({ usernameInput: item.key })
-                 this.setState({usernameList: []})
-                 this.isUsernameValid = true
-                 }}>
+              <TouchableOpacity onPress={() => {
+                this.setState({ usernameInput: item.key })
+                this.setState({ usernameList: [] })
+                this.isUsernameValid = true
+              }}>
                 <Text>{item.key}</Text>
               </TouchableOpacity>
             )}
@@ -93,7 +93,7 @@ export default class CreateGroup extends React.Component {
                   alert("Cet utilisateur est déjà dans la liste des participants !")
                 }
                 else if (this.state.usernameList.some(item => item.key !== this.state.usernameInput) || !this.isUsernameValid || this.state.usernameInput.length === 0) {
-                  alert ("Cet utilisateur n'existe pas !")
+                  alert("Cet utilisateur n'existe pas !")
                 }
                 else {
                   this.state.invitedUsers.push({ key: this.state.usernameInput })
@@ -108,13 +108,21 @@ export default class CreateGroup extends React.Component {
           </View>
           <View style={styles.create_container}>
             <CustomButton name='Créer groupe' onPress={() => {
-              this.pickImageGroup()
-              let invitedUsersArray = []
-              for (let i=0; i<this.state.invitedUsers.length; i++) {
-                invitedUsersArray.push(this.state.invitedUsers[i].key)
+              if (this.groupName.length === 0) {
+                alert("Le groupe n'a pas de nom !")
               }
-              groupServices.createGroup(this.groupName, this.description, invitedUsersArray, this.idImageGroup,
-                () => this.props.navigation.navigate("Groups"))
+              else if (this.description.length === 0) {
+                alert("Le champ description est vide !")
+              }
+              else {
+                this.pickImageGroup()
+                let invitedUsersArray = []
+                for (let i = 0; i < this.state.invitedUsers.length; i++) {
+                  invitedUsersArray.push(this.state.invitedUsers[i].key)
+                }
+                groupServices.createGroup(this.groupName, this.description, invitedUsersArray, this.idImageGroup,
+                  () => this.props.navigation.navigate("Groups"))
+              }
             }}></CustomButton>
           </View>
         </KeyboardAwareScrollView>

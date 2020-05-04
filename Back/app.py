@@ -81,31 +81,44 @@ def account_update():
 
         if user.Password == content["current_password"]:
             if "username" in content:
-                #Test if username is already taken
-                try:
-                    #This throw an error if there is no user found with this username
-                    u = PERSON.get(PERSON.Username == content["username"])
-                    return sendError(409, "Username already taken !")
-                except:
+                if content["username"] != "":
+                    #Test if username is already taken
+                    try:
+                        #This throw an error if there is no user found with this username
+                        u = PERSON.get(PERSON.Username == content["username"])
+                        if u.Username != session["username"]:
+                            return sendError(409, "Username already taken !")
+                    except:
+                        pass
                     user.Username = content["username"]
+                    session["username"] = content["username"]
             if "email" in content:
-                #Test if email is already taken
-                try:
-                    #This throw an error if there is no user found with this email
-                    u = PERSON.get(PERSON.Email == content["email"])
-                    return sendError(409, "Email already taken !")
-                except:
+                if content["email"] != "":
+                    #Test if email is already taken
+                    try:
+                        #This throw an error if there is no user found with this email
+                        u = PERSON.get(PERSON.Email == content["email"])
+                        cur_u = PERSON.get(PERSON.Username == session["username"])
+                        if u.Email != cur_u.Email:
+                            return sendError(409, "Email already taken !")
+                    except:
+                        pass
                     user.Email = content["email"]
             if "password" in content:
-                user.Password = content["password"]
+                if content["password"] != "":
+                    user.Password = content["password"]
             if "lastName" in content:
-                user.LastName = content["lastName"]
+                if content["lastName"] != "":
+                    user.LastName = content["lastName"]
             if "name" in content:
-                user.Name = content["name"]
+                if content["name"] != "":
+                    user.Name = content["name"]
             if "birthdate" in content:
-                user.BirthDate = content["birthdate"]
+                if content["birthdate"] != "":
+                    user.BirthDate = content["birthdate"]
             if "bio" in content:
-                user.Bio = content["bio"]
+                if content["bio"] != "":
+                    user.Bio = content["bio"]
             user.save()
         else:
             return sendError(403, "Password mismatch, you are not allowed to modify the profil !")
@@ -118,10 +131,9 @@ def account_update():
 @authenticate
 def account_info():
 
-    try:
+    username = session['username']
+    if request.args.get('username') is not None:
         username = request.args.get('username')
-    except:
-        username = session['username']
 
     try:
         user = PERSON.get(PERSON.Username == username)
@@ -295,10 +307,7 @@ def group():
         return jsonify(reponse_body), code
     elif request.method == 'GET':
         user = PERSON.get(PERSON.Username == session['username'])
-        try:
-            rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
-        except:
-            return sendError(404, "Groups not found")
+        rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
 
         groupsData = []
 
