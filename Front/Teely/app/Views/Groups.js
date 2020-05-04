@@ -49,12 +49,10 @@ export default class Groups extends React.Component {
     accountServices.dataProfile(this.updateDataProfile, "")
   }
 
-  updateInvitations = (dataInvit) => {
-    this.invitations = dataInvit
-  }
-
   getInvitations() {
-    accountServices.accountInvitations(this.updateInvitations)
+    accountServices.accountInvitations((dataInvit) => {
+      this.invitations = dataInvit
+    })
   }
 
   getGroups() {
@@ -66,6 +64,10 @@ export default class Groups extends React.Component {
 
   displayInvitations() {
     let nbInvit = this.invitations.length
+
+    if(!nbInvit){
+      nbInvit = 0
+    }
 
     const title = 'MES INVITATIONS (' + nbInvit + ')'
 

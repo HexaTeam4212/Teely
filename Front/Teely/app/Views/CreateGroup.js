@@ -107,7 +107,7 @@ export default class CreateGroup extends React.Component {
             />
           </View>
           <View style={styles.create_container}>
-            <CustomButton name='Créer groupe' onPress={() => {
+            <CustomButton name='Créer groupe' width={200} onPress={() => {
               if (this.groupName.length === 0) {
                 alert("Le groupe n'a pas de nom !")
               }
@@ -122,6 +122,7 @@ export default class CreateGroup extends React.Component {
                 }
                 groupServices.createGroup(this.groupName, this.description, invitedUsersArray, this.idImageGroup,
                   () => this.props.navigation.navigate("Groups", {refresh: true}))
+
               }
             }}></CustomButton>
           </View>
@@ -173,7 +174,6 @@ const styles = StyleSheet.create({
     marginRight: "15%",
     marginTop: "5%",
     borderWidth: 0,
-    textAlign: 'center'
   },
   suggestionList: {
     marginLeft: "15%",

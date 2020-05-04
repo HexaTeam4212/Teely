@@ -93,7 +93,7 @@ export default class InviteMembers extends React.Component {
                         />
                     </View>
                     <View style={styles.create_container}>
-                        <CustomButton name='Créer groupe' onPress={() => {
+                        <CustomButton name='Créer groupe' width={200} onPress={() => {
                             for (let i = 0; i < this.state.invitedUsers.length; i++) {
                                 console.log("à inviter : "+ this.state.invitedUsers[i].key )
                                 groupServices.inviteUser(this.groupId, this.state.invitedUsers[i].key)

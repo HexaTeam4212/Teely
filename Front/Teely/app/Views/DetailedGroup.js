@@ -162,12 +162,11 @@ export default class DetailedGroup extends React.Component {
               <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
             </TouchableOpacity>
 
-
             <View style={styles.arrows_container}>
               <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar", { idGroup: this.groupId })}>
                 <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
               </TouchableOpacity>
-              <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}*/>
+              <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}>
                 <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
               </TouchableOpacity>
               <TouchableOpacity style={{ flex: 1 }}
@@ -186,6 +185,7 @@ export default class DetailedGroup extends React.Component {
             </KeyboardAwareScrollView>
             {this.displayLoading()}
             {this.displayLeaveGroupDialog()}
+
         </View>
       </View >
     )

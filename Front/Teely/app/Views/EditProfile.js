@@ -7,6 +7,7 @@ import CustomButton from '../Components/CustomButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import accountServices from '../Services/AccountServices';
 import Images from '../modules/ImageProfile';
+import moment from 'moment'
 
 export default class EditProfil extends React.Component {
   constructor(props) {
@@ -14,7 +15,8 @@ export default class EditProfil extends React.Component {
     this.state = {
       isLoading: true,
       username: "",
-      password: "",
+      current_password: "",
+      new_password:"",
       confirmedPassword: "",
       email: "",
       lastName: "",
@@ -41,8 +43,12 @@ export default class EditProfil extends React.Component {
     this.setState({ username: childData })
   }
 
-  callbackFunctionPassword = (childData) => {
-    this.setState({ password: childData })
+  callbackFunctionCurrentPassword = (childData) => {
+    this.setState({ current_password: childData })
+  }
+
+  callbackFunctionNewPassword = (childData) => {
+    this.setState({ new_password: childData })
   }
 
   callbackFunctionConfirmedPassword = (childData) => {
@@ -78,17 +84,18 @@ export default class EditProfil extends React.Component {
   }
 
   saveProfile = () => {
-    if (this.state.username == '' || this.state.password == '' || this.state.confirmedPassword == '' 
-    || this.state.birthDate == '' || this.state.lastName == '' || this.state.name == '' || this.state.email == '') {
-      alert("Veuillez remplir tous les champs !")
+    if (this.state.current_password == '') {
+      alert("Veuillez rentrer votre mot de passe !")
     }
-    else if (this.state.password != this.state.confirmedPassword) {
-      alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
+    else if (this.state.new_password != '' || this.state.confirmedPassword != '') {
+      if(this.state.new_password != this.state.confirmedPassword){
+        alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
+      }
     }
     else {
       this.setState({ isLoading: true })
-      accountServices.saveProfile(this.state.username, this.state.password,this.state.email,
-      this.state.lastName, this.state.name, this.state.birthDate, this.state.biography,
+      accountServices.saveProfile(this.state.username, this.state.current_password, this.state.new_password, 
+        this.state.email,this.state.lastName, this.state.name, this.state.birthDate, this.state.biography,
         this.redirect)
     }
 
@@ -104,27 +111,18 @@ export default class EditProfil extends React.Component {
   }
 
   getDataProfile = () => {
-    accountServices.dataProfile(this.updateDataProfile)
+    accountServices.dataProfile(this.updateDataProfile,"")
   }
 
-  imageProfil = () => {
+  imageProfile = () => {
     return (
       <Image style={styles.profil} source={Images[this.state.idImage]} />
     )
   }
 
-  formatDate(dateString) {
-    var date = new Date(dateString);
-    var year = parseInt(date.getFullYear())
-    var month = parseInt(date.getMonth() + 1)
-    var day = parseInt(date.getDate())
-    if (month < 10) {
-        month = "0" + month
-    }
-    if (day < 10) {
-        day = "0" + day
-    }
-    var formattedDate = year + "-" + month + "-" + day
+  formatDate(dateString){
+    var date = new Date(dateString); 
+    var formattedDate= moment(date).format("YYYY-MM-DD")
     return formattedDate
 }
 
@@ -132,7 +130,7 @@ export default class EditProfil extends React.Component {
     return (
       <View style={styles.main_container}>
         <View style={styles.image_container}>
-          {this.imageProfil()}
+          {this.imageProfile()}
         </View>
         <View style={styles.content_container}>
 
@@ -148,8 +146,10 @@ export default class EditProfil extends React.Component {
               value={this.state.name} secureTextEntry={false} parentCallback={this.callbackFunctionName} />
             <NameWithInput name="Nom d'utilisateur : " type='username' placeholder={"Pseudonyme"} height={40}
               value={this.state.username} secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
-            <NameWithInput name='Mot de passe : ' type='password' placeholder={"********"} height={40}
-              value={this.state.password} secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
+               <NameWithInput name={'Mot de passe \nactuel : '} type='password' placeholder={"********"} height={40}
+              value={this.state.current_password} secureTextEntry={true} parentCallback={this.callbackFunctionCurrentPassword} />
+            <NameWithInput name={'Nouveau \nmot de passe : '} type='password' placeholder={"********"} height={40}
+              value={this.state.new_password} secureTextEntry={true} parentCallback={this.callbackFunctionNewPassword} />
             <NameWithInput name={"Confirmez votre \nmot de passe : "} type='password' placeholder={"********"} height={40}
               value={this.state.confirmedPassword} secureTextEntry={true} parentCallback={this.callbackFunctionConfirmedPassword} />
             <NameWithInput name='Email : ' type='emailAddress' placeholder={"Email"} height={40}
@@ -163,7 +163,7 @@ export default class EditProfil extends React.Component {
           </KeyboardAwareScrollView>
         </View>
         <View style={styles.buttons_container}>
-          <CustomButton name="Enregistrer" onPress={this.saveProfile} />
+          <CustomButton name="Enregistrer" width={200} onPress={this.saveProfile} />
         </View>
         {this.displayLoading()}
       </View>

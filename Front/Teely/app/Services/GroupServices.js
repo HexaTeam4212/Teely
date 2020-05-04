@@ -229,6 +229,60 @@ class GroupServices {
         }
     }
 
+    async acceptInvitGroup(groupId, invitId, callback){
+        const fullEndpoint = endpoint+ '/'+groupId+'/accept'
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'invit_id': invitId
+                    }
+                })
+            if (response.status != 204) {
+                alert("Erreur lors de la suppression de l'invitation")
+                callback(false)
+            }
+            else {
+                callback(true)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    async declineInvitGroup(groupId, callback){
+        const token = await getToken()
+        const fullEndpoint = endpoint + '/'+groupId+'/invite'
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    }
+                })
+            if (response.status != 204) {
+                if (response.status == 401) {
+                    alert("Vous n'êtes pas connecté")
+                }
+                alert("Erreur lors de la suppression de l'invitation")
+                callback(false);
+            }
+            else {
+                callback(true);
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
 
 
 }

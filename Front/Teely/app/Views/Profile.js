@@ -49,7 +49,7 @@ export default class Profile extends React.Component {
         if (!(this.state.tasks.length)) {
             return (
                 <View style={styles.emptyTasks_container}>
-                    <Text style={styles.bio_text}>Rien à signaler pour le moment.. </Text>
+                    <Text style={styles.bio_text}>Rien à signaler pour le moment... </Text>
                     <Image style={{ height: 150, width: 100 }} source={require('../../assets/Images/cat.png')} />
                 </View>
             )

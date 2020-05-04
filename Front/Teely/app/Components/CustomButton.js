@@ -9,7 +9,7 @@ export default class CustomButton extends React.Component {
     const onPressAction = this.props.onPress
     return(
     <View style={styles.main_container}>
-        <TouchableOpacity style = {styles.button} onPress = {onPressAction}>
+        <TouchableOpacity style = {[styles.button, {width:width}]} onPress = {onPressAction}>
             <Text style={styles.buttonText}>{name}</Text>
         </TouchableOpacity>
     </View>

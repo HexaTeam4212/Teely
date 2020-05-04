@@ -114,7 +114,7 @@ export default class SignUp extends React.Component {
 
           </KeyboardAwareScrollView>
         </View>
-        <CustomButton name='Créer mon compte'
+        <CustomButton name='Créer mon compte' width={200}
             onPress={this.signup} />
         {this.displayLoading()}
       </View>
