@@ -118,9 +118,17 @@ def account_update():
 @authenticate
 def account_info():
 
-    user = PERSON.get(PERSON.Username == session['username'])
-    groupsParticipating = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User == user.personId)
+    try:
+        username = request.args.get('username')
+    except:
+        username = session['username']
 
+    try:
+        user = PERSON.get(PERSON.Username == username)
+    except:
+        return sendError(404, "User not found !")
+    
+    groupsParticipating = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User == user.personId)
     groupIds = []
 
     for groupP in groupsParticipating:
@@ -511,7 +519,7 @@ def delete_task(id_group,id_task):
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
     except:
         return sendError(404, "Task doesnt't exist or has already been deleted !")
-        
+
     TASK.delete().where(TASK.taskId == id_task).execute()
     return jsonify({}), 204
 
