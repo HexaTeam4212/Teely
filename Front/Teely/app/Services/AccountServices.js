@@ -1,7 +1,8 @@
-//app/Services/SignUpService.js
+//app/Services/AccountServices.js
 import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
 import { storeToken, getToken, removeToken } from '../modules/TokenStorage.js'
+import generalServices from '../Services/GeneralServices'
 
 const endpoint = "/account"
 
@@ -149,10 +150,13 @@ class AccountServices {
     }
 
 
-    async dataProfile(callback) {
-
-        const username = await getToken()
-        const fullEndpoint = endpoint + "/info"
+    async dataProfile(callback, username) {
+        if (username=="") {
+            username = await (await getToken()).toString()
+        }
+        const token = await getToken()
+        const fullEndpoint = endpoint + "/info?username="+username
+        console.log(backendURL + fullEndpoint)
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -160,7 +164,7 @@ class AccountServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: username
+                        Authorization: token
                     }
                 })
             const respBody = await response.json()
@@ -177,9 +181,9 @@ class AccountServices {
     }
 
     async accountUpcomingTasks(callback) {
-
         const username = await getToken()
-        const fullEndpoint = endpoint + "task/upcomming"
+        const fullEndpoint = endpoint + "/task/upcomming"
+        console.log("full url "+ backendURL + fullEndpoint)
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -204,10 +208,9 @@ class AccountServices {
         }
     }
 
-    async accountAllTasks() {
-
+    async accountAllTasks(callback) {
         const username = await getToken()
-        const fullEndpoint = endpoint + "task/all"
+        const fullEndpoint = endpoint + "/task/all"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -219,7 +222,6 @@ class AccountServices {
                     }
                 })
             const respBody = await response.json()
-            console.log(respBody.tasks)
             if (response.status != 200) {
                 alert("Erreur lors de la récupération des tâches")
             }
@@ -230,59 +232,6 @@ class AccountServices {
         catch (error) {
             console.error(error)
         }
-    }
-
-
-
-    accountTasks() {
-        const task1 = { id: 320, name: 'Ménage', description: 'nettoyer salle de bain', dueDate: '2020-04-30', startingTime: '11:20', endingTime: '11:40' }
-        const task2 = { id: 253, name: 'Promener Pooky', description: 'aller au parc avec Pooky', dueDate: '2020-04-30', startingTime: '15:00', endingTime: '16:00' }
-        const task3 = { id: 501, name: 'Convention de stage', description: 'remplir avenant convention de stage', dueDate: '2020-04-30', startingTime: '16:10', endingTime: '16:30' }
-        const task4 = { id: 321, name: 'Courses', description: 'Faire les courses pour la semaine', dueDate: '2020-04-29', startingTime: '13:00', endingTime: '15:00' }
-    
-
-        let accountTasks = [task1, task2, task3, task4]
-        /*let accountTasks = []
-        const fullEndpoint = endpoint + "/task/all"
-
-        try {
-            const response = await fetch(backendURL + fullEndpoint, 
-            {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization : username
-                }
-            })
-            const respBody = await response.json()
-            if (response.status != 200) {
-                    alert("Erreur lors de la récupération des tâches")
-            }
-            else {
-                callback(respBody)
-            }
-        }
-        catch (error) {
-            console.error(error)
-        }*/
-        return accountTasks
-    }
-
-    tasksByDate(day) {
-        let tasksForDay = []
-        let tasks=this.accountTasks()
-        const arr = Object.keys(tasks);
-        for (let i = 0; i < arr.length; ++i) {
-            let task = {...tasks[arr[i]]}
-            if (task.dueDate==day) {
-                // let result = Array.isArray(tasksForDay[day]) ? tasksForDay[day] : []
-                // tasksForDay[day] = [task, ...result]
-                tasksForDay.push(task)
-            }
-        }
-        return tasksForDay      
-        
     }
 
     async accountInvitations(callback) {
@@ -313,7 +262,7 @@ class AccountServices {
                 console.error(response.error)
             }
             else {
-                alert("Récupération des invitations réussie :)")
+                // alert("Récupération des invitations réussie :)")
                 //callback(respBody)
                 callback(accountInvitations)
             }
@@ -341,7 +290,7 @@ class AccountServices {
                     body: requestBody
                 })
                 .catch(err => {
-                    console.error("Promise error : " + err)
+                    console.log("Promise error : " + err)
                 })
             if (response.status != 201) {
                 alert("Une erreur s'est produite")

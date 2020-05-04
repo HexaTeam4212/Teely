@@ -6,16 +6,18 @@ import ActionButton from 'react-native-action-button'
 import Autocomplete from 'react-native-autocomplete-input'
 
 import InputWithName from '../Components/InputWithName'
-import Images from '../modules/ImageProfile'
+import ImagesGroup from '../modules/ImageGroup'
 import CustomButton from '../Components/CustomButton'
 import groupServices from '../Services/GroupServices'
 import accountServices from '../Services/AccountServices'
+import {getToken} from '../modules/TokenStorage.js'
 
 export default class CreateGroup extends React.Component {
   constructor(props) {
     super(props)
     this.groupName = ""
     this.description = ""
+    this.idImageGroup = 18
     this.state = {
       usernameInput: "",
       usernameList: [],
@@ -32,15 +34,21 @@ export default class CreateGroup extends React.Component {
     this.description = childData
   }
 
+  pickImageGroup = () => {
+    let max = 5
+    this.idImageGroup = Math.floor(Math.random() * max)
+  }
+
   render() {
     return (
+      
       <View style={styles.main_container}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
           scrollEnabled={true}
           enableAutomaticScroll={(Platform.OS === 'ios')}
           enableOnAndroid={true}>
-          <Image style={styles.profile} source={Images[2]} />
+          <Image style={styles.profile} source={ImagesGroup[18]} />
           <InputWithName placeholder='Nom du groupe' value={this.groupName} parentCallback={this.callbackFunctionGroupName} />
           <InputWithName style={styles.text} placeholder={'Description\n\n\n'} value={this.description}
             parentCallback={this.callbackFunctionDescription} multiline={true} />
@@ -63,7 +71,7 @@ export default class CreateGroup extends React.Component {
               accountServices.getAccountUsernames(text, (usernameResults) => {
                 let newUsernameList = []
                 for (let i = 0; i<usernameResults.length; i++) {
-                  newUsernameList.push({key: usernameResults[i]})
+                    newUsernameList.push({key: usernameResults[i]})
                 }
                 this.setState({usernameList: newUsernameList})
               })
@@ -101,11 +109,12 @@ export default class CreateGroup extends React.Component {
           </View>
           <View style={styles.create_container}>
             <CustomButton name='Créer groupe' onPress={() => {
+              this.pickImageGroup()
               let invitedUsersArray = []
               for (let i=0; i<this.state.invitedUsers.length; i++) {
                 invitedUsersArray.push(this.state.invitedUsers[i].key)
               }
-              groupServices.createGroup(this.groupName, this.description, invitedUsersArray,
+              groupServices.createGroup(this.groupName, this.description, invitedUsersArray, this.idImageGroup,
                 () => this.props.navigation.navigate("Groups"))
             }}></CustomButton>
           </View>
@@ -143,14 +152,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 50,
   },
   itemText: {
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontSize: 18,
+    color: 'white',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+    fontWeight: 'bold',
+    flexWrap: 'wrap',
+    textAlign: 'center',
   },
   textInput: {
     backgroundColor: 'white',
     marginLeft: "15%",
     marginRight: "15%",
     marginTop: "5%",
-    borderWidth: 0
+    borderWidth: 0,
+    textAlign: 'center'
   },
   suggestionList: {
     marginLeft: "15%",

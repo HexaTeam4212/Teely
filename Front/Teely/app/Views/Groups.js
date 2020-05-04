@@ -5,22 +5,23 @@ import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndi
 
 import groupServices from '../Services/GroupServices';
 import accountServices from '../Services/AccountServices';
-import Images from '../modules/ImageProfile';
-import ImagesGp from '../modules/ImageGroup';
+import ImagesGroup from '../modules/ImageGroup'
+import ImagesProfile from '../modules/ImageProfile'
 import GroupItem from '../Components/GroupItem'
 import ImageWithText from '../Components/ImageWithText'
-
+import ProfileIcon from '../Components/ProfileIcon'
 export default class Groups extends React.Component {
   constructor(props) {
     super(props)
-    this.idImage = ""
+    this.idImageProfile = 18
     this.groups = []
     this.invitations = []
     this.firstload = true
-    this.state = { isLoading: true }
+    this.state = { isLoading: true, idImageProfile: 18}
 
     this.getInvitations()
     this.getDataProfile()
+    this.getGroups()
 
   }
 
@@ -35,57 +36,12 @@ export default class Groups extends React.Component {
   }
 
   updateDataProfile = (dataProfile) => {
-    this.idImage = dataProfile.idImage
-    // this.setState({ isLoading: false })
+    this.setState({idImageProfile : dataProfile.idImage})
+    this.setState({ isLoading: false })
   }
 
   getDataProfile = () => {
-    accountServices.dataProfile(this.updateDataProfile)
-  }
-
-  imageProfile = () => {
-    return (
-      <Image style={styles.profile} source={Images[this.idImage]} />
-    )
-  }
-
-  displayGroups() {
-    groupServices.getGroupsUser((groupIds) => {
-      this.groups = groupIds
-      console.log("hi " + this.groups)
-      console.log(this.groups.length)
-
-      if (!(this.groups.length)) {
-        return (
-          <View style={styles.noGroup_container}>
-            <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
-            <Image style={styles.image_group} source={require('../../assets/Images/noGroup.png')} />
-            <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvez créer votre propre groupe !</Text>
-          </View>
-        )
-      }
-      else {
-        //pour l'instant rien ne s'affiche c'est normal
-        // car il n'y a pas d'attribut id dans this.groups
-        return (
-          <KeyboardAwareScrollView
-            contentContainerstyle={styles.content_container}
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}>
-            <FlatList
-              data={this.groups}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) =>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.id })}>
-                  <GroupItem group={item.name} image={ImagesGp[item.idImage]} />
-                </TouchableOpacity>}
-            />
-          </KeyboardAwareScrollView>
-        )
-      }
-    })
+    accountServices.dataProfile(this.updateDataProfile, "")
   }
 
   updateInvitations = (dataInvit) => {
@@ -94,6 +50,13 @@ export default class Groups extends React.Component {
 
   getInvitations() {
     accountServices.accountInvitations(this.updateInvitations)
+  }
+
+  getGroups() {
+    groupServices.getGroupsUser((groupIds) => {
+      this.groups = groupIds
+      this.setState({ isLoading: false })
+    })
   }
 
   displayInvitations() {
@@ -108,27 +71,56 @@ export default class Groups extends React.Component {
     )
   }
 
+  displayGroups() {
+    if (this.groups.length === 0) {
+      return (
+        <View style={styles.noGroup_container}>
+          <Text style={styles.text}>Vous n'êtes dans aucun groupe pour le moment...</Text>
+          <Image style={styles.image_group} source={require('../../assets/Images/noGroup.png')} />
+          <Text style={styles.text}>...mais ne vous inquiétez pas, vous pouvez créer votre propre groupe !</Text>
+        </View>
+      )
+    }
+    else {
+      return (
+        <KeyboardAwareScrollView
+          contentContainerstyle={styles.content_container}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          scrollEnabled={true}
+          enableAutomaticScroll={(Platform.OS === 'ios')}
+          enableOnAndroid={true}>
+          <FlatList
+            data={this.groups}
+            keyExtractor={(item) => item.groupId.toString()}
+            renderItem={({ item }) =>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.groupId })}>
+                <GroupItem group={item.group_name} image={ImagesGroup[item.idImageGroup]} />
+              </TouchableOpacity>}
+          />
+        </KeyboardAwareScrollView>
+      )
+    }
+  }
+
 
   render() {
-
+    console.log(this.props)
     return (
       <View style={styles.main_container}>
-        <View style={styles.head_container}>
-          {this.imageProfile()}
+        <ProfileIcon idImage={this.state.idImageProfile}/>
           <View style={styles.title_container}>
             <Text style={styles.title_text}>Mes groupes</Text>
             <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
               <Image style={styles.image_plus} source={require('../../assets/Images/plus.png')} />
             </TouchableOpacity>
           </View>
-        </View>
         <View style={styles.content_container}>
           {this.displayGroups()}
         </View>
         <View style={styles.invit_container}>
           {this.displayInvitations()}
         </View>
-        {/* {this.displayLoading()} */}
+        {this.displayLoading()}
       </View>
     )
   }
@@ -140,10 +132,16 @@ const styles = StyleSheet.create({
     flex: 1
   },
   title_container: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'flex-start',
+    marginRight: 10,
+    marginLeft: 10,
+    marginBottom: 10,
+    justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    marginLeft: 80
   },
   content_container: {
     flex: 8,
@@ -165,14 +163,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: '#60dbd3',
   },
-  head_container: {
-    flex: 3,
-    marginRight: 10,
-    marginLeft: 10,
-    marginBottom: 10,
-    justifyContent: 'space-evenly',
-    flexDirection: 'row',
-  },
   invit_container: {
     flex: 3,
     flexDirection: 'column',
@@ -190,16 +180,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: '#60dbd3',
   },
-  profile: {
-    resizeMode: 'contain',
-    alignItems: 'center',
-    width: 90,
-    height: 90,
-    borderColor: '#ffb4e2',
-    borderWidth: 3,
-    borderRadius: 60,
-    margin: 10
-  },
+ 
   title_text: {
     fontWeight: 'bold',
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
@@ -239,6 +220,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-
 
 });

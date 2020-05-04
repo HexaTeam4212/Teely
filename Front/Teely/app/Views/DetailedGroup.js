@@ -1,34 +1,47 @@
-// app/Views/DatailedGroup.js
+// app/Views/DetailedGroup.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, TextInput } from 'react-native'
+import { YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, FlatList, KeyboardAvoidingView } from 'react-native'
 import groupServices from '../Services/GroupServices'
-import Images from '../modules/ImageProfile'
+import ImagesGroup from '../modules/ImageGroup'
 import ImageWithText from '../Components/ImageWithText'
+import ProfileIcon from '../Components/ProfileIcon'
+import GroupIcon from '../Components/GroupIcon'
 import Dialog, { SlideAnimation, DialogContent, DialogTitle, DialogFooter, DialogButton } from 'react-native-popup-dialog';
+import accountServices from '../Services/AccountServices'
+
+
+YellowBox.ignoreWarnings([
+  'componentWillReceiveProps has been renamed, and is not recommended for use'
+])
 
 export default class DetailedGroup extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      idImageProfile: 18,
       name: "",
       description: "",
-      idImage: 1,
+      idImageGroup: 18,
       members: [],
       isLoading: true,
-      visibleInvitationDialog: false,
       visibleLeaveGroupDialog: false,
+      usernameInput: "",
+      usernameList: [],
+      invitedUser: []
     }
-    this.invitationInput = ""
-    this.groupId = 1 
-    //this.getGroupId() Corriger quand back OK
+    this.isUsernameValid = true
+    this.groupId = ""
+    this.getGroupId() 
+    this.getDataProfile()
     this.getGroupInfos()
   }
 
   getGroupId() {
-    let params = this.props.navigation.state.params
+    let params = this.props.route.params
     this.groupId = params.idGroup
   }
+
   displayLoading() {
     if (this.state.isLoading) {
       return (
@@ -39,76 +52,36 @@ export default class DetailedGroup extends React.Component {
     }
   }
 
-  displayInvitationDialog = () => {
-    return (
-      <View>
-        <KeyboardAwareScrollView
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}>
-        <Dialog dialogStyle={styles.dialog_container}
-          visible={this.state.visibleInvitationDialog}
-          onTouchOutside={() => {
-            this.setState({ visibleInvitationDialog: false })
-          }}
-          footer={
-            <DialogFooter bordered={false} style={styles.dialog_footer} >
-              <DialogButton text="Annuler" textStyle={styles.dialog_text} style={styles.cancelButton}
-                onPress={() => { this.setState({ visibleInvitationDialog: false }) }} />
-              <DialogButton text="Inviter" textStyle={styles.confirmInvite_text} style={styles.confirmInviteButton}
-                onPress={this.confirmMemberInvitation} />
-            </DialogFooter>
-          }
-          dialogAnimation={new SlideAnimation({
-            slideFrom: 'bottom',
-          })}
-
-        >
-          <DialogContent style={styles.dialogContent_container}>
-            <Text style={styles.dialog_text}> Nom d'utilisateur : </Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={text => { this.invitationInput = text }}
-              value={this.state.invitationInput} placeholder={'Participant à inviter'}
-            />
-          </DialogContent>
-        </Dialog>
-        </KeyboardAwareScrollView>
-      </View>
-    )
-  }
-
   displayLeaveGroupDialog = () => {
     return (
       <View>
         <KeyboardAwareScrollView
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}>
-        <Dialog dialogStyle={styles.dialog_container}
-          visible={this.state.visibleLeaveGroupDialog}
-          onTouchOutside={() => {
-            this.setState({ visibleLeaveGroupDialog: false })
-          }}
-          footer={
-            <DialogFooter bordered={false} style={styles.dialog_footer} >
-              <DialogButton text="Annuler" textStyle={styles.dialog_text} style={styles.cancelButton}
-                onPress={() => { this.setState({ visibleLeaveGroupDialog: false }) }} />
-              <DialogButton text="Oui" textStyle={styles.dialog_text} style={styles.confirmButton}
-                onPress={this.confirmLeavingGroup} />
-            </DialogFooter>
-          }
-          dialogAnimation={new SlideAnimation({
-            slideFrom: 'bottom',
-          })}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          scrollEnabled={false}
+          enableAutomaticScroll={(Platform.OS === 'ios')}
+          enableOnAndroid={true}>
+          <Dialog dialogStyle={styles.dialog_container}
+            visible={this.state.visibleLeaveGroupDialog}
+            onTouchOutside={() => {
+              this.setState({ visibleLeaveGroupDialog: false })
+            }}
+            footer={
+              <DialogFooter bordered={false} style={styles.dialog_footer} >
+                <DialogButton text="Annuler" textStyle={styles.dialogButton_text} style={styles.cancelButton}
+                  onPress={() => { this.setState({ visibleLeaveGroupDialog: false }) }} />
+                <DialogButton text="Oui" textStyle={styles.dialogButton_text} style={styles.confirmButton}
+                  onPress={this.confirmLeavingGroup} />
+              </DialogFooter>
+            }
+            dialogAnimation={new SlideAnimation({
+              slideFrom: 'bottom',
+            })}
 
-        >
-          <DialogContent style={styles.dialogContent_container}>
-            <Text style={styles.dialog_text}> Etes-vous sûrs de vouloir quitter ce groupe ?</Text>
-          </DialogContent>
-        </Dialog>
+          >
+            <DialogContent style={styles.dialogContent_container}>
+              <Text style={styles.dialog_text}> Etes-vous sûrs de vouloir quitter ce groupe ?</Text>
+            </DialogContent>
+          </Dialog>
         </KeyboardAwareScrollView>
       </View>
     )
@@ -126,16 +99,10 @@ export default class DetailedGroup extends React.Component {
     groupServices.leaveGroup(this.groupId, this.redirect)
   }
 
-  confirmMemberInvitation = () => {
-    console.log("participant : " + this.invitationInput)
-    this.setState({ visibleInvitationDialog: false})
-    //this.setState({ visibleInvitationDialog: false, isLoading: true })
-
-  }
 
   updateGroupInfos = (data) => {
     this.setState({
-      name: data.group_name, description: data.description, idImage: data.idImageGroup,
+      name: data.group_name, description: data.description, idImageGroup: data.idImageGroup,
       members: data.members, isLoading: false
     });
   }
@@ -148,51 +115,59 @@ export default class DetailedGroup extends React.Component {
     this.setState({ visibleLeaveGroupDialog: true })
   }
 
-  inviteMembers = () => {
-    this.setState({ visibleInvitationDialog: true })
-  }
+
   imageGroup = () => {
     return (
-      <Image style={styles.groupPic} source={Images[this.state.idImage]} />
+      <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
     )
   }
 
+  updateDataProfile = (dataProfile) => {
+    this.setState({idImageProfile: dataProfile.idImage})
+  }
+
+  getDataProfile = () => {
+    accountServices.dataProfile(this.updateDataProfile, "")
+  }
 
   render() {
     return (
       <View style={styles.main_container}>
-          <View style={styles.head_container}>
-            {this.imageGroup()}
-            <Text style={styles.name_text}>{this.state.name}</Text>
-            <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
-            <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
-            <TouchableOpacity style={styles.editButton} onPress={() => this.props.navigation.navigate("EditGroup")}>
-              <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
-            </TouchableOpacity>
-          </View>
+        <ProfileIcon idImage={this.state.idImageProfile}/>
+        <View style={styles.head_container}>
+          <GroupIcon idImage={this.state.idImageGroup}/>
+          <Text style={styles.name_text}>{this.state.name}</Text>
+          <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
+          <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
+          <TouchableOpacity style={styles.editButton} onPress={() => 
+            this.props.navigation.navigate("EditGroup", {idGroup: this.groupId, idImageProfile: this.state.idImageProfile, description: this.state.description,
+                                                          idImageGroup: this.state.idImageGroup, name: this.state.name})}>
+            <Image style={styles.editImage} source={require('../../assets/Images/edit.png')} />
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.arrows_container}>
-            <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar")}>
-              <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
-              <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupCalendar")}*/>
-              <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.buttons_container}>
-            <TouchableOpacity style={styles.leaveGroupButton} onPress={this.leaveGroup}>
-              <Text style={styles.button_text}>Quitter le groupe</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.inviteButton} onPress={this.inviteMembers}>
-              <Text style={styles.inviteButtonText}>Inviter des participants</Text>
-            </TouchableOpacity>
-          </View>
-          {this.displayLoading()}
-          {this.displayLeaveGroupDialog()}
-          {this.displayInvitationDialog()}
+        <View style={styles.arrows_container}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar", {idGroup : this.groupId})}>
+            <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ flex: 1 }} /*onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}*/>
+            <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ flex: 1 }} 
+          onPress={() => this.props.navigation.navigate("GroupMembers", {idGroup: this.groupId})}>
+            <ImageWithText source={require('../../assets/Images/greenArrow.png')} text='PARTICIPANTS' />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttons_container}>
+          <TouchableOpacity style={styles.leaveGroupButton} onPress={this.leaveGroup}>
+            <Text style={styles.button_text}>Quitter le groupe</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.inviteButton} onPress={() => {this.props.navigation.navigate("InviteMembers", { idGroup: this.groupId})}}>
+            <Text style={styles.inviteButtonText}>Inviter des participants</Text>
+          </TouchableOpacity>
+        </View>
+        {this.displayLoading()}
+        {this.displayLeaveGroupDialog()}
       </View >
     )
   }
@@ -250,29 +225,18 @@ const styles = StyleSheet.create({
   dialog_container: {
     backgroundColor: '#ffb4e2',
     borderColor: '#78e1db',
-    borderWidth: 4,
+    borderWidth: 3,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
   },
   dialogContent_container: {
-    margin: 10,
+    margin: 20,
     flexDirection: 'column',
     justifyContent: 'center',
   },
   dialog_footer: {
-    margin: 10
-  },
-  groupPic: {
-    marginTop: 5,
-    alignSelf: 'center',
-    resizeMode: 'contain',
-    width: 120,
-    height: 120,
-    borderColor: '#ffb4e2',
-    borderWidth: 3,
-    borderRadius: 60,
-    marginBottom: 10
+    margin: 5
   },
   name_text: {
     fontWeight: 'bold',
@@ -316,25 +280,24 @@ const styles = StyleSheet.create({
   },
   dialog_text: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
     fontSize: 20,
     textAlign: 'center',
     color: 'white',
     alignSelf: 'center'
   },
-  confirmInvite_text: {
+  dialogButton_text: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 15,
     textAlign: 'center',
-    color: 'black'
+    color: 'white',
+    alignSelf: 'center'
   },
   textInput: {
     backgroundColor: 'white',
-    textAlign: 'center',
-    height: 50,
+    height: 40,
     width: 200,
-    borderRadius: 10,
     alignSelf: 'center',
     marginTop: 20
   },
@@ -354,16 +317,12 @@ const styles = StyleSheet.create({
     borderRadius: 35,
   },
   confirmButton: {
-    width: 50,
-    height: 60,
     margin: 5,
     padding: 5,
     borderRadius: 40,
-    backgroundColor: '#3eff3a',
+    backgroundColor: '#3bd137',
   },
   cancelButton: {
-    width: 50,
-    height: 60,
     margin: 5,
     padding: 5,
     borderRadius: 40,
@@ -378,13 +337,8 @@ const styles = StyleSheet.create({
     borderRightWidth: 3,
     borderBottomWidth: 5
   },
-  confirmInviteButton: {
-    width: 50,
-    height: 60,
-    margin: 5,
-    padding: 5,
-    borderRadius: 40,
-    backgroundColor: 'white',
-  }
+  suggestionList: {
+    borderWidth: 0
+  },
 
-});
+})

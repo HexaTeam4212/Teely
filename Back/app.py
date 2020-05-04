@@ -78,15 +78,37 @@ def account_update():
 
     try:
         user = PERSON.get(PERSON.Username == session['username'])
-        user.Username = content["username"]
-        user.Email = content["email"]
-        user.Password = content["password"]
-        user.LastName = content["lastName"]
-        user.Name = content["name"]
-        user.BirthDate = content["birthdate"]
-        if "bio" in content:
-            user.Bio = content["bio"]
-        user.save()
+
+        if user.Password == content["current_password"]:
+            if "username" in content:
+                #Test if username is already taken
+                try:
+                    #This throw an error if there is no user found with this username
+                    u = PERSON.get(PERSON.Username == content["username"])
+                    return sendError(409, "Username already taken !")
+                except:
+                    user.Username = content["username"]
+            if "email" in content:
+                #Test if email is already taken
+                try:
+                    #This throw an error if there is no user found with this email
+                    u = PERSON.get(PERSON.Email == content["email"])
+                    return sendError(409, "Email already taken !")
+                except:
+                    user.Email = content["email"]
+            if "password" in content:
+                user.Password = content["password"]
+            if "lastName" in content:
+                user.LastName = content["lastName"]
+            if "name" in content:
+                user.Name = content["name"]
+            if "birthdate" in content:
+                user.BirthDate = content["birthdate"]
+            if "bio" in content:
+                user.Bio = content["bio"]
+            user.save()
+        else:
+            return sendError(403, "Password mismatch, you are not allowed to modify the profil !")
     except:
         return sendError(400, "Bad Request: Make sure to send all parameters !")
 
@@ -96,9 +118,17 @@ def account_update():
 @authenticate
 def account_info():
 
-    user = PERSON.get(PERSON.Username == session['username'])
-    groupsParticipating = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User == user.personId)
+    try:
+        username = request.args.get('username')
+    except:
+        username = session['username']
 
+    try:
+        user = PERSON.get(PERSON.Username == username)
+    except:
+        return sendError(404, "User not found !")
+    
+    groupsParticipating = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User == user.personId)
     groupIds = []
 
     for groupP in groupsParticipating:
@@ -165,18 +195,26 @@ def account_list():
 @authenticate
 def account_all_tasks_for_user():
 
-    tasks_rep = TASK.select().where(TASK.TaskUser.Username == session["username"])
+    user = PERSON.get(PERSON.Username == session["username"])
+    tasks_rep = TASK.select().where(TASK.TaskUser == user)
     tasks_list = []
 
     for task in tasks_rep:
+        dependanciesIds=[]
+        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
+        for dep in dependancies :
+            dependanciesIds.append(dep.TaskConcerned.taskId)
+
         data = {
+            "taskId": task.taskId,
             "name": task.Name,
             "description": task.Description,
-            "taskedUser": task.TaskUser,
-            "dueDate": task.Date,
-            "duration": task.Duration,
+            "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
-            "priority": task.PriorityLevel
+            "priority": task.PriorityLevel,
+            "datetimeStart" : task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
+            "dependancies" : dependanciesIds
         }
         tasks_list.append(data)
 
@@ -190,20 +228,35 @@ def account_all_tasks_for_user():
 @authenticate
 def account_upcomming_tasks_for_user():
 
-    tasks_rep = TASK.select().where(TASK.TaskUser.Username == session["username"] & TASK.Date > datetime.datetime.now())
+    user = PERSON.get(PERSON.Username == session["username"])
+    current_date = datetime.datetime.now()
+    tasks_rep = TASK.select().where(TASK.TaskUser)
+
     tasks_list = []
 
     for task in tasks_rep:
+        dependanciesIds=[]
+        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
+        for dep in dependancies :
+            dependanciesIds.append(dep.TaskConcerned.taskId)
+
         data = {
+            "taskId": task.taskId,
             "name": task.Name,
             "description": task.Description,
-            "taskedUser": task.TaskUser,
-            "dueDate": task.Date,
-            "duration": task.Duration,
+            "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
-            "priority": task.PriorityLevel
+            "priority": task.PriorityLevel,
+            "datetimeStart" : task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
+            "dependancies" : dependanciesIds
         }
-        tasks_list.append(data)
+
+        if task.DatetimeStart is not None:
+            if task.DatetimeStart.year >= current_date.year:
+                if task.DatetimeStart.month >= current_date.month or task.DatetimeStart.year > current_date.year:
+                    if task.DatetimeStart.day >= current_date.day or task.DatetimeStart.month > current_date.month or task.DatetimeStart.year > current_date.year:
+                        tasks_list.append(data)
 
     reponse_body = {
         "tasks": tasks_list
@@ -363,9 +416,7 @@ def group_task_all(id_group):
     rep = TASK.select().where(TASK.Group_id == id_group)
     response_body = {}
     taskData = []
-    ''' manque des éléments à rajouter"description":
-    manque la DATE
-    '''
+
     for task in rep:
 
         dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
@@ -377,14 +428,14 @@ def group_task_all(id_group):
         except :
             dependanciesIds.append("")
 
-        data = {"id": task.taskId,
+        data = {
+            "taskId": task.taskId,
             "name": task.Name,
-            "taskedUsers": task.TaskUser_id,
-            "dueDate" : str(task.Date),
+            "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
-            "duration": task.Duration,
-            "startingTime" : str(task.StartingTime),
+            "datetimeStart" : task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
             "dependancies" : dependanciesIds
         }
 
@@ -394,119 +445,133 @@ def group_task_all(id_group):
         "tasks" : taskData
     }
 
-    return json.dumps(response_body),200
+    return jsonify(response_body),200
 
 @app.route('/group/<id_group>/task/<id_task>', methods=['GET'])
 def group_task_id(id_group, id_task):
-    rep = TASK.select().where(TASK.taskId == id_task)
-    taskData = []
+    try:
+        task = TASK.get(TASK.taskId == id_task)
+    except:
+        return sendError(404, "Task not found !")
+    
     dependanciesIds=[]
+    dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
+    for dep in dependancies :
+        dependanciesIds.append(dep.TaskConcerned.taskId)
 
-    try :
-        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
-        for dep in dependancies :
-            dependanciesIds.append(dep.taskConcerned)
-    except :
-        dependanciesIds.append("")
-
-    for task in rep:
-        data = {"id": task.taskId,
+    data = {
+        "taskId": task.taskId,
+        "name": task.Name,
         "description": task.Description,
-        "taskedUsers": task.TaskUser_id,
-        "dueDate": str(task.Date),
+        "taskUser": task.TaskUser.Username,
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
-        "duration": task.Duration,
-        "startingTime" : str(task.StartingTime),
+        "datetimeStart" : task.DatetimeStart,
+        "datetimeEnd": task.DatetimeEnd,
         "dependancies" : dependanciesIds
-        }
+    }
 
-        taskData.append(data)
-    response_body = {"task" : taskData}
+    response_body = {"task" : data}
 
-    return json.dumps(response_body),200
+    return jsonify(response_body),200
 
 @app.route('/group/<id_group>/task', methods=['POST'])
 def group_task(id_group):
     content = request.get_json()
-    reponse_body = {}
-    ''' verification que le groupe existe ?'''
-    try :
-        newTask = TASK(TaskUser=content['taskUser'], Description = content['description'], Frequency=content['frequency'],Group=id_group, Date= content['date'], PriorityLevel=content['priorityLevel'],Duration = content['duration'],StartingTime = content['startingTime'])
-    except:
-        return sendError(400, "Make sure to send all the parameters")
+    
     try:
-       newTask.save()
+        userTask = PERSON.get(PERSON.Username == content['taskUser'])
+        group = GROUP.get(GROUP.groupId == id_group)
     except:
-        return sendError(409, "This task couldn't be add in the database !")
+        return sendError(404, "User or group not found !")
 
     try :
-        newDependance = DEPENDANCE(TaskConcerned=newTask.taskId, TaskDependancies = content['dependancies'])
+        newTask = TASK(TaskUser=userTask, Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"])
     except:
         return sendError(400, "Make sure to send all the parameters")
-    try:
-       newDependance.save()
-    except:
-        return sendError(409, "This task couldn't be add in the database !")
 
-    return jsonify(reponse_body), 200
+    #optional field
+    if "startDatetime" in content:
+        newTask.DatetimeStart = content["datetimeStart"]
+    if "endDatetime" in content:
+        newTask.DatetimeEnd = content["datetimeEnd"]
+
+    newTask.save()
+
+    try :
+        for dep in content["dependencies"]:
+            taskDep = TASK.get(TASK.taskId == dep)
+            newDependance = DEPENDANCE(TaskConcerned = newTask, TaskDependency = taskDep)
+            newDependance.save()
+    except:
+        return sendError(400, "Fail to add dependencies. Make sure to send the dependencies field with correct task value !")
+
+    return jsonify({}), 200
 
 
 @app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])
 def delete_task(id_group,id_task):
-    reponse_body = {}
-    code = 204
-    TASK.delete().where( (TASK.taskId == id_task) ).execute()
-    return jsonify(reponse_body), code
+    try:
+        task = TASK.get(TASK.taskId == id_task)
+        DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
+    except:
+        return sendError(404, "Task doesnt't exist or has already been deleted !")
+
+    TASK.delete().where(TASK.taskId == id_task).execute()
+    return jsonify({}), 204
 
 @app.route('/group/<id_group>/task/<id_task>',  methods=['PUT'])
 def task_put(id_group,id_task):
     content = request.get_json()
     code = 204
     response_body ={}
+    
     try:
-        task = TASK.get(TASK.taskId==id_task)
-        task.TaskUser=content['taskUser']
-        task.Description = content['description']
-        task.Frequency=content['frequency']
-        task.Group=id_group
-        task.Date= content['date']
-        task.PriorityLevel=content['priorityLevel']
-        task.Duration = content['duration']
-        task.StartingTime = content['startingTime']
+        task = TASK.get(TASK.taskId == id_task)
+        task.Group = id_group
+        if 'taskUser' in content:
+            task.TaskUser = content['taskUser']
+        if 'description' in content:
+            task.Description = content['description']
+        if 'frequency' in content:
+            task.Frequency = content['frequency']
+        if 'name' in content:
+            task.Name = content['name']
+        if 'datetimeStart' in content:
+            task.DatetimeStart = content['datetimeStart']
+        if 'datetimeEnd' in content:
+            task.DatetimeEnd = content['datetimeEnd']
+        if 'priority' in content:
+            task.PriorityLevel = content['priority']
+        
         task.save()
     except:
-            return sendError(400, "Bad Request 1: Make sure to send all parameters !")
+        return sendError(404, "Task not found !")
 
-    try :
-            dependance = DEPENDANCE.get(DEPENDANCE.TaskConcerned==id_task)
-            dependance.TaskDependancies = content['dependancies']
-            dependance.save()
-    except :
-        try :
-            newDependance = DEPENDANCE(TaskConcerned=id_task, TaskDependancies = content['dependancies'])
+    if 'dependancies' in content:
+        DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
+        
+        for idDep in content['dependancies']:
+            taskDep = TASK.get(TASK.taskId == idDep)
+            newDependance = DEPENDANCE(TaskConcerned = task, TaskDependency = taskDep)
             newDependance.save()
-        except :
-            return sendError(400, "Bad Request 2: Make sure to send all parameters !")
 
-    try :
-        task = TASK.get(TASK.taskId==id_task)
-        dependancies = DEPENDANCE.get(DEPENDANCE.TaskConcerned==id_task)
-        dependanciesIds=[]
-        for dep in dependance :
-            dependanciesIds.append(dep.taskConcerned)
-    except :
-        dependanciesIds.append("")
 
-    data = {"id": task.taskId,
-    "description": task.Description,
-    "taskedUsers": task.TaskUser_id,
-    "dueDate": str(task.Date),
-    "frequency": task.Frequency,
-    "priority": task.PriorityLevel,
-    "duration": task.Duration,
-    "startingTime" : task.StartingTime,
-    "dependancies" : str(dependanciesIds)
+    dependanciesIds = []
+    dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
+    for dep in dependancies:
+        dependanciesIds.append(dep.TaskDependency.taskId)
+
+    data = {
+        "taskId": task.taskId,
+        "name": task.Name,
+        "description": task.Description,
+        "taskUser": task.TaskUser.Username,
+        "frequency": task.Frequency,
+        "priority": task.PriorityLevel,
+        "datetimeStart" : task.DatetimeStart,
+        "datetimeEnd": task.DatetimeEnd,
+        "dependancies" : dependanciesIds
     }
-    response_body =data
-    return json.dumps(response_body), 200
+    response_body = data
+    return jsonify(response_body), 200

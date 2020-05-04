@@ -8,7 +8,8 @@ import Images from '../modules/ImageProfile'
 import TaskItem from '../Components/TaskItem'
 import LogoutButton from '../Components/LogoutButton'
 import { YellowBox } from 'react-native'
-import moment from 'moment'
+import generalServices from '../Services/GeneralServices'
+
 YellowBox.ignoreWarnings([
     'VirtualizedLists should never be nested', // TODO: Remove when fixed
 ])
@@ -54,7 +55,7 @@ export default class Profile extends React.Component {
                     <Text style={styles.name_text}>A venir :</Text>
                     <FlatList
                         data={this.state.tasks}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => item.taskId.toString()}
                         renderItem={({ item }) => <TaskItem task={item} />}
                     />
                 </SafeAreaView>
@@ -72,13 +73,13 @@ export default class Profile extends React.Component {
     updateDataProfile = (dataProfile) => {
         this.setState({
             username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
-            birthDate: this.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage
+            birthDate: generalServices.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage
         })
         accountServices.accountUpcomingTasks(this.updateTasksList)
     }
 
     getDataProfile = () => {
-        accountServices.dataProfile(this.updateDataProfile)
+        accountServices.dataProfile(this.updateDataProfile, this.state.username)
     }
 
     imageProfile = () => {
@@ -99,11 +100,6 @@ export default class Profile extends React.Component {
         }
     }
 
-    formatDate(dateString){
-        var date = new Date(dateString); 
-        var formattedDate= moment(date).format("DD/MM/YYYY")
-        return formattedDate
-    }
 
 
     render() {

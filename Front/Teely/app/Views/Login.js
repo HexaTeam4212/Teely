@@ -109,7 +109,9 @@ const styles = StyleSheet.create({
     right: 0
   },
   inscriptionLabel: {
-    marginBottom: -15
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+    marginBottom: -15,
+    fontSize: 17
   },
   connexionButtonView: {
     marginTop: 30

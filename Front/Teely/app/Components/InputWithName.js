@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     height: "90%",
     width: "60%",
-    borderRadius: 10
+    borderRadius: 10,
+    textAlignVertical: 'center'
   }
 });

@@ -7,13 +7,6 @@ const endpoint = "/group"
 class GroupServices {
     
     async getGroupsUser(callback) {
-
-        // const group1 = { id: 1, name: 'Le meilleur groupe de travail', idImage: '0' }
-        // const group2 = { id: 2, name: 'En famille !', idImage: '1' }
-        // const group3 = { id: 3, name: 'Vacaciones', idImage: '2'}
-        // const group4 = { id: 4, name: 'Les poteaux', idImage: '3' }
-    
-        // let accountGroups = [group1, group2, group3, group4]
         const token = await getToken()
         try {
             const response = await fetch(backendURL + endpoint,
@@ -29,6 +22,7 @@ class GroupServices {
                     console.error("Promise error : " + err)
                 })
             const respBody = await response.json()
+            // console.log("service : "+JSON.stringify(respBody))
             if (response.status != 200) {
                 httpError(response.status)
             }
@@ -39,17 +33,11 @@ class GroupServices {
         catch (error) {
             console.error(error)
         }
+        
     }
 
     async getGroupInfos(groupId, callback) {
-        const name = 'Democrateam'
-        const idImageGroup = 5
-        const description = "La meilleure équipe projet"
-        const  members = [ 'FatimaW', 'Louis', 'AndreaC', 'Shuyao', 'Lucie', 'Emmy', 'Baptiste' ]
-
-
-        let groupInfo = await {id: groupId, group_name: name, idImageGroup: idImageGroup, description: description, members: members}
-        /*const token = await getToken()
+        const token = await getToken()
         const fullEndpoint = endpoint+ '/'+groupId
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -74,12 +62,11 @@ class GroupServices {
         }
         catch (error) {
             console.error(error)
-        }*/
-        callback(groupInfo)
+        }
     }
 
     async leaveGroup(groupId, callback) {
-        /*const token = await getToken()
+        const token = await getToken()
         const fullEndpoint = endpoint+ '/'+groupId+'/quit'
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -94,10 +81,39 @@ class GroupServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
-            const respBody = await response.json()
-            if (response.status != 200) {
+            if (response.status != 204) {
                 httpError(response.status)
                 callback(false)
+            }else {
+                callback(true)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    async inviteUser(groupId, username) {
+        const token = await getToken()
+        const fullEndpoint = endpoint+ '/'+groupId+'/invite?username=' + username
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    },
+                })
+                .catch(err => {
+                    console.log("Promise error : " + err)
+                })
+            if (response.status != 200) {
+                if (response.status == 409) {
+                    alert(username +" est déjà dans le groupe ou a déjà été invité !")
+                }
+                httpError(response.status)
             }
             else {
                 callback(true)
@@ -105,19 +121,15 @@ class GroupServices {
         }
         catch (error) {
             console.error(error)
-        }*/
-        callback(true)
+        }
     }
 
-    async inviteUser(groupId, username) {
-        
-    }
-
-    async createGroup(groupName, description, invitedUsers, callback) {
+    async createGroup(groupName, description, invitedUsers, idImageGroup, callback) {
         const requestBody = JSON.stringify({
             group_name: groupName,
             description: description,
-            guests: invitedUsers
+            guests: invitedUsers,
+            idImageGroup: idImageGroup
         })
         console.log(requestBody)
         const token = await getToken()
@@ -155,6 +167,35 @@ class GroupServices {
             console.error(error)
         }
     }
+
+    async getGroupTasks(groupId, callback) {
+        const token = await getToken()
+        const fullEndpoint = endpoint+ '/'+groupId+'/task/all'
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    }
+                })
+            const respBody = await response.json()
+            console.log("response : "+respBody.tasks)
+            if (response.status != 200) {
+                alert("Erreur lors de la récupération des tâches")
+            }
+            else {
+                callback(respBody.tasks)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+
 
 }
 const groupServices = new GroupServices()
