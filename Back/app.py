@@ -538,12 +538,10 @@ def task_put(id_group,id_task):
         return sendError(404, "Task not found !")
 
     if 'dependancies' in content:
-        dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
-        for dep in dependancies:
-            dep.delete()
+        DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
         
         for idDep in content['dependancies']:
-            taskDep = TASK.get(TASK.taskId == id_task)
+            taskDep = TASK.get(TASK.taskId == idDep)
             newDependance = DEPENDANCE(TaskConcerned = task, TaskDependency = taskDep)
             newDependance.save()
 
