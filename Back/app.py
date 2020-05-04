@@ -506,7 +506,13 @@ def group_task(id_group):
 
 @app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])
 def delete_task(id_group,id_task):
-    TASK.delete().where( (TASK.taskId == id_task) ).execute()
+    try:
+        task = TASK.get(TASK.taskId == id_task)
+        DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
+    except:
+        return sendError(404, "Task doesnt't exist or has already been deleted !")
+        
+    TASK.delete().where(TASK.taskId == id_task).execute()
     return jsonify({}), 204
 
 @app.route('/group/<id_group>/task/<id_task>',  methods=['PUT'])
