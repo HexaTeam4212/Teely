@@ -242,10 +242,7 @@ def group():
         return jsonify(reponse_body), code
     elif request.method == 'GET':
         user = PERSON.get(PERSON.Username == session['username'])
-        try:
-            rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
-        except:
-            return sendError(404, "Groups not found")
+        rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
 
         groupsData = []
 
