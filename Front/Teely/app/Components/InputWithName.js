@@ -28,10 +28,10 @@ export default class InputWithName extends React.Component {
     return (
       <View style={styles.main_container}>
         <Text style={styles.text}> {name} </Text>
-        <TextInput
+        <TextInput textAlignVertical='center' textAlign= 'center'
           placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type}
           onChangeText={(text) => this.textInputChangedText(text)} multiline={multiline}
-          secureTextEntry={secureTextEntry} style={styles.textInput} />
+          secureTextEntry={secureTextEntry} style={styles.textInput}/>
 
       </View>
     )
@@ -56,11 +56,11 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   textInput: {
+    padding: 5,
     backgroundColor: 'white',
     textAlign: 'center',
     height: "90%",
     width: "60%",
-    borderRadius: 10,
-    textAlignVertical: 'center'
+    borderRadius: 10
   }
 });

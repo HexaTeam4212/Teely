@@ -10,7 +10,6 @@ import ImagesGroup from '../modules/ImageGroup'
 import CustomButton from '../Components/CustomButton'
 import groupServices from '../Services/GroupServices'
 import accountServices from '../Services/AccountServices'
-import {getToken} from '../modules/TokenStorage.js'
 
 export default class CreateGroup extends React.Component {
   constructor(props) {
@@ -50,7 +49,7 @@ export default class CreateGroup extends React.Component {
           enableOnAndroid={true}>
           <Image style={styles.profile} source={ImagesGroup[18]} />
           <InputWithName placeholder='Nom du groupe' value={this.groupName} parentCallback={this.callbackFunctionGroupName} />
-          <InputWithName style={styles.text} placeholder={'Description\n\n\n'} value={this.description}
+          <InputWithName placeholder={'Description\n\n\n'} value={this.description}
             parentCallback={this.callbackFunctionDescription} multiline={true} />
           <FlatList data={this.state.invitedUsers}
             renderItem={({ item }) =>

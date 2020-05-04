@@ -152,11 +152,10 @@ class AccountServices {
 
     async dataProfile(callback, username) {
         if (username=="") {
-            username = await (await getToken()).toString()
+            username =  (await getToken()).toString()
         }
         const token = await getToken()
         const fullEndpoint = endpoint + "/info?username="+username
-        console.log(backendURL + fullEndpoint)
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -183,7 +182,6 @@ class AccountServices {
     async accountUpcomingTasks(callback) {
         const username = await getToken()
         const fullEndpoint = endpoint + "/task/upcomming"
-        console.log("full url "+ backendURL + fullEndpoint)
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -195,7 +193,6 @@ class AccountServices {
                     }
                 })
             const respBody = await response.json()
-            console.log("response : "+respBody.tasks)
             if (response.status != 200) {
                 alert("Erreur lors de la récupération des tâches")
             }

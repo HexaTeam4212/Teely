@@ -65,6 +65,40 @@ class GroupServices {
         }
     }
 
+    async updateGroupInfos(groupId, groupName, description, callback) {
+        const token = await getToken()
+        const requestBody = JSON.stringify({
+            group_name: groupName,
+            description: description
+        })
+        const fullEndpoint = endpoint+ '/'+groupId+'/update'
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    },
+                    body: requestBody
+                })
+            if (response.status != 204) {
+                if (response.status == 400) {
+                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                }
+                callback(false);
+            }
+            else {
+                alert("Modification enregistrée :)")
+                callback(true);
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     async leaveGroup(groupId, callback) {
         const token = await getToken()
         const fullEndpoint = endpoint+ '/'+groupId+'/quit'

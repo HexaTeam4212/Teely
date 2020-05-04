@@ -21,6 +21,7 @@ export default class DetailedGroup extends React.Component {
     this.state = {
       idImageProfile: 18,
       name: "",
+      firstLoad: true,
       description: "",
       idImageGroup: 18,
       members: [],
@@ -31,15 +32,11 @@ export default class DetailedGroup extends React.Component {
       invitedUser: []
     }
     this.isUsernameValid = true
-    this.groupId = ""
-    this.getGroupId() 
-    this.getDataProfile()
-    this.getGroupInfos()
-  }
-
-  getGroupId() {
     let params = this.props.route.params
     this.groupId = params.idGroup
+    this.reload= params.reload
+    this.getDataProfile()
+    this.getGroupInfos()
   }
 
   displayLoading() {
@@ -103,7 +100,7 @@ export default class DetailedGroup extends React.Component {
   updateGroupInfos = (data) => {
     this.setState({
       name: data.group_name, description: data.description, idImageGroup: data.idImageGroup,
-      members: data.members, isLoading: false
+      members: data.members, isLoading: false, firstLoad: false
     });
   }
 
@@ -280,7 +277,6 @@ const styles = StyleSheet.create({
   },
   dialog_text: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
-    //fontWeight: 'bold',
     fontSize: 20,
     textAlign: 'center',
     color: 'white',
@@ -336,9 +332,6 @@ const styles = StyleSheet.create({
     borderColor: '#737373',
     borderRightWidth: 3,
     borderBottomWidth: 5
-  },
-  suggestionList: {
-    borderWidth: 0
   },
 
 })

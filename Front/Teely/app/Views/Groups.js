@@ -93,7 +93,7 @@ export default class Groups extends React.Component {
             data={this.groups}
             keyExtractor={(item) => item.groupId.toString()}
             renderItem={({ item }) =>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.groupId })}>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("DetailedGroup", { idGroup: item.groupId})}>
                 <GroupItem group={item.group_name} image={ImagesGroup[item.idImageGroup]} />
               </TouchableOpacity>}
           />
@@ -104,7 +104,6 @@ export default class Groups extends React.Component {
 
 
   render() {
-    console.log(this.props)
     return (
       <View style={styles.main_container}>
         <ProfileIcon idImage={this.state.idImageProfile}/>

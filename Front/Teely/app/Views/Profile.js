@@ -67,7 +67,6 @@ export default class Profile extends React.Component {
         this.setState({
             tasks : tasksList, isLoading: false
         })
-        console.log("tasks : "+ this.state.tasks)
     }
 
     updateDataProfile = (dataProfile) => {

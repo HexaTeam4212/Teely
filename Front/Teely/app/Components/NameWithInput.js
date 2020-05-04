@@ -54,13 +54,14 @@ const styles = StyleSheet.create({
     textAlign : 'center',
     color: 'black',
     //marginTop : 10
-    marginBottom : 5
+    marginBottom : 5,
+    marginRight: 10
   },
   textInput: {
       backgroundColor: 'white',
       textAlign : 'center',
       width: 200,
       borderRadius: 10,
-      marginRight: 25
+      marginRight: 25,
     }
 });
