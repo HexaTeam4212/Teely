@@ -21,10 +21,13 @@ class GroupServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
-            // console.log("service : "+JSON.stringify(respBody))
             if (response.status != 200) {
                 httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody.groups)
@@ -55,6 +58,7 @@ class GroupServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody)
@@ -83,10 +87,17 @@ class GroupServices {
                     },
                     body: requestBody
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 204) {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
                 }
+                else {
+                    httpError(response.status)
+                }
+                console.error(response.error)
                 callback(false);
             }
             else {
@@ -117,6 +128,7 @@ class GroupServices {
                 })
             if (response.status != 204) {
                 httpError(response.status)
+                console.error(response.error)
                 callback(false)
             }else {
                 callback(true)
@@ -147,7 +159,10 @@ class GroupServices {
                 if (response.status == 409) {
                     alert(username +" est déjà dans le groupe ou a déjà été invité !")
                 }
-                httpError(response.status)
+                else {
+                    httpError(response.status)
+                }
+                console.error(response.error)
             }
             else {
                 callback(true)
@@ -165,7 +180,6 @@ class GroupServices {
             guests: invitedUsers,
             idImageGroup: idImageGroup
         })
-        console.log(requestBody)
         const token = await getToken()
         try {
             const response = await fetch(backendURL + endpoint,
@@ -183,7 +197,7 @@ class GroupServices {
                 })
             if (response.status != 204) {
                 if (response.status == 400) {
-                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                    alert("Une erreur s'est produite au niveau du réseau. Veuillez réessayer plus tard ou contater le support informatique.")
                 }
                 else if (response.status == 409) {
                     alert("Le groupe n'a pas pu être ajouté à la base de données. Veuillez consulter les logs pour plus de détails")
@@ -215,10 +229,13 @@ class GroupServices {
                         Authorization: token
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
-            console.log("response : "+respBody.tasks)
             if (response.status != 200) {
-                alert("Erreur lors de la récupération des tâches")
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody.tasks)
@@ -241,8 +258,12 @@ class GroupServices {
                         'invit_id': invitId
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 204) {
-                alert("Erreur lors de la suppression de l'invitation")
+                httpError(response.status)
+                console.error(response.error)
                 callback(false)
             }
             else {
@@ -267,24 +288,26 @@ class GroupServices {
                         Authorization: token
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 204) {
                 if (response.status == 401) {
                     alert("Vous n'êtes pas connecté")
                 }
-                alert("Erreur lors de la suppression de l'invitation")
+                else {
+                    httpError(response.status)
+                }
+                console.error(response.error)
                 callback(false);
             }
             else {
                 callback(true);
             }
-
         } catch (error) {
             console.error(error)
         }
     }
-
-
-
 }
 const groupServices = new GroupServices()
 export default groupServices

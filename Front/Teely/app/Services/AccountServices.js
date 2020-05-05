@@ -42,8 +42,8 @@ class AccountServices {
                 else {
                     httpError(response.status)
                 }
+                console.error(response.error)
                 callback(false);
-                console.log(await response.json())
             }
             else {
                 alert("Inscription réussie :)")
@@ -87,6 +87,7 @@ class AccountServices {
                 else {
                     httpError(response.status)
                 }
+                console.error(response.error)
                 callback(false);
             }
             else {
@@ -140,8 +141,9 @@ class AccountServices {
                     alert("Mauvais mot de passe")
                 }
                 else {
-                    httpError()
+                    httpError(response.status)
                 }
+                console.error(response.error)
                 callback(false)
             }
             else {
@@ -175,7 +177,8 @@ class AccountServices {
                 })
             const respBody = await response.json()
             if (response.status != 200) {
-                httpError()
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody)
@@ -204,7 +207,8 @@ class AccountServices {
                 })
             const respBody = await response.json()
             if (response.status != 200) {
-                httpError()
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody.tasks)
@@ -233,7 +237,8 @@ class AccountServices {
                 })
             const respBody = await response.json()
             if (response.status != 200) {
-                httpError()
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody.tasks)
