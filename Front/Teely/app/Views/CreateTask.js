@@ -107,7 +107,6 @@ export default class CreateTask extends React.Component {
   }
 
   updateDuration = (value) => {
-    if (value)
       this.setState({ taskDuration: value })
   }
 
