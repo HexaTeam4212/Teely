@@ -1,6 +1,10 @@
 from peewee import *
+from configparser import ConfigParser
 
-mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
+config_object = ConfigParser()
+config_object.read("config.ini")
+database_config = config_object["DATABASE_INFO"]
+mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=database_config["port"])
 
 class BaseModel(Model):
     """A base model that will use our MySQL database"""
