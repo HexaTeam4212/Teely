@@ -91,7 +91,8 @@ class AccountServices {
                 callback(false);
             }
             else {
-                storeToken(username)
+                const respBody = await response.json();
+                storeToken(respBody.authToken)
                 callback(true);
             }
         }
