@@ -254,7 +254,7 @@ export default function App() {
           name="GroupTasks"
           component={GroupTasks}
           options={{
-            title: 'Tâches d\'un groupe',
+            title: 'Tâches du groupe',
             headerStyle: {
               backgroundColor: '#78e1db',
             },

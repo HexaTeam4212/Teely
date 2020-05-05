@@ -84,13 +84,11 @@ export default class EditProfil extends React.Component {
   }
 
   saveProfile = () => {
-    if (this.state.current_password == '') {
+    if (this.state.current_password == "") {
       alert("Veuillez rentrer votre mot de passe !")
     }
-    else if (this.state.new_password != '' || this.state.confirmedPassword != '') {
-      if(this.state.new_password != this.state.confirmedPassword){
+    else if (this.state.new_password != this.state.confirmedPassword) {
         alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
-      }
     }
     else {
       this.setState({ isLoading: true })

@@ -135,9 +135,9 @@ class AccountServices {
             if (response.status != 204) {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête")
-                } else if (response.status == 409) {
-                    alert("Email and nom d'utilisateur déjà pris")
-                } else if (response.status == 403) {
+                }else if(response.status == 409){
+                    alert("Email ou nom d'utilisateur déjà pris")
+                }else if(response.status == 403){
                     alert("Mauvais mot de passe")
                 }
                 else {
@@ -190,6 +190,7 @@ class AccountServices {
     }
 
     async accountUpcomingTasks(callback) {
+
         const username = await getToken()
         const fullEndpoint = endpoint + "/task/upcoming"
         try {

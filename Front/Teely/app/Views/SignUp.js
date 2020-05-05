@@ -18,7 +18,7 @@ export default class SignUp extends React.Component {
     this.name = ""
     this.birthDate = ""
     this.idImage = 18
-    this.state = { isLoading: false }
+    this.state = { isLoading: false, birthDate:"aaaa-mm-jj" }
   }
 
   displayLoading() {
@@ -57,6 +57,7 @@ export default class SignUp extends React.Component {
 
   callbackFunctionBirthDate = (childData) => {
     this.birthDate = childData
+    this.setState({birthDate:childData})
   }
 
   redirect = (signUpOK) => {
@@ -110,7 +111,7 @@ export default class SignUp extends React.Component {
             <InputWithName name='Prénom' type='none' placeholder='Prénom'
               secureTextEntry={false} parentCallback={this.callbackFunctionName} />
             <Text style={styles.text}> Date de naissance </Text>
-            <DateTimePicker name="aaaa-mm-jj" parentCallback={this.callbackFunctionBirthDate} />
+            <DateTimePicker name={this.state.birthDate} parentCallback={this.callbackFunctionBirthDate} />
 
           </KeyboardAwareScrollView>
         </View>
