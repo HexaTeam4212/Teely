@@ -2,7 +2,8 @@
 
 ## Backend
 
-Backend server for the Teely application made using the Flask Framework for Python
+Backend server for the Teely application made using the Flask Framework for Python.  
+The Python version used is 3.8.2
 
 ## Usage
 
