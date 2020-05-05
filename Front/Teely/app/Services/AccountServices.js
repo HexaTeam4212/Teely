@@ -186,7 +186,7 @@ class AccountServices {
 
     async accountUpcomingTasks(callback) {
         const username = await getToken()
-        const fullEndpoint = endpoint + "/task/upcomming"
+        const fullEndpoint = endpoint + "/task/upcoming"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
