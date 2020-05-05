@@ -7,7 +7,7 @@ export function httpError(statusCode) {
             alert("Une erreur s'est produite au niveau du serveur. Veuillez réessayer plus tard ou contacter le support informatique.")
             break
         case 404:
-            alert("La ressource demandée n'existe pas.")
+            alert("La fenêtre ou la ressource demandée n'existe pas.")
             break
         case 503:
             alert("Le serveur n'est pas disponible. Veuillez réessayer plus tard.")

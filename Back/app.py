@@ -12,7 +12,11 @@ CORS(app) ## allow CORS for all domains on all routes (to change later)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
+
+config_object = ConfigParser()
+config_object.read("config.ini")
+database_config = config_object["DATABASE_INFO"]
+mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=int(database_config["port"]))
 
 # Account endpoints
 
@@ -238,9 +242,9 @@ def account_all_tasks_for_user():
 
     return jsonify(reponse_body), 200
 
-@app.route('/account/task/upcomming',  methods=['GET'])
+@app.route('/account/task/upcoming',  methods=['GET'])
 @authenticate
-def account_upcomming_tasks_for_user():
+def account_upcoming_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
     current_date = datetime.datetime.now()
