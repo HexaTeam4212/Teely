@@ -6,6 +6,7 @@ import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
 import CustomButton from '../Components/CustomButton'
 import InputWithName from '../Components/InputWithName'
 import accountServices from '../Services/AccountServices';
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -52,6 +53,7 @@ export default class Login extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+          {backgroundGradientColor()}
         <KeyboardAwareScrollView
           contentContainerstyle={styles.content_container}
           resetScrollToCoords={{ x: 0, y: 0 }}
@@ -82,7 +84,6 @@ export default class Login extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {

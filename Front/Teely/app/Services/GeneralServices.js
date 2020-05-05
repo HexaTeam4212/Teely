@@ -13,7 +13,7 @@ class GeneralServices {
         if (dateString==null) {
             return ""
         }
-        var date = new Date(dateString); 
+        var date = new Date(dateString)
         var formattedDate= moment.utc(date).format("DD/MM/YYYY")
         return formattedDate
     }
@@ -22,7 +22,7 @@ class GeneralServices {
         if (dateString==null) {
             return ""
         }
-        var date = new Date(dateString); 
+        var date = new Date(dateString)
         var formattedDate= moment.utc(date).format('HH:mm')
         return formattedDate
     }

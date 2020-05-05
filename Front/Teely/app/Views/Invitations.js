@@ -2,9 +2,11 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, FlatList, RefreshControl, ActivityIndicator } from 'react-native'
+
 import groupServices from '../Services/GroupServices';
 import accountServices from '../Services/AccountServices';
 import InvitationItem from '../Components/InvitationItem'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class Invitations extends React.Component {
   constructor(props) {
@@ -111,6 +113,7 @@ export default class Invitations extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <View style={{ flex: 1 }}>
           <KeyboardAwareScrollView
             contentContainerStyle={{ flex: 1 }}
@@ -135,7 +138,6 @@ export default class Invitations extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {

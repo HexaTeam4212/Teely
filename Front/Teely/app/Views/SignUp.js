@@ -1,12 +1,14 @@
 // app/Views/SignUp.js
 import React from 'react'
 import DateTimePicker from '../Components/DateTimePicker'
-import InputWithName from '../Components/InputWithName'
-import CustomButton from '../Components/CustomButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-native'
 
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+import InputWithName from '../Components/InputWithName'
+import CustomButton from '../Components/CustomButton'
 import accountServices from '../Services/AccountServices';
+
 export default class SignUp extends React.Component {
   constructor(props) {
     super(props)
@@ -18,7 +20,7 @@ export default class SignUp extends React.Component {
     this.name = ""
     this.birthDate = ""
     this.idImage = 18
-    this.state = { isLoading: false }
+    this.state = { isLoading: false, birthDate:"aaaa-mm-jj" }
   }
 
   displayLoading() {
@@ -57,6 +59,7 @@ export default class SignUp extends React.Component {
 
   callbackFunctionBirthDate = (childData) => {
     this.birthDate = childData
+    this.setState({birthDate:childData})
   }
 
   redirect = (signUpOK) => {
@@ -89,6 +92,7 @@ export default class SignUp extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <View style={styles.content_container}>
           <KeyboardAwareScrollView
             contentContainerstyle={styles.content_container}
@@ -111,7 +115,6 @@ export default class SignUp extends React.Component {
               secureTextEntry={false} parentCallback={this.callbackFunctionName} />
             <Text style={styles.text}> Date de naissance </Text>
             <DateTimePicker width={200} mode='date' name="aaaa-mm-jj" parentCallback={this.callbackFunctionBirthDate} />
-
           </KeyboardAwareScrollView>
         </View>
         <CustomButton name='Créer mon compte' width={200}
@@ -124,7 +127,6 @@ export default class SignUp extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1,
   },
   content_container: {

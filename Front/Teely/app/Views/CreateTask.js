@@ -11,6 +11,7 @@ import DateTimePicker from '../Components/DateTimePicker'
 import TaskItem from '../Components/TaskItem'
 import CustomButton from '../Components/CustomButton'
 import generalServices from '../Services/GeneralServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class CreateTask extends React.Component {
   constructor(props) {
@@ -67,7 +68,6 @@ export default class CreateTask extends React.Component {
       groupName: data.name, idImageGroup: data.idImageGroup, groupMembers: data.members,
       isLoading: false
     });
-    console.log(this.state)
   }
 
   getGroupInfos = () => {
@@ -83,7 +83,7 @@ export default class CreateTask extends React.Component {
   }
 
   updateGroupTasks = (data) => {
-    this.setState({ groupTasks: data, isLoading: false})
+    this.setState({ groupTasks: data, isLoading: false })
   }
 
   getGroupTasks() {
@@ -243,9 +243,11 @@ export default class CreateTask extends React.Component {
     this.setState({ taskDependencies: newDependencies })
   }
 
-  redirect = () => {
-    this.setState({isLoading: true})
-    this.props.navigation.navigate("GroupTasks", {idGroup: this.groupId})
+  redirect = (result) => {
+    this.setState({ isLoading: false })
+    if (result) {
+      this.props.navigation.navigate("GroupTasks", { idGroup: this.groupId })
+    }
   }
 
   createTask = () => {
@@ -265,16 +267,18 @@ export default class CreateTask extends React.Component {
     }
 
     if (isValid) {
-      this.setState({isLoading: true}) 
-      groupServices.createTask(this.groupId, this.taskName, this.taskDescription, this.datetimeStart, this.datetimeEnd,
-        this.taskDuration, this.taskDependencies, this.taskUser, this.taskPrioriy, this.redirect)
+      this.setState({ isLoading: true })
+      groupServices.createTask(this.groupId, this.state.taskName, this.state.taskDescription, this.state.datetimeStart, this.state.datetimeEnd,
+        this.state.taskDuration, this.state.taskDependencies, this.state.taskUser, this.state.taskPrioriy, this.redirect)
     }
   }
 
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <ProfileIcon idImage={this.state.idImageProfile} />
+
         <KeyboardAwareScrollView
           scrollEnabled={true}
           enableAutomaticScroll={(Platform.OS === 'ios')}
@@ -367,7 +371,6 @@ export default class CreateTask extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {
@@ -493,7 +496,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
     color: 'black',
     marginRight: 10
@@ -512,7 +515,7 @@ const styles = StyleSheet.create({
   pickerItem: {
     borderRadius: 16,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'grey',
     fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
     fontSize: 20
   }

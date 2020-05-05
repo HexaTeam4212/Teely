@@ -4,8 +4,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { StyleSheet, Text, View, Image, ActivityIndicator, RefreshControl } from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
+
 import groupServices from '../Services/GroupServices'
 import generalServices from '../Services/GeneralServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 
 LocaleConfig.locales['fr'] = {
@@ -136,6 +138,7 @@ export default class GroupCalendar extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <View style={{ flex: 1 }}>
           <KeyboardAwareScrollView
             contentContainerStyle={{ flex: 1 }}
@@ -194,11 +197,9 @@ export default class GroupCalendar extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   emptyTask_container: {
-    backgroundColor: '#78e1db',
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',

@@ -5,7 +5,7 @@ import { storeToken, getToken } from '../modules/TokenStorage.js'
 const endpoint = "/group"
 
 class GroupServices {
-    
+
     async getGroupsUser(callback) {
         const token = await getToken()
         try {
@@ -21,10 +21,13 @@ class GroupServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
-            // console.log("service : "+JSON.stringify(respBody))
             if (response.status != 200) {
                 httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody.groups)
@@ -33,12 +36,12 @@ class GroupServices {
         catch (error) {
             console.error(error)
         }
-        
+
     }
 
     async getGroupInfos(groupId, callback) {
         const token = await getToken()
-        const fullEndpoint = endpoint+ '/'+groupId
+        const fullEndpoint = endpoint + '/' + groupId
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -55,6 +58,7 @@ class GroupServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody)
@@ -71,7 +75,7 @@ class GroupServices {
             group_name: groupName,
             description: description
         })
-        const fullEndpoint = endpoint+ '/'+groupId+'/update'
+        const fullEndpoint = endpoint + '/' + groupId + '/update'
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -83,10 +87,17 @@ class GroupServices {
                     },
                     body: requestBody
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 204) {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
                 }
+                else {
+                    httpError(response.status)
+                }
+                console.error(response.error)
                 callback(false);
             }
             else {
@@ -101,7 +112,7 @@ class GroupServices {
 
     async leaveGroup(groupId, callback) {
         const token = await getToken()
-        const fullEndpoint = endpoint+ '/'+groupId+'/quit'
+        const fullEndpoint = endpoint + '/' + groupId + '/quit'
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -117,8 +128,9 @@ class GroupServices {
                 })
             if (response.status != 204) {
                 httpError(response.status)
+                console.error(response.error)
                 callback(false)
-            }else {
+            } else {
                 callback(true)
             }
         }
@@ -129,7 +141,7 @@ class GroupServices {
 
     async inviteUser(groupId, username) {
         const token = await getToken()
-        const fullEndpoint = endpoint+ '/'+groupId+'/invite?username=' + username
+        const fullEndpoint = endpoint + '/' + groupId + '/invite?username=' + username
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -143,11 +155,13 @@ class GroupServices {
                 .catch(err => {
                     console.log("Promise error : " + err)
                 })
-            if (response.status != 200) {
+            if (response.status != 204) {
                 if (response.status == 409) {
-                    alert(username +" est déjà dans le groupe ou a déjà été invité !")
+                    alert(username + " est déjà dans le groupe ou a déjà été invité !")
                 }
-                httpError(response.status)
+                else {
+                    httpError(response.status)
+                }
             }
             else {
                 callback(true)
@@ -165,7 +179,6 @@ class GroupServices {
             guests: invitedUsers,
             idImageGroup: idImageGroup
         })
-        console.log(requestBody)
         const token = await getToken()
         try {
             const response = await fetch(backendURL + endpoint,
@@ -183,7 +196,7 @@ class GroupServices {
                 })
             if (response.status != 204) {
                 if (response.status == 400) {
-                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                    alert("Une erreur s'est produite au niveau du réseau. Veuillez réessayer plus tard ou contater le support informatique.")
                 }
                 else if (response.status == 409) {
                     alert("Le groupe n'a pas pu être ajouté à la base de données. Veuillez consulter les logs pour plus de détails")
@@ -191,7 +204,6 @@ class GroupServices {
                 else {
                     httpError(response.status)
                 }
-                console.error(response.error)
             }
             else {
                 callback()
@@ -203,8 +215,9 @@ class GroupServices {
     }
 
     async getGroupTasks(groupId, callback) {
+
         const token = await getToken()
-        const fullEndpoint = endpoint+ '/'+groupId+'/task/all'
+        const fullEndpoint = endpoint + '/' + groupId + '/task/all'
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -215,10 +228,12 @@ class GroupServices {
                         Authorization: token
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
-            console.log("response : "+respBody.tasks)
             if (response.status != 200) {
-                alert("Erreur lors de la récupération des tâches")
+                httpError(response.status)
             }
             else {
                 callback(respBody.tasks)
@@ -229,8 +244,8 @@ class GroupServices {
         }
     }
 
-    async acceptInvitGroup(groupId, invitId, callback){
-        const fullEndpoint = endpoint+ '/'+groupId+'/accept'
+    async acceptInvitGroup(groupId, invitId, callback) {
+        const fullEndpoint = endpoint + '/' + groupId + '/accept'
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -241,8 +256,11 @@ class GroupServices {
                         'invit_id': invitId
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 204) {
-                alert("Erreur lors de la suppression de l'invitation")
+                httpError(response.status)
                 callback(false)
             }
             else {
@@ -254,9 +272,9 @@ class GroupServices {
         }
     }
 
-    async declineInvitGroup(groupId, callback){
+    async declineInvitGroup(groupId, callback) {
         const token = await getToken()
-        const fullEndpoint = endpoint + '/'+groupId+'/invite'
+        const fullEndpoint = endpoint + '/' + groupId + '/invite'
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -267,11 +285,15 @@ class GroupServices {
                         Authorization: token
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 204) {
                 if (response.status == 401) {
                     alert("Vous n'êtes pas connecté")
+                } else {
+                    alert("Erreur lors de la suppression de l'invitation")
                 }
-                alert("Erreur lors de la suppression de l'invitation")
                 callback(false);
             }
             else {
@@ -290,11 +312,11 @@ class GroupServices {
             description: description,
             taskUser: taskUser,
             frequency: 1,
-            priority: priority,
+            priorityLevel: priority,
             dependencies: dependencies,
             datetimeStart: datetimeStart,
             datetimeEnd: datetimeEnd,
-            duration: duration
+            duration: duration,
         })
         console.log(requestBody)
         const fullEndpoint = endpoint + '/'+groupId+'/task'
@@ -313,7 +335,7 @@ class GroupServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
-            if (response.status != 201) {
+            if (response.status != 200) {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
                 }
@@ -322,20 +344,94 @@ class GroupServices {
                 }
                 else {
                     httpError(response.status)
+                    console.log(response.error)
                 }
-                console.error(response.error)
+                callback(false)
             }
             else {
-                callback()
+                callback(true)
             }
         }
-        catch (error) {
+        catch (error) {         
             console.error(error)
         }
     }
 
 
+    async deleteTaskGroup(taskId, groupId, callback) {
+        const fullEndpoint = endpoint + '/' + groupId + '/task/' + taskId
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    }
+                })
+            if (response.status != 204) {
+                if (response.status == 404) {
+                    alert("La tâche n'existe pas ou a déjà été supprimée")
+                } 
+                else {
+                    alert("Erreur lors de la suppression de la tâche")
+                    httpError(response.status)
+                }
+                callback(false);
+            }
+            else {
+                callback(true);
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
+    async updateTaskGroup(groupId, taskId, taskUser, description, frequency, name, datetimeStart, datetimeEnd, priority, dependancies,callback) {
+       
+        const requestBody = JSON.stringify({
+            taskUser: taskUser,
+            description:description,
+            frequency:frequency,
+            name: name,
+            datetimeStart:datetimeStart,
+            datetimeEnd:datetimeEnd,
+            priority:priority,
+            dependancies:dependancies
+
+        })
+        const fullEndpoint = endpoint + '/' + groupId + '/task/'+taskId
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: requestBody
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            if (response.status != 200) {
+                if (response.status == 404) {
+                    alert("La tâche n'existe pas")
+                }
+                else {
+                    httpError(response.status)
+                }
+                callback(false);
+            }
+            else {
+                alert("Modification enregistrée :)")
+                callback(true);
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 const groupServices = new GroupServices()
 export default groupServices

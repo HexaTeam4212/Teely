@@ -10,6 +10,7 @@ import ImagesGroup from '../modules/ImageGroup'
 import CustomButton from '../Components/CustomButton'
 import groupServices from '../Services/GroupServices'
 import accountServices from '../Services/AccountServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class CreateGroup extends React.Component {
   constructor(props) {
@@ -40,8 +41,8 @@ export default class CreateGroup extends React.Component {
 
   render() {
     return (
-
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
           scrollEnabled={true}
@@ -67,7 +68,7 @@ export default class CreateGroup extends React.Component {
             onChangeText={text => {
               this.setState({ usernameInput: text })
               this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
-              accountServices.getAccountUsernames(text, (usernameResults) => {
+              accountServices.getAccountUsernames(text, false, (usernameResults) => {
                 let newUsernameList = []
                 for (let i = 0; i < usernameResults.length; i++) {
                   newUsernameList.push({ key: usernameResults[i] })
@@ -134,7 +135,6 @@ export default class CreateGroup extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   profile: {

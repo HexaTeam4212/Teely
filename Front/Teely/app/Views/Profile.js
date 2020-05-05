@@ -2,12 +2,15 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { YellowBox, RefreshControl, StyleSheet, Text, View, ActivityIndicator, Image, Platform, TouchableOpacity, FlatList, SafeAreaView } from 'react-native'
+
 import ImageWithText from '../Components/ImageWithText'
 import accountServices from '../Services/AccountServices'
 import Images from '../modules/ImageProfile'
 import TaskItem from '../Components/TaskItem'
 import LogoutButton from '../Components/LogoutButton'
 import generalServices from '../Services/GeneralServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+
 
 YellowBox.ignoreWarnings([
     'VirtualizedLists should never be nested', // TODO: Remove when fixed
@@ -77,7 +80,8 @@ export default class Profile extends React.Component {
     updateDataProfile = (dataProfile) => {
         this.setState({
             username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
-            birthDate: generalServices.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage
+            birthDate: generalServices.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage,
+            isLoading:false
         })
         accountServices.accountUpcomingTasks(this.updateTasksList)
     }
@@ -109,6 +113,7 @@ export default class Profile extends React.Component {
     render() {
         return (
             <View style={styles.main_container}>
+                {backgroundGradientColor()}
                 <LogoutButton></LogoutButton>
                 <View style={{ flex: 1 }}>
                     <KeyboardAwareScrollView
@@ -163,7 +168,6 @@ export default class Profile extends React.Component {
 
 const styles = StyleSheet.create({
     main_container: {
-        backgroundColor: '#78e1db',
         flex: 1,
     },
     head_container: {
@@ -184,12 +188,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     content_container: {
+        backgroundColor: '#78e1db',
         flex: 5,
         flexDirection: 'column',
         justifyContent: 'space-evenly',
         marginLeft: 50,
         marginRight: 30,
-        backgroundColor: '#60dbd3',
         borderColor: 'white',
         borderWidth: 2,
         borderRadius: 15,

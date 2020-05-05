@@ -37,13 +37,13 @@ class AccountServices {
                     alert("Ce nom d'utilisateur (ou cette adresse e-mail) est déjà utilisé, merci d'en choisir un autre !")
                 }
                 else if (response.status == 400) {
-                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                    alert("Une erreur s'est produite au niveau du réseau. Veuillez réessayer plus tard ou contacter le support informatique.")
                 }
                 else {
                     httpError(response.status)
                 }
+                console.error(response.error)
                 callback(false);
-                console.log(await response.json())
             }
             else {
                 alert("Inscription réussie :)")
@@ -74,10 +74,9 @@ class AccountServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
-            const jsonBody = await response.json()
             if (response.status != 200) {
                 if (response.status == 400) {
-                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                    alert("Une erreur s'est produite au niveau du réseau. Veuillez réessayer plus tard ou contacter le support informatique.")
                 }
                 else if (response.status == 404) {
                     alert("Ce nom d'utilisateur n'existe pas.")
@@ -88,8 +87,8 @@ class AccountServices {
                 else {
                     httpError(response.status)
                 }
+                console.error(response.error)
                 callback(false);
-                console.log(await jsonBody)
             }
             else {
                 storeToken(username)
@@ -105,11 +104,7 @@ class AccountServices {
         removeToken();
     }
 
-    async saveProfile(username, current_password, new_password,email, lastName, name, birthDate, biography, callback) {
-
-        alert(lastName + "\n" + name + "\n" + username + "\n" + current_password + "\n"
-                +new_password+ '\n'+ email + "\n" + birthDate + "\n" + biography)
-
+    async saveProfile(username, current_password, new_password, email, lastName, name, birthDate, biography, callback) {
         const token = await getToken()
 
         const requestBody = JSON.stringify({
@@ -134,18 +129,24 @@ class AccountServices {
                     },
                     body: requestBody
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             if (response.status != 204) {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête")
                 }else if(response.status == 409){
-                    alert("Email and nom d'utilisateur déjà pris")
+                    alert("Email ou nom d'utilisateur déjà pris")
                 }else if(response.status == 403){
                     alert("Mauvais mot de passe")
                 }
-                callback(false);
+                else {
+                    httpError(response.status)
+                }
+                console.error(response.error)
+                callback(false)
             }
             else {
-                alert("Modification enregistrée :)")
                 callback(true);
             }
 
@@ -156,11 +157,11 @@ class AccountServices {
 
 
     async dataProfile(callback, username) {
-        if (username=="") {
-            username =  (await getToken()).toString()
+        if (username == "") {
+            username = (await getToken()).toString()
         }
         const token = await getToken()
-        const fullEndpoint = endpoint + "/info?username="+username
+        const fullEndpoint = endpoint + "/info"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -171,9 +172,13 @@ class AccountServices {
                         Authorization: token
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
             if (response.status != 200) {
-                alert("Erreur lors de la récupération du profil")
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody)
@@ -185,8 +190,9 @@ class AccountServices {
     }
 
     async accountUpcomingTasks(callback) {
+
         const username = await getToken()
-        const fullEndpoint = endpoint + "/task/upcomming"
+        const fullEndpoint = endpoint + "/task/upcoming"
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -197,9 +203,13 @@ class AccountServices {
                         Authorization: username
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
             if (response.status != 200) {
-                alert("Erreur lors de la récupération des tâches")
+                httpError(response.status)
+                console.error(response.error)
             }
             else {
                 callback(respBody.tasks)
@@ -223,9 +233,12 @@ class AccountServices {
                         Authorization: username
                     }
                 })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
             if (response.status != 200) {
-                alert("Erreur lors de la récupération des tâches")
+                httpError(response.status)
             }
             else {
                 callback(respBody.tasks)
@@ -238,35 +251,29 @@ class AccountServices {
 
     async accountInvitations(callback) {
 
-        const invit1 = { invitationId: 1, sender: 'User57', groupId:'1',group: 'La mifa !', idImageGroup: '4' }
-        const invit2 = { invitationId: 2, sender: 'Fati', groupId:'2',group: 'Les collègues', idImageGroup: '3' }
-        const invit3 = { invitationId: 3, sender: 'Lili la licorne', groupId:'3',group: 'Vacances dans les iles', idImageGroup: '5' }
-        const invit4 = { invitationId: 4, sender: 'Anonyme201', groupId:'4',group: 'H4212', idImageGroup: '6' }
-
-        let accountInvitations = [invit1, invit2, invit3, invit4]
-
         const username = await getToken()
         const fullEndpoint = endpoint + "/invitation"
 
         try {
-            const response = await fetch(backendURL + fullEndpoint, 
-            {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: username
-                }
-            })
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: username
+                    }
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
                 console.error(response.error)
             }
             else {
-                console.log("respBody invit : "+respBody)
                 callback(respBody)
-                //callback(accountInvitations)
             }
         }
         catch (error) {
@@ -274,26 +281,36 @@ class AccountServices {
         }
     }
 
-    async getAccountUsernames(usernameParam, callback) {
+    async getAccountUsernames(usernameParam, withConnectedUser,callback) {
         const username = await getToken()
         const fullEndpoint = endpoint + "?username=" + usernameParam
         try {
-            const response = await fetch(backendURL + fullEndpoint, 
-            {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: username
-                }
-            })
-            const respBody = await response.json()
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: username
+                    }
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            let respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
                 console.error(response.error)
             }
             else {
+                if (withConnectedUser === false) {
+                    const index = respBody.users.indexOf(username);                    
+                    if (index > -1) {
+                        respBody.users.splice(index, 1);
+                    }
+                }
                 callback(respBody.users)
+                
             }
         }
         catch (error) {

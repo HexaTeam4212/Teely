@@ -53,7 +53,7 @@ export default class InviteMembers extends React.Component {
                         onChangeText={text => {
                             this.setState({ usernameInput: text })
                             this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
-                            accountServices.getAccountUsernames(text, (usernameResults) => {
+                            accountServices.getAccountUsernames(text, true, (usernameResults) => {
                                 let newUsernameList = []
                                 for (let i = 0; i < usernameResults.length; i++) {
                                     newUsernameList.push({ key: usernameResults[i] })
@@ -93,9 +93,9 @@ export default class InviteMembers extends React.Component {
                         />
                     </View>
                     <View style={styles.create_container}>
-                        <CustomButton name='Créer groupe' width={200} onPress={() => {
+                        <CustomButton name='Inviter' width={200} onPress={() => {
                             for (let i = 0; i < this.state.invitedUsers.length; i++) {
-                                console.log("à inviter : "+ this.state.invitedUsers[i].key )
+                                console.log("à inviter : " + this.state.invitedUsers[i].key)
                                 groupServices.inviteUser(this.groupId, this.state.invitedUsers[i].key)
                             }
                         }}></CustomButton>
@@ -108,23 +108,24 @@ export default class InviteMembers extends React.Component {
 
 const styles = StyleSheet.create({
     main_container: {
-        backgroundColor: '#ffb4e2',
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'stretch'
-    },create_container: {
+        alignItems: 'stretch',
+        backgroundColor: '#ffb4e2'
+    },
+    create_container: {
         flex: 1,
         marginTop: 30,
         marginBottom: 10,
-      },
-      item: {
+    },
+    item: {
         backgroundColor: 'lightpink',
         padding: 15,
         marginVertical: 8,
         marginHorizontal: 50,
-      },
-      itemText: {
+    },
+    itemText: {
         alignSelf: 'center',
         fontSize: 18,
         color: 'white',
@@ -132,21 +133,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flexWrap: 'wrap',
         textAlign: 'center',
-      },
-      textInput: {
+    },
+    textInput: {
         backgroundColor: 'white',
         marginLeft: "15%",
         marginRight: "15%",
         marginTop: "5%",
         borderWidth: 0
-      },
-      suggestionList: {
+    },
+    suggestionList: {
         marginLeft: "15%",
         marginRight: "15%",
         borderWidth: 0
-      },
-      addButton: {
+    },
+    addButton: {
         marginBottom: 70,
         marginTop: -10
-      }
+    }
 });
