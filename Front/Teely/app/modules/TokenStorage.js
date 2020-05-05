@@ -29,3 +29,39 @@ export const removeToken = async () => {
         console.error(e)
     }
 }
+
+export const storeKeyValue = async (key, value) => {
+    try {
+        await AsyncStorage.setItem(key, value)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+export const getKeyValue = async (key) => {
+    try {
+        const value = await AsyncStorage.getItem(key)
+        if (value !== null) {
+            return value
+        }
+        else {
+            console.error("Key not found")
+        }
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+export const removeKeyValue = async (key) => {
+    try {
+        await AsyncStorage.removeItem(key)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+export const clearAllData = async() => {
+    AsyncStorage.getAllKeys()
+        .then(keys => AsyncStorage.multiRemove(keys))
+        .then(() => alert('success'));
+}

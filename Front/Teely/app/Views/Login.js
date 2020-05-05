@@ -47,6 +47,7 @@ export default class Login extends React.Component {
     }
     else {
       alert("Veuillez renseigner votre nom d'utilisateur et mot de passe")
+      this.setState({isLoading:false})
     }
   }
 
