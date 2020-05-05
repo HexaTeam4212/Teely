@@ -338,6 +338,53 @@ class GroupServices {
             console.error(error)
         }
     }
+
+    async updateTaskGroup(groupId, taskId, taskUser, description, frequency, name, datetimeStart, datetimeEnd, priority, dependancies,callback) {
+       
+        const requestBody = JSON.stringify({
+            taskUser: taskUser,
+            description:description,
+            frequency:frequency,
+            name: name,
+            datetimeStart:datetimeStart,
+            datetimeEnd:datetimeEnd,
+            priority:priority,
+            dependancies:dependancies
+
+        })
+        const fullEndpoint = endpoint + '/' + groupId + '/task/'+taskId
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: requestBody
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            if (response.status != 200) {
+                if (response.status == 404) {
+                    alert("La tâche n'existe pas")
+                }
+                else {
+                    httpError(response.status)
+                }
+                console.error(response.error)
+                callback(false);
+            }
+            else {
+                alert("Modification enregistrée :)")
+                callback(true);
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 const groupServices = new GroupServices()
 export default groupServices
