@@ -213,7 +213,7 @@ def account_list():
 def account_all_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
-    tasks_rep = TASK.select().where(TASK.TaskUser == user)
+    tasks_rep = TASK.select().where(TASK.TaskUser == user).order_by(TASK.DatetimeStart)
     tasks_list = []
 
     for task in tasks_rep:
@@ -249,7 +249,7 @@ def account_upcoming_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
     current_date = datetime.datetime.now()
-    tasks_rep = TASK.select().where(TASK.TaskUser)
+    tasks_rep = TASK.select().where(TASK.TaskUser).order_by(TASK.DatetimeStart)
 
     tasks_list = []
 
@@ -425,7 +425,7 @@ def group_task_all(id_group):
     except:
         return sendError(404, "Group not found !")
 
-    tasks = TASK.select().where(TASK.Group == group)
+    tasks = TASK.select().where(TASK.Group == group).order_by(TASK.DatetimeStart)
     taskData = []
 
     for task in tasks:
