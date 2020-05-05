@@ -86,7 +86,7 @@ export default class DetailedGroup extends React.Component {
 
           >
             <DialogContent style={styles.dialogContent_container}>
-              <Text style={styles.dialog_text}> Etes-vous sûrs de vouloir quitter ce groupe ?</Text>
+              <Text style={styles.dialog_text}> Etes-vous sûr de vouloir quitter ce groupe ?</Text>
             </DialogContent>
           </Dialog>
         </KeyboardAwareScrollView>
