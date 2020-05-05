@@ -21,13 +21,10 @@ class GroupServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
-                .catch(err => {
-                    console.error("Promise error : " + err)
-                })
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(response.error)
+                console.error(respBody.error)
             }
             else {
                 callback(respBody.groups)
@@ -58,7 +55,7 @@ class GroupServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(response.error)
+                console.error(respBody.error)
             }
             else {
                 callback(respBody)
@@ -97,7 +94,8 @@ class GroupServices {
                 else {
                     httpError(response.status)
                 }
-                console.error(response.error)
+                const respBody = await response.json()
+                console.error(respBody.error)
                 callback(false);
             }
             else {
@@ -128,7 +126,8 @@ class GroupServices {
                 })
             if (response.status != 204) {
                 httpError(response.status)
-                console.error(response.error)
+                const respBody = await response.json()
+                console.error(respBody.error)
                 callback(false)
             } else {
                 callback(true)
@@ -162,6 +161,8 @@ class GroupServices {
                 else {
                     httpError(response.status)
                 }
+                const respBody = await response.json()
+                console.error(respBody.error)
             }
             else {
                 callback(true)
@@ -204,6 +205,8 @@ class GroupServices {
                 else {
                     httpError(response.status)
                 }
+                const respBody = await response.json()
+                console.error(respBody.error)
             }
             else {
                 callback()
@@ -238,6 +241,7 @@ class GroupServices {
             else {
                 callback(respBody.tasks)
             }
+            console.error(respBody.error)
         }
         catch (error) {
             console.error(error)
@@ -262,6 +266,8 @@ class GroupServices {
             if (response.status != 204) {
                 httpError(response.status)
                 callback(false)
+                const respBody = await response.json()
+                console.error(respBody.error)
             }
             else {
                 callback(true)
@@ -289,11 +295,9 @@ class GroupServices {
                     console.error("Promise error : " + err)
                 })
             if (response.status != 204) {
-                if (response.status == 401) {
-                    alert("Vous n'êtes pas connecté")
-                } else {
-                    alert("Erreur lors de la suppression de l'invitation")
-                }
+                httpError(response.status)
+                const respBody = await response.json()
+                console.error(respBody.error)
                 callback(false);
             }
             else {
@@ -337,15 +341,16 @@ class GroupServices {
                 })
             if (response.status != 200) {
                 if (response.status == 400) {
-                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                    alert("Erreur de réseau. Veuillez réessayer plus tard ou contacter le support informatique.")
                 }
                 else if (response.status == 404) {
-                    alert("Utilisateur ou group non trouvé")
+                    alert("Utilisateur ou groupe non trouvé")
                 }
                 else {
                     httpError(response.status)
-                    console.log(response.error)
                 }
+                const respBody = await response.json()
+                console.error(respBody.error)
                 callback(false)
             }
             else {
@@ -374,9 +379,10 @@ class GroupServices {
                     alert("La tâche n'existe pas ou a déjà été supprimée")
                 } 
                 else {
-                    alert("Erreur lors de la suppression de la tâche")
                     httpError(response.status)
                 }
+                const respBody = await response.json()
+                console.error(respBody.error)
                 callback(false);
             }
             else {
@@ -421,6 +427,8 @@ class GroupServices {
                 else {
                     httpError(response.status)
                 }
+                const respBody = await response.json()
+                console.error(respBody.error)
                 callback(false);
             }
             else {
