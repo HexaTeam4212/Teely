@@ -208,7 +208,7 @@ def account_list():
 def account_all_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
-    tasks_rep = TASK.select().where(TASK.TaskUser == user)
+    tasks_rep = TASK.select().where(TASK.TaskUser == user).order_by(TASK.DatetimeStart)
     tasks_list = []
 
     for task in tasks_rep:
@@ -243,7 +243,7 @@ def account_upcomming_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
     current_date = datetime.now()
-    tasks_rep = TASK.select().where(TASK.TaskUser)
+    tasks_rep = TASK.select().where(TASK.TaskUser).order_by(TASK.DatetimeStart)
 
     tasks_list = []
 
@@ -427,7 +427,7 @@ def quit_group(id_group):
 
 @app.route('/group/<id_group>/task/all', methods=['GET'])
 def group_task_all(id_group):
-    rep = TASK.select().where(TASK.Group_id == id_group)
+    rep = TASK.select().where(TASK.Group_id == id_group).order_by(TASK.DatetimeStart)
     response_body = {}
     taskData = []
 
