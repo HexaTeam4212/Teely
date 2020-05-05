@@ -9,8 +9,8 @@ export default class DateTimePickerComponent extends Component {
         this.state = {
             isDateTimePickerVisible: false,
             mode: this.props.mode,
-            name: this.props.name,
         };
+        this.name = this.props.name
     }
 
     showDateTimePicker = () => {
@@ -51,17 +51,28 @@ export default class DateTimePickerComponent extends Component {
         return formattedTime
     }
 
+    datePicked = (date) => {
+        let data;
+        if (this.state.mode == 'date') {
+            data = this.displayedFormatDate(date);
+        } else if (this.state.mode == 'datetime') {
+            data = this.displayedFormatDateTime(date);
+        } else if (this.state.mode == 'time') {
+            data = this.displayedFormatTime(date);
+        }else {
+            data = ""
+        }
+        return data
+    }
+
     handleDatePicked = date => {
         var data = ""
         if (this.state.mode == 'date') {
             data = this.formatDate(date)
-            this.setState({ name: this.displayedFormatDate(date) })
         } else if (this.state.mode == 'datetime') {
             data = this.formatDateTime(date)
-            this.setState({ name: this.displayedFormatDateTime(date) })
         } else if (this.state.mode == 'time') {
             data = this.formatTime(date)
-            this.setState({ name: this.displayedFormatTime(date) })
         }
         this.props.parentCallback(data)
         this.hideDateTimePicker()
@@ -69,12 +80,18 @@ export default class DateTimePickerComponent extends Component {
 
 
     render() {
+        if(this.props.name!="jj-mm-aaaa" && this.props.name!="00-00-0000 à 00:00"){
+            this.name = this.datePicked(this.props.name)
+        }
+        else{
+            this.name = this.props.name
+        }
         const marginRight = this.props.marginRight
         const width = this.props.width
         return (
             <View style={styles.main_container}>
                 <TouchableOpacity style={[styles.button, { marginRight: marginRight, width: width } ]} onPress={this.showDateTimePicker}>
-                    <Text style={styles.buttonText}> {this.state.name} </Text>
+                    <Text style={styles.buttonText}> {this.name} </Text>
                 </TouchableOpacity>
                 <DateTimePicker
                     mode={this.state.mode}

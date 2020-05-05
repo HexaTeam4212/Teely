@@ -25,8 +25,8 @@ export default class CreateTask extends React.Component {
       taskUser: "",
       groupMembers: [],
       taskDependencies: [],
-      datetimeStart: "",
-      datetimeEnd: "",
+      datetimeStart: "00-00-0000 à 00:00",
+      datetimeEnd: "00-00-0000 à 00:00",
       taskDuration: "",
       taskPrioriy: "",
       groupTasks: [],
@@ -308,7 +308,7 @@ export default class CreateTask extends React.Component {
               <Text style={styles.text}> Début : </Text>
             </View>
             <View style={styles.rightAligned_container}>
-              <DateTimePicker mode='datetime' name="00/00/0000 à 00:00" parentCallback={this.callbackFunctionDateTimeStart} />
+              <DateTimePicker mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
             </View>
           </View>
           <View style={styles.groupLined_container}>
@@ -316,7 +316,7 @@ export default class CreateTask extends React.Component {
               <Text style={styles.text}> Fin : </Text>
             </View>
             <View style={styles.rightAligned_container}>
-              <DateTimePicker mode='datetime' name="00/00/0000 à 00:00" parentCallback={this.callbackFunctionDateTimeEnd} />
+              <DateTimePicker mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
             </View>
           </View>
           <View style={styles.groupLined_container}>

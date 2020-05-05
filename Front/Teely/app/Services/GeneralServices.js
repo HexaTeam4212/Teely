@@ -55,11 +55,8 @@ class GeneralServices {
             return ""
         }
         let duree = ((parseInt(dateString, 10)/60)).toString()
-        console.log("duree : "+duree)
-        let hour = duree.substring(0,duree.lastIndexOf("."));
-        console.log("hour : "+hour)
-        let min = (parseInt(dateString, 10)%60).toString()
-        console.log("min : "+min)
+        const hour = duree.substring(0,duree.lastIndexOf("."));
+        const min = (parseInt(dateString, 10)%60).toString()
         duree = hour+"h"+min
         return duree
     }
