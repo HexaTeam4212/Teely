@@ -28,7 +28,7 @@ class GroupTaskItem extends React.Component {
                     </View>
                     <View style={styles.date_container}>
                         <Text style={styles.date_text}>Le {generalServices.formatDate(this.task.datetimeStart)} à {generalServices.formatTime(this.task.datetimeStart)} </Text>
-                        <Text style={styles.date_text}>Durée : {this.task.duration/60}h</Text>
+                        <Text style={styles.date_text}>Durée : {generalServices.convertMinInHour(this.task.duration)}</Text>
                     </View>
                     <View style={styles.pers_container}>
                         <Text style={styles.date_text}>Par : {this.task.taskUser} </Text>
