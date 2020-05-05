@@ -21,6 +21,7 @@ Update the npm dependencies from the Front/Teely folder : npm install
 Launch the app : npm start
 
 3 different QR code are then displayed : Tunnel, LAN and local.
+Scan this code using your smartphone and you will be able to download the app through Expo.
 
 The tunnel one works but sometimes take too much time to get ready.
 
