@@ -4,7 +4,7 @@ from configparser import ConfigParser
 config_object = ConfigParser()
 config_object.read("config.ini")
 database_config = config_object["DATABASE_INFO"]
-mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=database_config["port"])
+mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=int(database_config["port"]))
 
 class BaseModel(Model):
     """A base model that will use our MySQL database"""

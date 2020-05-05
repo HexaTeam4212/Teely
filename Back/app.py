@@ -17,7 +17,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 config_object = ConfigParser()
 config_object.read("config.ini")
 database_config = config_object["DATABASE_INFO"]
-mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=database_config["port"])
+mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=int(database_config["port"]))
 
 # Account endpoints
 
