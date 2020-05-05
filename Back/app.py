@@ -6,6 +6,7 @@ import datetime
 from configparser import ConfigParser
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPENDANCE
 from wrapper import sendError, authenticate
+from algoBack import order_tasks
 app = Flask(__name__)
 
 CORS(app) ## allow CORS for all domains on all routes (to change later)
@@ -232,7 +233,8 @@ def account_all_tasks_for_user():
             "duration" : task.Duration,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
 
         tasks_list.append(data)
@@ -268,7 +270,8 @@ def account_upcoming_tasks_for_user():
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
 
         if task.DatetimeStart is not None:
@@ -451,7 +454,8 @@ def group_task_all(id_group):
             "duration" : task.Duration,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
         taskData.append(data)
 
@@ -483,7 +487,8 @@ def group_task_id(id_group, id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration" : task.Duration
     }
 
     reponse_body = {"task" : data}
@@ -573,6 +578,8 @@ def task_put(id_group,id_task):
             task.DatetimeEnd = content['datetimeEnd']
         if 'priority' in content:
             task.PriorityLevel = content['priority']
+        if 'duration' in content:
+            task.Duration = content['duration']
 
         task.save()
     except:
@@ -601,7 +608,22 @@ def task_put(id_group,id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration" : task.Duration
     }
     response_body = data
     return jsonify(response_body), 200
+
+@app.route('/group/<id_group>/order',  methods=['GET'])
+@authenticate
+def group_order_tasks(id_group):
+    content = request.get_json()
+
+    try:
+        group = GROUP.get(GROUP.groupId == id_group)
+    except:
+        return sendError(404, "Group not found !")
+
+    order_tasks(group)
+
+    return jsonify({}), 200
