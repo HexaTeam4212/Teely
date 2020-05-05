@@ -24,7 +24,7 @@ class GroupServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody.groups)
@@ -55,7 +55,7 @@ class GroupServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody)
@@ -95,7 +95,7 @@ class GroupServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
@@ -127,7 +127,7 @@ class GroupServices {
             if (response.status != 204) {
                 httpError(response.status)
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false)
             } else {
                 callback(true)
@@ -162,7 +162,7 @@ class GroupServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(true)
@@ -206,7 +206,7 @@ class GroupServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback()
@@ -241,7 +241,7 @@ class GroupServices {
             else {
                 callback(respBody.tasks)
             }
-            console.error(respBody.error)
+            console.warn(respBody.error)
         }
         catch (error) {
             console.error(error)
@@ -267,7 +267,7 @@ class GroupServices {
                 httpError(response.status)
                 callback(false)
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(true)
@@ -297,7 +297,7 @@ class GroupServices {
             if (response.status != 204) {
                 httpError(response.status)
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
@@ -350,7 +350,7 @@ class GroupServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false)
             }
             else {
@@ -382,7 +382,7 @@ class GroupServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
@@ -428,7 +428,7 @@ class GroupServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
