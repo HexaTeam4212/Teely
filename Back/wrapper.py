@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, session
 from functools import wraps
+import jwt
 
 def sendError(code, msg):
 	body = {
@@ -16,8 +17,10 @@ def authenticate(func):
 		if 'username' not in session:
 			return sendError(401, "User is not logged in !")
 
-		if request.headers["Authorization"] != session['username']:
-			return sendError(401, "Incorrect username verification !")
+		JWTtoken = request.headers["Authorization"]
+		decodedJWTtoken = jwt.decode(JWTtoken, 'not_so_secret_key')
+		if decodedJWTtoken['username'] != session['username']:
+			return sendError(401, "Incorrect token !")
 
 		return func(*args, **kwargs)
 	return authenticate_and_call

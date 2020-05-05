@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from peewee import *
+import jwt
 import json
 import datetime
 from configparser import ConfigParser
@@ -60,8 +61,14 @@ def account_login():
     if user.Password != password:
         return sendError(401, "The password is incorrect !")
     else:
+        key = 'not_so_secret_key'
+        jwt_payload = {
+            'username' : username,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2) #token expired after 2 hours
+        }
+        JWTtoken = jwt.encode(jwt_payload, key).decode('utf-8')
         reponse_body = {
-            "authToken": "dsfsdofjsdpofjsdpfk"
+            "authToken": JWTtoken
         }
         session['username'] = username
 
