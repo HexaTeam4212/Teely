@@ -68,7 +68,7 @@ export default class EditGroup extends React.Component {
             <NameWithInput name='Description : ' type='none' placeholder={"Description"} height={150} multiline={true}
               value={this.state.description} secureTextEntry={false} parentCallback={this.callbackFunctionDescription} />
 
-            <CustomButton name='Modifier' onPress= {this.updateGroup}></CustomButton>
+            <CustomButton name='Modifier' width={200} onPress= {this.updateGroup}></CustomButton>
           </KeyboardAwareScrollView>
         </View>
       

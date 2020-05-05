@@ -6,6 +6,7 @@ import datetime
 from configparser import ConfigParser
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPENDANCE
 from wrapper import sendError, authenticate
+from algoBack import order_tasks
 app = Flask(__name__)
 
 CORS(app) ## allow CORS for all domains on all routes (to change later)
@@ -213,7 +214,7 @@ def account_list():
 def account_all_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
-    tasks_rep = TASK.select().where(TASK.TaskUser == user)
+    tasks_rep = TASK.select().where(TASK.TaskUser == user).order_by(TASK.DatetimeStart)
     tasks_list = []
 
     for task in tasks_rep:
@@ -229,10 +230,10 @@ def account_all_tasks_for_user():
             "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
-            "duration" : task.Duration,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
 
         tasks_list.append(data)
@@ -249,7 +250,7 @@ def account_upcoming_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
     current_date = datetime.datetime.now()
-    tasks_rep = TASK.select().where(TASK.TaskUser)
+    tasks_rep = TASK.select().where(TASK.TaskUser).order_by(TASK.DatetimeStart)
 
     tasks_list = []
 
@@ -268,7 +269,8 @@ def account_upcoming_tasks_for_user():
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
 
         if task.DatetimeStart is not None:
@@ -425,7 +427,7 @@ def group_task_all(id_group):
     except:
         return sendError(404, "Group not found !")
 
-    tasks = TASK.select().where(TASK.Group == group)
+    tasks = TASK.select().where(TASK.Group == group).order_by(TASK.DatetimeStart)
     taskData = []
 
     for task in tasks:
@@ -448,10 +450,10 @@ def group_task_all(id_group):
             "frequency": task.Frequency,
             "taskUser": taskUserUsername,
             "priority": task.PriorityLevel,
-            "duration" : task.Duration,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
         taskData.append(data)
 
@@ -483,7 +485,8 @@ def group_task_id(id_group, id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration" : task.Duration
     }
 
     reponse_body = {"task" : data}
@@ -500,15 +503,23 @@ def group_task(id_group):
     except:
         return sendError(404, "Group not found !")
 
+    if "datetimeStart" in content and "datetimeEnd" in content:
+        startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
+        endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
+        diff = endTime - startTime
+        duration = diff.seconds / 60
+    else:
+        duration = content['duration']
+    
     try :
-        newTask = TASK(Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"])
+        newTask = TASK(Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"],  Duration=duration)
     except:
         return sendError(400, "Make sure to send all the parameters")
 
     #optional field
-    if "startDatetime" in content:
+    if "datetimeStart" in content:
         newTask.DatetimeStart = content["datetimeStart"]
-    if "endDatetime" in content:
+    if "datetimeEnd" in content:
         newTask.DatetimeEnd = content["datetimeEnd"]
 
     if "taskUser" in content:
@@ -565,6 +576,8 @@ def task_put(id_group,id_task):
             task.DatetimeEnd = content['datetimeEnd']
         if 'priority' in content:
             task.PriorityLevel = content['priority']
+        if 'duration' in content:
+            task.Duration = content['duration']
 
         task.save()
     except:
@@ -593,7 +606,22 @@ def task_put(id_group,id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration" : task.Duration
     }
     response_body = data
     return jsonify(response_body), 200
+
+@app.route('/group/<id_group>/order',  methods=['GET'])
+@authenticate
+def group_order_tasks(id_group):
+    content = request.get_json()
+
+    try:
+        group = GROUP.get(GROUP.groupId == id_group)
+    except:
+        return sendError(404, "Group not found !")
+
+    order_tasks(group)
+
+    return jsonify({}), 200

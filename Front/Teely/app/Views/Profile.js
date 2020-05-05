@@ -80,7 +80,8 @@ export default class Profile extends React.Component {
     updateDataProfile = (dataProfile) => {
         this.setState({
             username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
-            birthDate: generalServices.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage
+            birthDate: generalServices.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage,
+            isLoading:false
         })
         accountServices.accountUpcomingTasks(this.updateTasksList)
     }
