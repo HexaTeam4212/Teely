@@ -8,7 +8,7 @@ export default class DateTimePickerTester extends Component {
         this.name = this.props.name
         this.state = {
             isDateTimePickerVisible: false,
-            name : this.props.name
+            // name : this.props.name
         };
     }
 
@@ -28,13 +28,11 @@ export default class DateTimePickerTester extends Component {
         const data = this.formatDate(date)
         this.props.parentCallback(data)
         this.hideDateTimePicker();
-        //this.setState({name : data});
         this.name = data
     };
 
 
     render() {
-        this.name=this.props.name;
         const marginRight = this.props.marginRight
         return (
             <View style={styles.main_container}>
