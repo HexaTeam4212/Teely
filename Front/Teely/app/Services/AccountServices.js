@@ -238,13 +238,6 @@ class AccountServices {
 
     async accountInvitations(callback) {
 
-        const invit1 = { invitationId: 1, sender: 'User57', groupId:'1',group: 'La mifa !', idImageGroup: '4' }
-        const invit2 = { invitationId: 2, sender: 'Fati', groupId:'2',group: 'Les collègues', idImageGroup: '3' }
-        const invit3 = { invitationId: 3, sender: 'Lili la licorne', groupId:'3',group: 'Vacances dans les iles', idImageGroup: '5' }
-        const invit4 = { invitationId: 4, sender: 'Anonyme201', groupId:'4',group: 'H4212', idImageGroup: '6' }
-
-        let accountInvitations = [invit1, invit2, invit3, invit4]
-
         const username = await getToken()
         const fullEndpoint = endpoint + "/invitation"
 
@@ -264,9 +257,7 @@ class AccountServices {
                 console.error(response.error)
             }
             else {
-                console.log("respBody invit : "+respBody)
                 callback(respBody)
-                //callback(accountInvitations)
             }
         }
         catch (error) {
