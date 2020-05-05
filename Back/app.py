@@ -3,6 +3,7 @@ from flask_cors import CORS
 from peewee import *
 import json
 from datetime import datetime
+from configparser import ConfigParser
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPENDANCE
 from wrapper import sendError, authenticate
 app = Flask(__name__)
@@ -12,7 +13,11 @@ CORS(app) ## allow CORS for all domains on all routes (to change later)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
+
+config_object = ConfigParser()
+config_object.read("config.ini")
+database_config = config_object["DATABASE_INFO"]
+mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=database_config["port"])
 
 # Account endpoints
 
