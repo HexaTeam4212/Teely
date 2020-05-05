@@ -500,15 +500,23 @@ def group_task(id_group):
     except:
         return sendError(404, "Group not found !")
 
+    if "datetimeStart" in content and "datetimeEnd" in content:
+        startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
+        endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
+        diff = endTime - startTime
+        duration = diff.seconds / 60
+    else:
+        duration = content['duration']
+    
     try :
-        newTask = TASK(Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"])
+        newTask = TASK(Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"],  Duration=duration)
     except:
         return sendError(400, "Make sure to send all the parameters")
 
     #optional field
-    if "startDatetime" in content:
+    if "datetimeStart" in content:
         newTask.DatetimeStart = content["datetimeStart"]
-    if "endDatetime" in content:
+    if "datetimeEnd" in content:
         newTask.DatetimeEnd = content["datetimeEnd"]
 
     if "taskUser" in content:
