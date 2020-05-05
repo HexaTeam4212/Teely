@@ -514,8 +514,8 @@ def group_task(id_group):
     
     try :
         if "datetimeStart" in content and "datetimeEnd" in content and content["datetimeStart"] != "" and content["datetimeEnd"] != "":
-            startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
-            endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
+            startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
+            endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
             diff = endTime - startTime
             duration = diff.seconds / 60
         else:
