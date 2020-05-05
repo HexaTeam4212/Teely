@@ -403,6 +403,7 @@ def create_invite(id_group):
     return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/accept', methods=['GET'])
+@authenticate
 def accept_invite(id_group):
     rep = INVITATION.select().where(INVITATION.invitationId == request.args.get('invite_id'))
     for invitation in rep :
@@ -502,24 +503,24 @@ def group_task(id_group):
         group = GROUP.get(GROUP.groupId == id_group)
     except:
         return sendError(404, "Group not found !")
-
-    if "datetimeStart" in content and "datetimeEnd" in content:
-        startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
-        endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
-        diff = endTime - startTime
-        duration = diff.seconds / 60
-    else:
-        duration = content['duration']
     
     try :
+        if "datetimeStart" in content and "datetimeEnd" in content and content["datetimeStart"] != "" and content["datetimeEnd"] != "":
+            startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
+            endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
+            diff = endTime - startTime
+            duration = diff.seconds / 60
+        else:
+            duration = content['duration']
+
         newTask = TASK(Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"],  Duration=duration)
     except:
         return sendError(400, "Make sure to send all the parameters")
 
     #optional field
-    if "datetimeStart" in content:
+    if "datetimeStart" in content and content["datetimeStart"] != "":
         newTask.DatetimeStart = content["datetimeStart"]
-    if "datetimeEnd" in content:
+    if "datetimeEnd" in content and content["datetimeEnd"] != "":
         newTask.DatetimeEnd = content["datetimeEnd"]
 
     if "taskUser" in content:
