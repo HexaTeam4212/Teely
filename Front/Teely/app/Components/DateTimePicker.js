@@ -33,6 +33,7 @@ export default class DateTimePickerTester extends Component {
 
 
     render() {
+        this.name = this.props.name
         const marginRight = this.props.marginRight
         return (
             <View style={styles.main_container}>
