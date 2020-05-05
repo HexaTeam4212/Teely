@@ -63,7 +63,6 @@ def account_login():
     else:
         key = 'not_so_secret_key'
         userId = user.personId
-        print(userId)
         jwt_payload = {
             'userId' : userId,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2) #token expires after 2 hours
