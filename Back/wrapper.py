@@ -18,8 +18,11 @@ def authenticate(func):
 			return sendError(401, "User is not logged in !")
 
 		JWTtoken = request.headers["Authorization"]
-		decodedJWTtoken = jwt.decode(JWTtoken, 'not_so_secret_key')
-		if decodedJWTtoken['userId'] != session['userId']:
+		try:
+			decodedJWTtoken = jwt.decode(JWTtoken, 'not_so_secret_key')
+			if decodedJWTtoken['userId'] != session['userId']:
+				raise Exception()
+		except:
 			return sendError(401, "Incorrect token !")
 
 		return func(*args, **kwargs)
