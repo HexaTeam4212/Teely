@@ -9,6 +9,8 @@ import ImagesGroup from '../modules/ImageGroup'
 import GroupItem from '../Components/GroupItem'
 import ImageWithText from '../Components/ImageWithText'
 import ProfileIcon from '../Components/ProfileIcon'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+
 export default class Groups extends React.Component {
   constructor(props) {
     super(props)
@@ -113,6 +115,7 @@ export default class Groups extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <View style={{ flex: 1 }}>
           <KeyboardAwareScrollView
             contentContainerStyle={{ flex: 1 }}
@@ -145,7 +148,6 @@ export default class Groups extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   title_container: {

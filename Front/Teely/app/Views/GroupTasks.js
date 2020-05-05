@@ -2,10 +2,12 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native'
+
 import groupServices from '../Services/GroupServices';
 import accountServices from '../Services/AccountServices';
 import ImagesProfile from '../modules/ImageProfile'
 import CustomButton from '../Components/CustomButton';
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class GroupTasks extends React.Component {
   constructor(props) {
@@ -100,6 +102,7 @@ export default class GroupTasks extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <View style={styles.head_container}>
           <View style={styles.image_container}>
             {this.imageProfile()}
@@ -130,7 +133,6 @@ export default class GroupTasks extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1,
   },
   head_container: {

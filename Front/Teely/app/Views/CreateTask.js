@@ -2,8 +2,10 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList } from 'react-native'
+
 import accountServices from '../Services/AccountServices';
 import InvitationItem from '../Components/InvitationItem'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class CreatTask extends React.Component {
   constructor(props) {
@@ -17,6 +19,7 @@ export default class CreatTask extends React.Component {
   render() {
     return (
         <View style={styles.content_container}>
+          {backgroundGradientColor()}
         <KeyboardAwareScrollView
           contentContainerstyle={styles.content_container}
           resetScrollToCoords={{ x: 0, y: 0 }}
@@ -31,7 +34,6 @@ export default class CreatTask extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {

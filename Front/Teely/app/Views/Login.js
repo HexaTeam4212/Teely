@@ -6,7 +6,7 @@ import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native'
 import CustomButton from '../Components/CustomButton'
 import InputWithName from '../Components/InputWithName'
 import accountServices from '../Services/AccountServices';
-import {backgroundGradientColor} from '../modules/BackgroundGradientColor'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class Login extends React.Component {
   constructor(props) {

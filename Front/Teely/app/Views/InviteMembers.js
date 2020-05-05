@@ -9,6 +9,7 @@ import CustomButton from '../Components/CustomButton'
 import groupServices from '../Services/GroupServices'
 import accountServices from '../Services/AccountServices'
 import { getToken } from '../modules/TokenStorage'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class InviteMembers extends React.Component {
     constructor(props) {
@@ -32,6 +33,7 @@ export default class InviteMembers extends React.Component {
     render() {
         return (
             <View style={styles.main_container}>
+                {backgroundGradientColor()}
                 <KeyboardAwareScrollView
                     resetScrollToCoords={{ x: 0, y: 0 }}
                     scrollEnabled={true}
@@ -108,7 +110,6 @@ export default class InviteMembers extends React.Component {
 
 const styles = StyleSheet.create({
     main_container: {
-        backgroundColor: '#ffb4e2',
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',

@@ -1,13 +1,15 @@
 // app/Views/EditProfil.js
 import React from 'react';
+import moment from 'moment'
+import { StyleSheet, View, Image, TouchableOpacity, Text, Platform, ActivityIndicator } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 import NameWithInput from '../Components/NameWithInput'
 import DateTimePicker from '../Components/DateTimePicker'
-import { StyleSheet, View, Image, TouchableOpacity, Text, Platform, ActivityIndicator } from 'react-native';
 import CustomButton from '../Components/CustomButton'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import accountServices from '../Services/AccountServices';
 import Images from '../modules/ImageProfile';
-import moment from 'moment'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class EditProfil extends React.Component {
   constructor(props) {
@@ -129,6 +131,7 @@ export default class EditProfil extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <View style={styles.image_container}>
           {this.imageProfile()}
         </View>
@@ -173,7 +176,6 @@ export default class EditProfil extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {

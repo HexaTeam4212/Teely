@@ -10,6 +10,7 @@ import ImagesGroup from '../modules/ImageGroup'
 import CustomButton from '../Components/CustomButton'
 import groupServices from '../Services/GroupServices'
 import accountServices from '../Services/AccountServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class CreateGroup extends React.Component {
   constructor(props) {
@@ -40,8 +41,8 @@ export default class CreateGroup extends React.Component {
 
   render() {
     return (
-
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
           scrollEnabled={true}
@@ -134,7 +135,6 @@ export default class CreateGroup extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   profile: {
