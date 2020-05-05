@@ -53,7 +53,7 @@ export default class InviteMembers extends React.Component {
                         onChangeText={text => {
                             this.setState({ usernameInput: text })
                             this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
-                            accountServices.getAccountUsernames(text, (usernameResults) => {
+                            accountServices.getAccountUsernames(text, true, (usernameResults) => {
                                 let newUsernameList = []
                                 for (let i = 0; i < usernameResults.length; i++) {
                                     newUsernameList.push({ key: usernameResults[i] })

@@ -281,7 +281,7 @@ class AccountServices {
         }
     }
 
-    async getAccountUsernames(usernameParam, callback) {
+    async getAccountUsernames(usernameParam, withConnectedUser,callback) {
         const username = await getToken()
         const fullEndpoint = endpoint + "?username=" + usernameParam
         try {
@@ -297,13 +297,20 @@ class AccountServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
-            const respBody = await response.json()
+            let respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
                 console.error(response.error)
             }
             else {
+                if (withConnectedUser === false) {
+                    const index = respBody.users.indexOf(username);                    
+                    if (index > -1) {
+                        respBody.users.splice(index, 1);
+                    }
+                }
                 callback(respBody.users)
+                
             }
         }
         catch (error) {
