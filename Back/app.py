@@ -2,8 +2,7 @@ from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from peewee import *
 import json
-from datetime import datetime
-from configparser import ConfigParser
+import datetime
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPENDANCE
 from wrapper import sendError, authenticate
 app = Flask(__name__)
@@ -13,11 +12,7 @@ CORS(app) ## allow CORS for all domains on all routes (to change later)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-
-config_object = ConfigParser()
-config_object.read("config.ini")
-database_config = config_object["DATABASE_INFO"]
-mysql_db = MySQLDatabase(database_config["name"], user=database_config["user"], password=database_config["password"], host=database_config["host"], port=database_config["port"])
+mysql_db = MySQLDatabase('teely_db', user='root', password='root', host='127.0.0.1', port=3306)
 
 # Account endpoints
 
@@ -144,7 +139,7 @@ def account_info():
         user = PERSON.get(PERSON.Username == username)
     except:
         return sendError(404, "User not found !")
-    
+
     groupsParticipating = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User == user.personId)
     groupIds = []
 
@@ -213,7 +208,7 @@ def account_list():
 def account_all_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
-    tasks_rep = TASK.select().where(TASK.TaskUser == user).order_by(TASK.DatetimeStart)
+    tasks_rep = TASK.select().where(TASK.TaskUser == user)
     tasks_list = []
 
     for task in tasks_rep:
@@ -229,11 +224,12 @@ def account_all_tasks_for_user():
             "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
+            "duration" : task.Duration,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds,
-            "duration": task.Duration
+            "dependancies" : dependanciesIds
         }
+
         tasks_list.append(data)
 
     reponse_body = {
@@ -247,8 +243,8 @@ def account_all_tasks_for_user():
 def account_upcomming_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
-    current_date = datetime.now()
-    tasks_rep = TASK.select().where(TASK.TaskUser).order_by(TASK.DatetimeStart)
+    current_date = datetime.datetime.now()
+    tasks_rep = TASK.select().where(TASK.TaskUser)
 
     tasks_list = []
 
@@ -267,8 +263,7 @@ def account_upcomming_tasks_for_user():
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds,
-            "duration": task.Duration
+            "dependancies" : dependanciesIds
         }
 
         if task.DatetimeStart is not None:
@@ -397,7 +392,7 @@ def create_invite(id_group):
                 reponse_body = {
                     "error": "Conflict: The request could not be completed due to conflict. User may have already been invited."
                 }
-                return jsonify(reponse_body), code            
+                return jsonify(reponse_body), code
             resultat = PARTICIPATE_IN.select().where( (PARTICIPATE_IN.User_id == guest.personId) & (PARTICIPATE_IN.Group_id == id_group) )
             for participant in resultat :
                 code = 409
@@ -431,180 +426,215 @@ def quit_group(id_group):
         return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/task/all', methods=['GET'])
+@authenticate
 def group_task_all(id_group):
-    rep = TASK.select().where(TASK.Group_id == id_group).order_by(TASK.DatetimeStart)
-    response_body = {}
-    taskData = []
+    reponse_body = {}
+    code = 204
 
-    for task in rep:
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
 
-        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned.taskId== task.taskId)
+        rep = TASK.select().where(TASK.Group_id == id_group)
+        taskData = []
+
+        for task in rep:
+
+            dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned.taskId== task.taskId)
+
+            dependanciesIds=[]
+
+            try :
+                for dep in dependancies :
+                    dependanciesIds.append(dep.taskConcerned)
+            except :
+                dependanciesIds.append("")
+
+            """        "taskUser": str(task.TaskUser.Username),    """
+
+            if str(task.TaskUser_id)!= "None" :
+                data = {
+                    "taskId": task.taskId,
+                    "name": task.Name,
+                    "frequency": task.Frequency,
+                    "taskUser": task.TaskUser.Username,
+                    "priority": task.PriorityLevel,
+                    "duration" : task.Duration,
+                    "datetimeStart" : task.DatetimeStart,
+                    "datetimeEnd": task.DatetimeEnd,
+                    "dependancies" : dependanciesIds
+                }
+                taskData.append(data)
+            else :
+                data = {
+                    "taskId": task.taskId,
+                    "name": task.Name,
+                    "frequency": task.Frequency,
+                    "taskUser": "None",
+                    "priority": task.PriorityLevel,
+                    "duration" : task.Duration,
+                    "datetimeStart" : task.DatetimeStart,
+                    "datetimeEnd": task.DatetimeEnd,
+                    "dependancies" : dependanciesIds
+                }
+                taskData.append(data)
+
+        response_body = {
+            "tasks" : taskData
+        }
+
+        return jsonify(response_body),200
+
+@app.route('/group/<id_group>/task/<id_task>', methods=['GET'])
+@authenticate
+def group_task_id(id_group, id_task):
+    reponse_body = {}
+    code = 204
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
+        try:
+            task = TASK.get(TASK.taskId == id_task)
+        except:
+            return sendError(404, "Task not found !")
 
         dependanciesIds=[]
-        try :
-            for dep in dependancies :
-                dependanciesIds.append(dep.taskConcerned)
-        except :
-            dependanciesIds.append("")
+        dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
+        for dep in dependancies :
+            dependanciesIds.append(dep.TaskConcerned.taskId)
 
         data = {
             "taskId": task.taskId,
             "name": task.Name,
+            "description": task.Description,
             "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds,
-            "duration": task.Duration
+            "dependancies" : dependanciesIds
         }
 
-        taskData.append(data)
+        response_body = {"task" : data}
 
-    response_body = {
-        "tasks" : taskData
-    }
-
-    return jsonify(response_body),200
-
-@app.route('/group/<id_group>/task/<id_task>', methods=['GET'])
-def group_task_id(id_group, id_task):
-    try:
-        task = TASK.get(TASK.taskId == id_task)
-    except:
-        return sendError(404, "Task not found !")
-    
-    dependanciesIds=[]
-    dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
-    for dep in dependancies :
-        dependanciesIds.append(dep.TaskConcerned.taskId)
-
-    data = {
-        "taskId": task.taskId,
-        "name": task.Name,
-        "description": task.Description,
-        "taskUser": task.TaskUser.Username,
-        "frequency": task.Frequency,
-        "priority": task.PriorityLevel,
-        "datetimeStart" : task.DatetimeStart,
-        "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds,
-        "duration": task.Duration
-    }
-
-    response_body = {"task" : data}
-
-    return jsonify(response_body),200
+        return jsonify(response_body),200
 
 @app.route('/group/<id_group>/task', methods=['POST'])
+@authenticate
 def group_task(id_group):
-    content = request.get_json()
-    
-    try:
-        userTask = PERSON.get(PERSON.Username == content['taskUser'])
-        group = GROUP.get(GROUP.groupId == id_group)
-    except:
-        return sendError(404, "User or group not found !")
+    reponse_body = {}
+    code = 204
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
 
-    if "datetimeStart" in content and "datetimeEnd" in content:
-        startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
-        endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
-        diff = endTime - startTime
-        duration = diff.seconds / 60
-    else:
-        duration = content['duration']
+        content = request.get_json()
 
-    try :
-        
-        newTask = TASK(TaskUser=userTask, Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"], Duration=duration)
-    except:
-        return sendError(400, "Make sure to send all the parameters")
+        try:
+            userTask = PERSON.get(PERSON.Username == content['taskUser'])
+            group = GROUP.get(GROUP.groupId == id_group)
+        except:
+            return sendError(404, "User or group not found !")
 
-    #optional field
-    if "datetimeStart" in content:
-        newTask.DatetimeStart = content["datetimeStart"]
-    if "datetimeEnd" in content:
-        newTask.DatetimeEnd = content["datetimeEnd"]
+        try :
+            newTask = TASK(TaskUser=userTask, Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"])
+        except:
+            return sendError(400, "Make sure to send all the parameters")
 
-    newTask.save()
+        #optional field
+        if "startDatetime" in content:
+            newTask.DatetimeStart = content["datetimeStart"]
+        if "endDatetime" in content:
+            newTask.DatetimeEnd = content["datetimeEnd"]
 
-    try :
-        for dep in content["dependencies"]:
-            taskDep = TASK.get(TASK.taskId == dep)
-            newDependance = DEPENDANCE(TaskConcerned = newTask, TaskDependency = taskDep)
-            newDependance.save()
-    except:
-        return sendError(400, "Fail to add dependencies. Make sure to send the dependencies field with correct task value !")
+        newTask.save()
 
-    return jsonify({}), 200
+        try :
+            for dep in content["dependencies"]:
+                taskDep = TASK.get(TASK.taskId == dep)
+                newDependance = DEPENDANCE(TaskConcerned = newTask, TaskDependency = taskDep)
+                newDependance.save()
+        except:
+            return sendError(400, "Fail to add dependencies. Make sure to send the dependencies field with correct task value !")
+
+        return jsonify({}), 200
 
 
 @app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])
+@authenticate
 def delete_task(id_group,id_task):
-    try:
-        task = TASK.get(TASK.taskId == id_task)
-        DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
-    except:
-        return sendError(404, "Task doesnt't exist or has already been deleted !")
+    reponse_body = {}
+    code = 204
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
+        try:
+            task = TASK.get(TASK.taskId == id_task)
+            DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
+        except:
+            return sendError(404, "Task doesnt't exist or has already been deleted !")
 
-    TASK.delete().where(TASK.taskId == id_task).execute()
-    return jsonify({}), 204
+        TASK.delete().where(TASK.taskId == id_task).execute()
+        return jsonify({}), 204
 
 @app.route('/group/<id_group>/task/<id_task>',  methods=['PUT'])
+@authenticate
 def task_put(id_group,id_task):
-    content = request.get_json()
+    reponse_body = {}
     code = 204
-    response_body ={}
-    
-    try:
-        task = TASK.get(TASK.taskId == id_task)
-        task.Group = id_group
-        if 'taskUser' in content:
-            task.TaskUser = content['taskUser']
-        if 'description' in content:
-            task.Description = content['description']
-        if 'frequency' in content:
-            task.Frequency = content['frequency']
-        if 'name' in content:
-            task.Name = content['name']
-        if 'datetimeStart' in content:
-            task.DatetimeStart = content['datetimeStart']
-        if 'datetimeEnd' in content:
-            task.DatetimeEnd = content['datetimeEnd']
-        if 'priority' in content:
-            task.PriorityLevel = content['priority']
-        if 'duration' in content:
-            task.Duration = content['duration']
-        
-        task.save()
-    except:
-        return sendError(404, "Task not found !")
+    if 'username' not in session:
+        return sendError("User is not logged in", 401)
+    else :
+        content = request.get_json()
+        code = 204
+        response_body ={}
 
-    if 'dependancies' in content:
-        DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
-        
-        for idDep in content['dependancies']:
-            taskDep = TASK.get(TASK.taskId == idDep)
-            newDependance = DEPENDANCE(TaskConcerned = task, TaskDependency = taskDep)
-            newDependance.save()
+        try:
+            task = TASK.get(TASK.taskId == id_task)
+            task.Group = id_group
+            if 'taskUser' in content:
+                task.TaskUser = content['taskUser']
+            if 'description' in content:
+                task.Description = content['description']
+            if 'frequency' in content:
+                task.Frequency = content['frequency']
+            if 'name' in content:
+                task.Name = content['name']
+            if 'datetimeStart' in content:
+                task.DatetimeStart = content['datetimeStart']
+            if 'datetimeEnd' in content:
+                task.DatetimeEnd = content['datetimeEnd']
+            if 'priority' in content:
+                task.PriorityLevel = content['priority']
+
+            task.save()
+        except:
+            return sendError(404, "Task not found !")
+
+        if 'dependancies' in content:
+            DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
+
+            for idDep in content['dependancies']:
+                taskDep = TASK.get(TASK.taskId == idDep)
+                newDependance = DEPENDANCE(TaskConcerned = task, TaskDependency = taskDep)
+                newDependance.save()
 
 
-    dependanciesIds = []
-    dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
-    for dep in dependancies:
-        dependanciesIds.append(dep.TaskDependency.taskId)
+        dependanciesIds = []
+        dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
+        for dep in dependancies:
+            dependanciesIds.append(dep.TaskDependency.taskId)
 
-    data = {
-        "taskId": task.taskId,
-        "name": task.Name,
-        "description": task.Description,
-        "taskUser": task.TaskUser.Username,
-        "frequency": task.Frequency,
-        "priority": task.PriorityLevel,
-        "datetimeStart" : task.DatetimeStart,
-        "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds,
-        "duration": task.Duration
-    }
-    response_body = data
-    return jsonify(response_body), 200
+        data = {
+            "taskId": task.taskId,
+            "name": task.Name,
+            "description": task.Description,
+            "taskUser": task.TaskUser.Username,
+            "frequency": task.Frequency,
+            "priority": task.PriorityLevel,
+            "datetimeStart" : task.DatetimeStart,
+            "datetimeEnd": task.DatetimeEnd,
+            "dependancies" : dependanciesIds
+        }
+        response_body = data
+        return jsonify(response_body), 200
