@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from peewee import *
 import json
-import datetime
+from datetime import datetime
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPENDANCE
 from wrapper import sendError, authenticate
 app = Flask(__name__)
@@ -226,7 +226,8 @@ def account_all_tasks_for_user():
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration": task.Duration
         }
         tasks_list.append(data)
 
@@ -241,7 +242,7 @@ def account_all_tasks_for_user():
 def account_upcomming_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
-    current_date = datetime.datetime.now()
+    current_date = datetime.now()
     tasks_rep = TASK.select().where(TASK.TaskUser)
 
     tasks_list = []
@@ -261,7 +262,8 @@ def account_upcomming_tasks_for_user():
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration": task.Duration
         }
 
         if task.DatetimeStart is not None:
@@ -448,7 +450,8 @@ def group_task_all(id_group):
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration": task.Duration
         }
 
         taskData.append(data)
@@ -480,7 +483,8 @@ def group_task_id(id_group, id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration": task.Duration
     }
 
     response_body = {"task" : data}
@@ -497,15 +501,24 @@ def group_task(id_group):
     except:
         return sendError(404, "User or group not found !")
 
+    if "datetimeStart" in content and "datetimeEnd" in content:
+        startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
+        endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
+        diff = endTime - startTime
+        duration = diff.seconds / 60
+    else:
+        duration = content['duration']
+
     try :
-        newTask = TASK(TaskUser=userTask, Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"])
+        
+        newTask = TASK(TaskUser=userTask, Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"], Duration=duration)
     except:
         return sendError(400, "Make sure to send all the parameters")
 
     #optional field
-    if "startDatetime" in content:
+    if "datetimeStart" in content:
         newTask.DatetimeStart = content["datetimeStart"]
-    if "endDatetime" in content:
+    if "datetimeEnd" in content:
         newTask.DatetimeEnd = content["datetimeEnd"]
 
     newTask.save()
@@ -555,6 +568,8 @@ def task_put(id_group,id_task):
             task.DatetimeEnd = content['datetimeEnd']
         if 'priority' in content:
             task.PriorityLevel = content['priority']
+        if 'duration' in content:
+            task.Duration = content['duration']
         
         task.save()
     except:
@@ -583,7 +598,8 @@ def task_put(id_group,id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration": task.Duration
     }
     response_body = data
     return jsonify(response_body), 200
