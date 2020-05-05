@@ -144,7 +144,7 @@ export default class EditProfil extends React.Component {
               value={this.state.lastName} secureTextEntry={false} parentCallback={this.callbackFunctionLastName} />
             <NameWithInput name='Prénom : ' type='none' placeholder={"Prénom"} height={40}
               value={this.state.name} secureTextEntry={false} parentCallback={this.callbackFunctionName} />
-            <NameWithInput name="Nom d'utilisateur : " type='username' placeholder={"Pseudonyme"} height={40}
+            <NameWithInput name="Nom d'utilisateur:" type='username' placeholder={"Pseudonyme"} height={40}
               value={this.state.username} secureTextEntry={false} parentCallback={this.callbackFunctionUsername} />
                <NameWithInput name={'Mot de passe \nactuel : '} type='password' placeholder={"********"} height={40}
               value={this.state.current_password} secureTextEntry={true} parentCallback={this.callbackFunctionCurrentPassword} />
@@ -156,7 +156,7 @@ export default class EditProfil extends React.Component {
               value={this.state.email} secureTextEntry={false} parentCallback={this.callbackFunctionEmail} />
             <View style={styles.date_container} >
               <Text style={[styles.text, { marginLeft: 5 }]}>Date de naissance : </Text>
-              <DateTimePicker name={this.state.birthDate} marginRight={25} parentCallback={this.callbackFunctionBirthDate} />
+              <DateTimePicker name={this.state.birthDate} width = {200} marginRight={25} parentCallback={this.callbackFunctionBirthDate} />
             </View>
             <NameWithInput name='Biographie : ' type='none' placeholder={"Biographie"} height={200} multiline={true}
               value={this.state.biography} secureTextEntry={false} parentCallback={this.callbackFunctionBibliography} />
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontSize: 16,
+    fontWeight: 'bold',
     textAlign: 'center',
     color: 'black',
     marginBottom: 5

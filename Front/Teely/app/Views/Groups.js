@@ -30,6 +30,7 @@ export default class Groups extends React.Component {
     this.getGroups()
   }
 
+
   displayLoading() {
     if (this.state.isLoading) {
       return (

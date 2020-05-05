@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         flexDirection: 'row',
         justifyContent: 'flex-start',
+        zIndex: 5
     },
     profile: {
         resizeMode: 'contain',

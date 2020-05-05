@@ -50,12 +50,13 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
+    fontWeight: 'bold',
     fontSize: 16,
     textAlign : 'center',
     color: 'black',
-    //marginTop : 10
     marginBottom : 5,
-    marginRight: 10
+    marginRight: 10,
+    flexWrap: 'wrap'
   },
   textInput: {
       backgroundColor: 'white',

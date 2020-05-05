@@ -38,6 +38,17 @@ class GeneralServices {
         }
         return tasksForDay
     }
+
+    checkPrecedence(startDateString, endDateString) {
+        isVerified=true
+        if (startDateString=="" || endDateString=="") {
+            return isVerified
+        }
+        const startDate = moment.utc(startDateString, 'DD-MM-YYYY HH:mm:ss')
+        const endDate = moment.utc(endDateString, 'DD-MM-YYYY HH:mm:ss')
+        var isVerified = moment(endDate).isAfter(startDate)
+        return isVerified
+    }
 }
 
 const generalServices = new GeneralServices()

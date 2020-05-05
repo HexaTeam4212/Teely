@@ -133,17 +133,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    groupPic: {
-        marginTop: 5,
-        alignSelf: 'center',
-        resizeMode: 'contain',
-        width: 120,
-        height: 120,
-        borderColor: '#ffb4e2',
-        borderWidth: 3,
-        borderRadius: 60,
-        marginBottom: 10
-    },
     name_text: {
         fontWeight: 'bold',
         fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',

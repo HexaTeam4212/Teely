@@ -110,7 +110,7 @@ export default class SignUp extends React.Component {
             <InputWithName name='Prénom' type='none' placeholder='Prénom'
               secureTextEntry={false} parentCallback={this.callbackFunctionName} />
             <Text style={styles.text}> Date de naissance </Text>
-            <DateTimePicker name="aaaa-mm-jj" parentCallback={this.callbackFunctionBirthDate} />
+            <DateTimePicker width={200} mode='date' name="aaaa-mm-jj" parentCallback={this.callbackFunctionBirthDate} />
 
           </KeyboardAwareScrollView>
         </View>

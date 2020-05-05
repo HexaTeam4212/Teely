@@ -283,6 +283,57 @@ class GroupServices {
         }
     }
 
+    async createTask(groupId, name, description, datetimeStart, datetimeEnd, 
+        duration, dependencies, taskUser, priority, callback) {
+        const requestBody = JSON.stringify({
+            name: name,
+            description: description,
+            taskUser: taskUser,
+            frequency: 1,
+            priority: priority,
+            dependencies: dependencies,
+            datetimeStart: datetimeStart,
+            datetimeEnd: datetimeEnd,
+            duration: duration
+        })
+        console.log(requestBody)
+        const fullEndpoint = endpoint + '/'+groupId+'/task'
+        const token = await getToken()
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    },
+                    body: requestBody
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            if (response.status != 201) {
+                if (response.status == 400) {
+                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                }
+                else if (response.status == 404) {
+                    alert("Utilisateur ou group non trouvé")
+                }
+                else {
+                    httpError(response.status)
+                }
+                console.error(response.error)
+            }
+            else {
+                callback()
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
 
 
 }
