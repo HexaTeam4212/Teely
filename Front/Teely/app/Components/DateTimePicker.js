@@ -5,6 +5,7 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 export default class DateTimePickerTester extends Component {
     constructor(props) {
         super(props);
+        this.name = this.props.name
         this.state = {
             isDateTimePickerVisible: false,
             name : this.props.name
@@ -27,16 +28,18 @@ export default class DateTimePickerTester extends Component {
         const data = this.formatDate(date)
         this.props.parentCallback(data)
         this.hideDateTimePicker();
-        this.setState({name : data});
+        //this.setState({name : data});
+        this.name = data
     };
 
 
     render() {
+        this.name=this.props.name;
         const marginRight = this.props.marginRight
         return (
             <View style={styles.main_container}>
                 <TouchableOpacity style={[styles.button, {marginRight:marginRight}]} onPress={this.showDateTimePicker}>
-                    <Text style={styles.buttonText}> {this.state.name} </Text>
+                    <Text style={styles.buttonText}> {this.name} </Text>
                 </TouchableOpacity>
                 <DateTimePicker
                     isVisible={this.state.isDateTimePickerVisible}

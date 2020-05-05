@@ -65,12 +65,12 @@ export default class Login extends React.Component {
           <InputWithName name='Mot de passe' type='password' placeholder='********'
             secureTextEntry={true} parentCallback={this.callbackFunctionPassword} />
           <View style={styles.connexionButtonView}>
-            <CustomButton name='Connexion' onPress={this.login} />
+            <CustomButton name='Connexion' width={200} onPress={this.login} />
           </View>
         </KeyboardAwareScrollView>
         <View style={styles.inscriptionView}>
           <Text style={styles.inscriptionLabel}> Pas encore de compte ? </Text>
-          <CustomButton name='Inscription' onPress={() => {
+          <CustomButton name='Inscription' width={200} onPress={() => {
             this.props.navigation.navigate("SignUp")
           }} />
         </View>

@@ -17,7 +17,8 @@ import EditGroup from './app/Views/EditGroup'
 import GroupCalendar from './app/Views/GroupCalendar'
 import GroupMembers from './app/Views/GroupMembers'
 import InviteMembers from './app/Views/InviteMembers'
-
+import GroupTasks from './app/Views/GroupTasks'
+import CreateTask from './app/Views/CreateTask'
 
 export default function App() {
 
@@ -239,6 +240,40 @@ export default function App() {
             title: 'Inviter des membres',
             headerStyle: {
               backgroundColor: '#ffb4e2',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+              fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
+            },
+          }}
+        />
+         <Stack.Screen
+          name="GroupTasks"
+          component={GroupTasks}
+          options={{
+            title: 'Tâches d\'un groupe',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+              fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
+            },
+          }}
+        />
+       <Stack.Screen
+          name="CreateTask"
+          component={CreateTask}
+          options={{
+            title: 'Créer une tâche',
+            headerStyle: {
+              backgroundColor: '#78e1db',
             },
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',

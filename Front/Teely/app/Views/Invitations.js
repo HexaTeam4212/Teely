@@ -2,6 +2,7 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, FlatList, RefreshControl, ActivityIndicator } from 'react-native'
+import groupServices from '../Services/GroupServices';
 import accountServices from '../Services/AccountServices';
 import InvitationItem from '../Components/InvitationItem'
 
@@ -45,17 +46,19 @@ export default class Invitations extends React.Component {
   acceptInvitation = (invit) => {
     this.selectedInvit = invit;
     const invitationId = this.selectedInvit.invitationId
+    const groupId = this.selectedInvit.groupId
 
     this.setState({ isLoading: true })
-    accountServices.accountInvitationChoice(invitationId, 'accept', this.resultChoice)
+    groupServices.acceptInvitGroup(groupId,invitationId, this.resultChoice)
   }
 
   declineInvitation = (invit) => {
     this.selectedInvit = invit;
-    const invitationId = invit.invitationId
-
+    const groupId = this.selectedInvit.groupId
+    
     this.setState({ isLoading: true })
-    accountServices.accountInvitationChoice(invitationId, 'decline', this.resultChoice)
+    groupServices.declineInvitGroup(groupId, this.resultChoice)
+
   }
 
   updateInvitations = (dataInvit) => {
@@ -124,6 +127,7 @@ export default class Invitations extends React.Component {
           </KeyboardAwareScrollView>
           {this.displayLoading()}
         </View>
+        {this.displayLoading()}
       </View>
     )
   }
@@ -161,5 +165,14 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginBottom: 10
   },
+loading_container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 100,
+    alignItems: 'center',
+    justifyContent: 'center'
+}
 
 });

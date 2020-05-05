@@ -105,16 +105,17 @@ class AccountServices {
         removeToken();
     }
 
-    async saveProfile(userName, password, email, lastName, name, birthDate, biography, callback) {
+    async saveProfile(username, current_password, new_password,email, lastName, name, birthDate, biography, callback) {
 
-        alert(lastName + "\n" + name + "\n" + userName + "\n" + password + "\n"
-                + email + "\n" + birthDate + "\n" + biography)
+        alert(lastName + "\n" + name + "\n" + username + "\n" + current_password + "\n"
+                +new_password+ '\n'+ email + "\n" + birthDate + "\n" + biography)
 
-        const username = await getToken()
+        const token = await getToken()
 
         const requestBody = JSON.stringify({
-            username: userName,
-            password: password,
+            username: username,
+            current_password: current_password,
+            password: new_password,
             email: email,
             birthdate: birthDate,
             lastName: lastName,
@@ -129,13 +130,17 @@ class AccountServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: username
+                        Authorization: token
                     },
                     body: requestBody
                 })
             if (response.status != 204) {
                 if (response.status == 400) {
-                    alert("Paramètre manquant dans la requête. Veuillez consulter les logs pour plus de détails.")
+                    alert("Paramètre manquant dans la requête")
+                }else if(response.status == 409){
+                    alert("Email and nom d'utilisateur déjà pris")
+                }else if(response.status == 403){
+                    alert("Mauvais mot de passe")
                 }
                 callback(false);
             }
@@ -233,10 +238,10 @@ class AccountServices {
 
     async accountInvitations(callback) {
 
-        const invit1 = { invitationId: 1, sender: 'User57', group: 'La mifa !', idImageGroup: '4' }
-        const invit2 = { invitationId: 2, sender: 'Fati', group: 'Les collègues', idImageGroup: '3' }
-        const invit3 = { invitationId: 3, sender: 'Lili la licorne', group: 'Vacances dans les iles', idImageGroup: '5' }
-        const invit4 = { invitationId: 4, sender: 'Anonyme201', group: 'H4212', idImageGroup: '6' }
+        const invit1 = { invitationId: 1, sender: 'User57', groupId:'1',group: 'La mifa !', idImageGroup: '4' }
+        const invit2 = { invitationId: 2, sender: 'Fati', groupId:'2',group: 'Les collègues', idImageGroup: '3' }
+        const invit3 = { invitationId: 3, sender: 'Lili la licorne', groupId:'3',group: 'Vacances dans les iles', idImageGroup: '5' }
+        const invit4 = { invitationId: 4, sender: 'Anonyme201', groupId:'4',group: 'H4212', idImageGroup: '6' }
 
         let accountInvitations = [invit1, invit2, invit3, invit4]
 
@@ -259,50 +264,14 @@ class AccountServices {
                 console.error(response.error)
             }
             else {
-                // alert("Récupération des invitations réussie :)")
-                //callback(respBody)
-                callback(accountInvitations)
+                console.log("respBody invit : "+respBody)
+                callback(respBody)
+                //callback(accountInvitations)
             }
         }
         catch (error) {
             console.log(error)
         }
-    }
-
-    async accountInvitationChoice(idInvit, choice, callback) {
-        /*const requestBody = JSON.stringify({
-            idInvit: idInvit,
-            choice: choice,
-            
-        })
-        const fullEndpoint = endpoint + "/invitation/choice"
-        try {
-            const response = await fetch(backendURL + fullEndpoint,
-                {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: requestBody
-                })
-                .catch(err => {
-                    console.log("Promise error : " + err)
-                })
-            if (response.status != 201) {
-                alert("Une erreur s'est produite")
-                httpError(response.status)
-                callback(false);
-                console.log(await response.json())
-            }
-            else {
-                callback(true);
-            }
-        }
-        catch (error) {
-            console.error(error)
-        }*/
-        callback(true)
     }
 
     async getAccountUsernames(usernameParam, callback) {

@@ -95,7 +95,7 @@ export default class PersonalCalendar extends React.Component {
       <View style={styles.emptyTask_container}>
         <Image
           source={require('../../assets/Images/cat.png')} style={{ height: 400, width: 275 }} />
-        <Text style={styles.emptyTask_text}>Rien à signaler pour le moment.. </Text>
+        <Text style={styles.emptyTask_text}>Rien à signaler pour le moment... </Text>
       </View>
     );
   }
