@@ -1,15 +1,13 @@
 // app/Views/EditProfil.js
 import React from 'react';
-import moment from 'moment'
-import { StyleSheet, View, Image, TouchableOpacity, Text, Platform, ActivityIndicator } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
 import NameWithInput from '../Components/NameWithInput'
 import DateTimePicker from '../Components/DateTimePicker'
+import { StyleSheet, View, Image, TouchableOpacity, Text, Platform, ActivityIndicator } from 'react-native';
 import CustomButton from '../Components/CustomButton'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import accountServices from '../Services/AccountServices';
 import Images from '../modules/ImageProfile';
-import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+import moment from 'moment'
 
 export default class EditProfil extends React.Component {
   constructor(props) {
@@ -24,7 +22,7 @@ export default class EditProfil extends React.Component {
       lastName: "",
       name: "",
       biography: "",
-      birthDate: "aaaa-mm-jj", 
+      birthDate: "jj-mm-aaaa", 
       idImage: ""
     }
 
@@ -86,11 +84,13 @@ export default class EditProfil extends React.Component {
   }
 
   saveProfile = () => {
-    if (this.state.current_password == "") {
+    if (this.state.current_password == '') {
       alert("Veuillez rentrer votre mot de passe !")
     }
-    else if (this.state.new_password != this.state.confirmedPassword) {
+    else if (this.state.new_password != '' || this.state.confirmedPassword != '') {
+      if(this.state.new_password != this.state.confirmedPassword){
         alert("Les mots de passe saisis ne sont pas identiques, merci de re-vérifier")
+      }
     }
     else {
       this.setState({ isLoading: true })
@@ -129,7 +129,6 @@ export default class EditProfil extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-        {backgroundGradientColor()}
         <View style={styles.image_container}>
           {this.imageProfile()}
         </View>
@@ -157,7 +156,7 @@ export default class EditProfil extends React.Component {
               value={this.state.email} secureTextEntry={false} parentCallback={this.callbackFunctionEmail} />
             <View style={styles.date_container} >
               <Text style={[styles.text, { marginLeft: 5 }]}>Date de naissance : </Text>
-              <DateTimePicker name={this.state.birthDate} width = {200} marginRight={25} parentCallback={this.callbackFunctionBirthDate} />
+              <DateTimePicker mode='date' name={this.state.birthDate} width = {200} marginRight={25} parentCallback={this.callbackFunctionBirthDate} />
             </View>
             <NameWithInput name='Biographie : ' type='none' placeholder={"Biographie"} height={200} multiline={true}
               value={this.state.biography} secureTextEntry={false} parentCallback={this.callbackFunctionBibliography} />
@@ -174,6 +173,7 @@ export default class EditProfil extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
+    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {

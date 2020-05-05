@@ -20,7 +20,7 @@ export default class SignUp extends React.Component {
     this.name = ""
     this.birthDate = ""
     this.idImage = 18
-    this.state = { isLoading: false, birthDate:"aaaa-mm-jj" }
+    this.state = { isLoading: false, birthDate:"jj-mm-aaaa" }
   }
 
   displayLoading() {

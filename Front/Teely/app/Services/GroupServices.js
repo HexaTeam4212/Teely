@@ -139,7 +139,7 @@ class GroupServices {
         }
     }
 
-    async inviteUser(groupId, username) {
+    async inviteUser(groupId, username, callback) {
         const token = await getToken()
         const fullEndpoint = endpoint + '/' + groupId + '/invite?username=' + username
         try {
