@@ -242,9 +242,9 @@ def account_all_tasks_for_user():
 
     return jsonify(reponse_body), 200
 
-@app.route('/account/task/upcomming',  methods=['GET'])
+@app.route('/account/task/upcoming',  methods=['GET'])
 @authenticate
-def account_upcomming_tasks_for_user():
+def account_upcoming_tasks_for_user():
 
     user = PERSON.get(PERSON.Username == session["username"])
     current_date = datetime.now()
