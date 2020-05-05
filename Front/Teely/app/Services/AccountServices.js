@@ -43,7 +43,7 @@ class AccountServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
@@ -89,7 +89,7 @@ class AccountServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
@@ -147,7 +147,7 @@ class AccountServices {
                     httpError(response.status)
                 }
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
                 callback(false)
             }
             else {
@@ -183,7 +183,7 @@ class AccountServices {
             if (response.status != 200) {
                 httpError(response.status)
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody)
@@ -215,7 +215,7 @@ class AccountServices {
             if (response.status != 200) {
                 httpError(response.status)
                 const respBody = await response.json()
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody.tasks)
@@ -245,7 +245,7 @@ class AccountServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody.tasks)
@@ -277,7 +277,7 @@ class AccountServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody)
@@ -307,7 +307,7 @@ class AccountServices {
             let respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(respBody.error)
+                console.warn(respBody.error)
             }
             else {
                 if (withConnectedUser === false) {
