@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     marginRight: "15%",
     marginTop: "5%",
     borderWidth: 0,
-    textAlign: 'center'
   },
   suggestionList: {
     marginLeft: "15%",
