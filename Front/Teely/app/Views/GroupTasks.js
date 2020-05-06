@@ -1,7 +1,7 @@
 // app/Views/GroupTask.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { RefreshControl, StyleSheet, Text, View, Image, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native'
+import { RefreshControl, StyleSheet, Text, View, Image, ActivityIndicator, FlatList, TouchableOpacity, ScrollView } from 'react-native'
 import Dialog, { SlideAnimation, DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 
 import groupServices from '../Services/GroupServices';
@@ -197,8 +197,8 @@ export default class GroupTasks extends React.Component {
 
   drawerContent = () => {
     return (
-      <View style={styles.menu}>
-        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1 }} >
+      <ScrollView style={styles.menu}>
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 60  }} >
           <ProfileIcon idImage={this.state.idImageProfile} />
         </TouchableOpacity>
         <View style={{ flex: 12 }}>
@@ -212,7 +212,7 @@ export default class GroupTasks extends React.Component {
             this.props.navigation.navigate("Login")
           }} />
         </View>
-      </View>
+      </ScrollView>
     )
   }
 

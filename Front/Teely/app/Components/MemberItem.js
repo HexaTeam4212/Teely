@@ -91,10 +91,12 @@ const styles = StyleSheet.create({
         flex: 2,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexWrap: 'wrap'
     },
     bio_container: {
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexWrap: 'wrap'
     },
     foot_container: {
         flex: 1,
