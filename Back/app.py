@@ -640,11 +640,10 @@ def task_put(id_task):
                     task.Duration = duration
                 else :
                     return sendError(400, "Make sure to send all the parameters")
-        
         task.save()
     except:
         return sendError(400, "Make sure to send all the parameters")
-	"""
+    """
     try :
         if 'datetimeStart' in content and  content['datetimeStart']!= "" and 'datetimeEnd' in content and  content['datetimeEnd']!= "" :
             startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
@@ -668,7 +667,8 @@ def task_put(id_task):
             newTask.DatetimeStart = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
         task.save()
     except:
-        return sendError(400, "Durée et Heures incohérentes")"""
+        return sendError(400, "Durée et Heures incohérentes")
+    """
 
     if 'dependencies' in content  :
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
