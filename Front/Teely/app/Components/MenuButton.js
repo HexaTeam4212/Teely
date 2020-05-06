@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
   main_container: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    marginVertical: 30
+    marginTop: 15,
+    marginBottom: 40
   },
   buttonText: {
     fontSize: 20,
