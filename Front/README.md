@@ -4,6 +4,8 @@
 
 Mobile application made using the framework React Native and the platform Expo.
 
+Warning : although the mobile app works on both Android and IOS, there may be some styling problems not yet resolved on Android. If possible, please run the app on IOS.
+
 ### Quickstart
 
 Install the latest stable version of Node.js.
