@@ -71,10 +71,18 @@ class GeneralServices {
         if (dateString == null) {
             return ""
         }
-        let duree = ((parseInt(dateString, 10) / 60)).toString()
-        const hour = duree.substring(0, duree.lastIndexOf("."));
-        const min = (parseInt(dateString, 10) % 60).toString()
-        duree = hour + "h" + min
+        let hour = ((parseInt(dateString, 10)/60)).toString()
+        const pos = hour.lastIndexOf(".")
+        if(pos!=-1){
+            hour = hour.substr(0,pos)
+        }
+        
+        let min = (parseInt(dateString, 10)%60)
+    
+        if(min<=9){
+            min = "0"+min.toString()
+        }
+        const duree = hour+"h"+min
         return duree
     }
 }

@@ -49,7 +49,16 @@ export default class DetailedGroup extends React.Component {
     this.getGroupInfos()
   }
 
+  componentDidMount() {
+    const { navigation } = this.props
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.onRefresh()
+    });
+  }
 
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
 
   displayLoading() {
     if (this.state.isLoading) {

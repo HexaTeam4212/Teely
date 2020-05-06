@@ -18,6 +18,20 @@ class GroupTaskItem extends React.Component {
     clickDelete() {
         this.props.parentCallbackDelete(this.task)
     }
+
+    displayTimes() {
+        if (this.task.datetimeStart) {
+            return(
+                <Text style={styles.date_text}>Le {generalServices.formatDate(this.task.datetimeStart)} à {generalServices.formatTime(this.task.datetimeStart)} </Text>
+                
+            )
+        }
+        if(this.task.duration){
+            return(
+                <Text style={styles.date_text}>Durée : {generalServices.convertMinInHour(this.task.duration)}</Text>
+            )
+        }
+    }
     
     render() {
         return (
@@ -27,8 +41,7 @@ class GroupTaskItem extends React.Component {
                         <Text style={styles.name_text}>{this.task.name}</Text>
                     </View>
                     <View style={styles.date_container}>
-                        <Text style={styles.date_text}>Le {generalServices.formatDate(this.task.datetimeStart)} à {generalServices.formatTime(this.task.datetimeStart)} </Text>
-                        <Text style={styles.date_text}>Durée : {generalServices.convertMinInHour(this.task.duration)}</Text>
+                    {this.displayTimes()}
                     </View>
                     <View style={styles.pers_container}>
                         <Text style={styles.date_text}>Par : {this.task.taskUser} </Text>
@@ -69,7 +82,8 @@ const styles = StyleSheet.create({
     date_container: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-between',
+        marginRight:3,
 
     },
     pers_container: {

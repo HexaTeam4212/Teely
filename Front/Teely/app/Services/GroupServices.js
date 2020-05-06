@@ -260,8 +260,8 @@ class GroupServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'invit_id': invitId,
-                        Authorization: token,
+                        'invite_id': invitId,
+                        Authorization:token,
                     }
                 })
                 .catch(err => {

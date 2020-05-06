@@ -264,7 +264,7 @@ export default class EditTask extends React.Component {
 
     removeTaskDependency = (task) => {
         this.taskSelection.set(task.taskId, false)
-        var newDependencies = this.state.taskDependencies
+        let newDependencies = this.state.taskDependencies
         for (let i = 0; i < newDependencies.length; i++) {
             if (newDependencies[i] == task.taskId.toString()) {
                 newDependencies.splice(i, 1)
@@ -396,7 +396,7 @@ export default class EditTask extends React.Component {
                     </View>
                     {this.displayPossibleDependencies()}
                     <View style={{ marginBottom: 100 }}>
-                        <CustomButton name='Modifier' width={100} onPress={this.updateTask}>
+                        <CustomButton name='Enregistrer' width={170} onPress={this.updateTask}>
                         </CustomButton>
                     </View>
                 </KeyboardAwareScrollView>
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
         flex: 6,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
     },
     checkedImage_container: {
         flex: 1,

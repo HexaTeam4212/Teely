@@ -2,6 +2,7 @@ import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
 import { getToken } from '../modules/TokenStorage.js'
 
+
 const endpoint = "/task"
 
 class TaskServices {
