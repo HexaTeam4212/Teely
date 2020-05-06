@@ -238,7 +238,6 @@ export default class DetailedGroup extends React.Component {
             </MenuDrawer>
             {this.displayLoading()}
             {this.displayLeaveGroupDialog()}
-
         </View>
       </View >
     )
@@ -268,7 +267,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   arrows_container: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
     flexDirection: 'column',
   },
@@ -277,7 +276,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginRight: 20,
     marginLeft: 20,
-    marginBottom: 130,
+    marginBottom: 85,
     marginTop: 10
   },
   foot_container: {
