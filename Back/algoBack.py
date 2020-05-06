@@ -29,8 +29,9 @@ def order_tasks(group, startHour, startMinute, endHour, endMinute):
 	tasks_modified = []
 
 	#daily limits
-	dayStart = datetime.time(int(startHour), int(startMinute))
-	dayEnd = datetime.time(int(endHour), int(endMinute))
+	dayStart = datetime.datetime(year=1900, month=1, day=1, hour=int(startHour), minute=int(startMinute))
+	dayEnd = datetime.datetime(year=1900, month=1, day=1, hour=int(endHour), minute=int(endMinute))
+	diff = dayEnd - dayStart
 
 	# first get all task which have dates but no user assigned and give them a user
 	task_needing_user = TASK.select().where(TASK.TaskUser.is_null(), TASK.DatetimeStart.is_null(False), TASK.DatetimeEnd.is_null(False))
@@ -67,6 +68,11 @@ def order_tasks(group, startHour, startMinute, endHour, endMinute):
 	# get all tasks to schedule
 	all_tasks = TASK.select().where(TASK.Group == group, TASK.DatetimeEnd.is_null())
 	
+	# check if all tasks can be processed
+	for task in all_tasks:
+		if task.Duration > diff.seconds/60:
+			raise Exception("task duration too big")
+
 	# get all tasks with no dependencies or with past dependencies
 	all_t = []
 	no_dep_task = []
