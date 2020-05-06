@@ -153,7 +153,7 @@ export default class Groups extends React.Component {
   }
 
   render() {
-    this.reload()
+    //this.reload()
     return (
       <View style={styles.main_container}>
         {backgroundGradientColor()}
