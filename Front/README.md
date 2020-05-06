@@ -30,4 +30,4 @@ In order to use the LAN one, make sure that the following conditions are verifie
  -Your mobile device and computer are on the same network. The network must be a private one otherwise are hidden from each other.
 
  -The currently network interface you're using must be prioritized. You can verify using the command : ifconfig on Windows.
- If it is not first one displayed in the results, it is necessary to manually set the priority order : https://www.windowscentral.com/how-change-priority-order-network-adapters-windows-10.
+ If it is not the first one displayed in the results (without taking into account the unused interfaces), it is necessary to manually set the priority order : https://www.windowscentral.com/how-change-priority-order-network-adapters-windows-10.

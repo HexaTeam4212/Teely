@@ -2,11 +2,13 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {StyleSheet, View, ActivityIndicator } from 'react-native'
+
 import ProfileIcon from '../Components/ProfileIcon'
 import GroupIcon from '../Components/GroupIcon'
 import NameWithInput from '../Components/NameWithInput'
 import CustomButton from '../Components/CustomButton'
 import groupServices from '../Services/GroupServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class EditGroup extends React.Component {
   constructor(props) {
@@ -52,6 +54,7 @@ export default class EditGroup extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <ProfileIcon idImage={this.state.idImageProfile} />
         <GroupIcon idImage={this.state.idImageGroup} />
           <KeyboardAwareScrollView
@@ -65,7 +68,7 @@ export default class EditGroup extends React.Component {
             <NameWithInput name='Description : ' type='none' placeholder={"Description"} height={150} multiline={true}
               value={this.state.description} secureTextEntry={false} parentCallback={this.callbackFunctionDescription} />
 
-            <CustomButton name='Modifier' onPress= {this.updateGroup}></CustomButton>
+            <CustomButton name='Modifier' width={200} onPress= {this.updateGroup}></CustomButton>
           </KeyboardAwareScrollView>
         </View>
       
@@ -75,7 +78,6 @@ export default class EditGroup extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {

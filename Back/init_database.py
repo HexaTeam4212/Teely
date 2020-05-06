@@ -58,3 +58,17 @@ class INVITATION(BaseModel):
 mysql_db.connect()
 
 mysql_db.create_tables([PERSON, GROUP, PARTICIPATE_IN, TASK, INVITATION, DEPENDANCE])
+
+# Generate base data
+
+#u1 = PERSON(Username = "Michou", Email = "michel.test@gmail.com", Password = "1234", LastName = "Test", Name = "Michel", BirthDate = "2000-01-10", idImage = 1).save()
+#u2 = PERSON(Username = "Patoch", Email = "patoch.test@gmail.com", Password = "1234", LastName = "Poulard", Name = "Patrick", BirthDate = "1999-12-02", idImage = 2).save()
+#u3 = PERSON(Username = "BLotigier", Email = "baptiste.lotigier@gmail.com", Password = "1234", LastName = "Lotigier", Name = "Baptiste", BirthDate = "1998-05-29", idImage = 3).save()
+
+#g1 = GROUP(Name = "Groupe 1", Description = "C'est le groupe 1", idImage=1).save()
+#g2 = GROUP(Name = "Groupe 2", Description = "C'est le groupe 2", idImage=2).save()
+
+#PARTICIPATE_IN(User = u1, Group = g1).save()
+#PARTICIPATE_IN(User = u2, Group = g1).save()
+#PARTICIPATE_IN(User = u2, Group = g2).save()
+#PARTICIPATE_IN(User = u3, Group = g2).save()

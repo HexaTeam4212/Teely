@@ -4,8 +4,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { StyleSheet, Text, View, Image, ActivityIndicator, RefreshControl } from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
+
 import accountServices from '../Services/AccountServices'
 import generalServices from '../Services/GeneralServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 LocaleConfig.locales['fr'] = {
   monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
@@ -93,6 +95,7 @@ export default class PersonalCalendar extends React.Component {
   renderEmptyData = () => {
     return (
       <View style={styles.emptyTask_container}>
+                {backgroundGradientColor()}
         <Image
           source={require('../../assets/Images/cat.png')} style={{ height: 400, width: 275 }} />
         <Text style={styles.emptyTask_text}>Rien à signaler pour le moment... </Text>
@@ -104,6 +107,7 @@ export default class PersonalCalendar extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <View style={{ flex: 1 }}>
           <KeyboardAwareScrollView
             contentContainerStyle={{ flex: 1 }}
@@ -164,11 +168,10 @@ export default class PersonalCalendar extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   emptyTask_container: {
-    backgroundColor: '#78e1db',
+    // backgroundColor: '#78e1db',
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
   emptyTask_text: {
     fontStyle: 'italic',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'lightblue',
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontSize: 24,
     textAlign: 'center',

@@ -5,17 +5,28 @@ import { StyleSheet, View, Text } from 'react-native'
 import generalServices from '../Services/GeneralServices'
 
 class TaskItem extends React.Component {
-
+    constructor(props) {
+        super(props)
+        this.task = this.props.task
+    }
+    displayTimes() {
+        if (this.task.datetimeStart) {
+            return(
+                <View style={styles.date_container}>
+                    <Text style={styles.date_text}>Le {generalServices.formatDate(this.task.datetimeStart)} à {generalServices.formatTime(this.task.datetimeStart)} </Text>
+                </View>
+            )
+        }
+    }
     render() {
-        const task = this.props.task
+        
         return (
             <View style={styles.main_container}>
                 <View style={styles.name_container}>
-                    <Text style={styles.name_text}>{task.name}</Text>
+                    <Text style={styles.name_text}>{this.task.name}</Text>
                 </View>
-                <View style={styles.date_container}>
-                    <Text style={styles.date_text}>Le {generalServices.formatDate(task.datetimeStart)} à {generalServices.formatTime(task.datetimeStart)} </Text>
-                </View>
+                {this.displayTimes()}
+                
             </View>
         )
     }

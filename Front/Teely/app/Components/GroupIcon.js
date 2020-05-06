@@ -1,7 +1,7 @@
 // app/Components/GroupIcon.js
 import React from 'react';
 import { StyleSheet, View, Image} from 'react-native'
-import ImagesGroup from '../modules/ImageGroup';
+import ImagesGroup from '../modules/ImageGroup'
 
 export default class GroupIcon extends React.Component {
     constructor(props) {
@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
         borderColor: '#ffb4e2',
         borderWidth: 3,
         borderRadius: 60,
-        marginBottom: 10
+        marginBottom: 5
       },
 });

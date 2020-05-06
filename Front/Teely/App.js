@@ -254,7 +254,7 @@ export default function App() {
           name="GroupTasks"
           component={GroupTasks}
           options={{
-            title: 'Tâches d\'un groupe',
+            title: 'Tâches du groupe',
             headerStyle: {
               backgroundColor: '#78e1db',
             },
@@ -271,7 +271,7 @@ export default function App() {
           name="CreateTask"
           component={CreateTask}
           options={{
-            title: 'Créer une tâche',
+            title: 'Nouvelle tâche',
             headerStyle: {
               backgroundColor: '#78e1db',
             },

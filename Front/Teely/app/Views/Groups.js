@@ -11,6 +11,8 @@ import ImageWithText from '../Components/ImageWithText'
 import ProfileIcon from '../Components/ProfileIcon'
 import MenuButton from '../Components/MenuButton'
 import MenuDrawer from 'react-native-side-drawer'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+
 export default class Groups extends React.Component {
   constructor(props) {
     super(props)
@@ -31,6 +33,7 @@ export default class Groups extends React.Component {
     this.getInvitations()
     this.getGroups()
   }
+
 
   displayLoading() {
     if (this.state.isLoading) {
@@ -139,7 +142,7 @@ export default class Groups extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
-        
+        {backgroundGradientColor()}
         <View style={{ flex: 1 }}>
           <MenuDrawer 
               open={this.state.open} 
@@ -185,7 +188,6 @@ export default class Groups extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   title_container: {
@@ -218,7 +220,6 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderWidth: 2,
     borderRadius: 15,
-    backgroundColor: '#60dbd3',
   },
   invit_container: {
     flex: 1,

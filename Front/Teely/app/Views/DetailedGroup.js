@@ -2,13 +2,16 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { RefreshControl, YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
+import Dialog, { SlideAnimation, DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
+
 import groupServices from '../Services/GroupServices'
 import ImagesGroup from '../modules/ImageGroup'
 import ImageWithText from '../Components/ImageWithText'
 import ProfileIcon from '../Components/ProfileIcon'
 import GroupIcon from '../Components/GroupIcon'
-import Dialog, { SlideAnimation, DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 import accountServices from '../Services/AccountServices'
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+
 
 
 YellowBox.ignoreWarnings([
@@ -140,6 +143,7 @@ export default class DetailedGroup extends React.Component {
   render() {
     return (
       <View style={styles.main_container}>
+        {backgroundGradientColor()}
         <ProfileIcon idImage={this.state.idImageProfile} />
         <View style={{ flex: 1 }}>
           <KeyboardAwareScrollView
@@ -196,7 +200,6 @@ export default class DetailedGroup extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    backgroundColor: '#78e1db',
     flex: 1
   },
   content_container: {
@@ -324,6 +327,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end'
   },
   editImage: {
+    marginRight: 10,
     width: 30,
     height: 30,
   },

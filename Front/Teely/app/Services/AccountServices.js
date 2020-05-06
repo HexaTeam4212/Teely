@@ -1,7 +1,7 @@
 //app/Services/AccountServices.js
 import { backendURL } from '../modules/BackendConfig.js'
 import { httpError } from '../modules/Error.js'
-import { storeToken, getToken, removeToken } from '../modules/TokenStorage.js'
+import {storeToken, getToken, removeToken, getKeyValue, storeKeyValue, removeKeyValue} from '../modules/TokenStorage.js'
 import generalServices from '../Services/GeneralServices'
 
 const endpoint = "/account"
@@ -42,7 +42,8 @@ class AccountServices {
                 else {
                     httpError(response.status)
                 }
-                console.error(response.error)
+                const respBody = await response.json()
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
@@ -74,6 +75,7 @@ class AccountServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
+            const respBody = await response.json()
             if (response.status != 200) {
                 if (response.status == 400) {
                     alert("Une erreur s'est produite au niveau du réseau. Veuillez réessayer plus tard ou contacter le support informatique.")
@@ -87,11 +89,12 @@ class AccountServices {
                 else {
                     httpError(response.status)
                 }
-                console.error(response.error)
+                console.warn(respBody.error)
                 callback(false);
             }
             else {
-                storeToken(username)
+                storeToken(respBody.authToken)
+                storeKeyValue('username', username)
                 callback(true);
             }
         }
@@ -102,6 +105,7 @@ class AccountServices {
 
     async logout() {
         removeToken();
+        removeKeyValue('username')
     }
 
     async saveProfile(username, current_password, new_password, email, lastName, name, birthDate, biography, callback) {
@@ -135,18 +139,23 @@ class AccountServices {
             if (response.status != 204) {
                 if (response.status == 400) {
                     alert("Paramètre manquant dans la requête")
-                } else if (response.status == 409) {
-                    alert("Email and nom d'utilisateur déjà pris")
-                } else if (response.status == 403) {
+                }else if(response.status == 409){
+                    alert("Email ou nom d'utilisateur déjà pris")
+                }else if(response.status == 403){
                     alert("Mauvais mot de passe")
                 }
                 else {
                     httpError(response.status)
                 }
-                console.error(response.error)
+                const respBody = await response.json()
+                console.warn(respBody.error)
                 callback(false)
             }
             else {
+                const storedUsername = await getKeyValue('username')
+                if (storedUsername !== username) {
+                    storeKeyValue('username', username)
+                }
                 callback(true);
             }
 
@@ -155,10 +164,9 @@ class AccountServices {
         }
     }
 
-
     async dataProfile(callback, username) {
         if (username == "") {
-            username = (await getToken()).toString()
+            username = await getToken('username')
         }
         const token = await getToken()
         const fullEndpoint = endpoint + "/info"
@@ -178,7 +186,8 @@ class AccountServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(response.error)
+                const respBody = await response.json()
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody)
@@ -190,7 +199,8 @@ class AccountServices {
     }
 
     async accountUpcomingTasks(callback) {
-        const username = await getToken()
+
+        const token = await getToken()
         const fullEndpoint = endpoint + "/task/upcoming"
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -199,7 +209,7 @@ class AccountServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: username
+                        Authorization: token
                     }
                 })
                 .catch(err => {
@@ -208,7 +218,8 @@ class AccountServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(response.error)
+                const respBody = await response.json()
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody.tasks)
@@ -220,7 +231,7 @@ class AccountServices {
     }
 
     async accountAllTasks(callback) {
-        const username = await getToken()
+        const token = await getToken()
         const fullEndpoint = endpoint + "/task/all"
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -229,7 +240,7 @@ class AccountServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: username
+                        Authorization: token
                     }
                 })
                 .catch(err => {
@@ -238,7 +249,7 @@ class AccountServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(response.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody.tasks)
@@ -251,7 +262,7 @@ class AccountServices {
 
     async accountInvitations(callback) {
 
-        const username = await getToken()
+        const token = await getToken()
         const fullEndpoint = endpoint + "/invitation"
 
         try {
@@ -261,7 +272,7 @@ class AccountServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: username
+                        Authorization: token
                     }
                 })
                 .catch(err => {
@@ -270,7 +281,7 @@ class AccountServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(response.error)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody)
@@ -282,7 +293,7 @@ class AccountServices {
     }
 
     async getAccountUsernames(usernameParam, withConnectedUser,callback) {
-        const username = await getToken()
+        const token = await getToken()
         const fullEndpoint = endpoint + "?username=" + usernameParam
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -291,7 +302,7 @@ class AccountServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: username
+                        Authorization: token
                     }
                 })
                 .catch(err => {
@@ -300,11 +311,12 @@ class AccountServices {
             let respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
-                console.error(response.error)
+                console.warn(respBody.error)
             }
             else {
                 if (withConnectedUser === false) {
-                    const index = respBody.users.indexOf(username);                    
+                    const storedUsername = await getKeyValue('username')
+                    const index = respBody.users.indexOf(storedUsername);                    
                     if (index > -1) {
                         respBody.users.splice(index, 1);
                     }

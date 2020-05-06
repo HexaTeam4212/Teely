@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from peewee import *
+import jwt
 import json
 import datetime
 from configparser import ConfigParser
 from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPENDANCE
 from wrapper import sendError, authenticate
+from algoBack import order_tasks
 app = Flask(__name__)
 
 CORS(app) ## allow CORS for all domains on all routes (to change later)
@@ -59,10 +61,17 @@ def account_login():
     if user.Password != password:
         return sendError(401, "The password is incorrect !")
     else:
-        reponse_body = {
-            "authToken": "dsfsdofjsdpofjsdpfk"
+        key = 'not_so_secret_key'
+        userId = user.personId
+        jwt_payload = {
+            'userId' : userId,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2) #token expires after 2 hours
         }
-        session['username'] = username
+        JWTtoken = jwt.encode(jwt_payload, key).decode('utf-8')
+        reponse_body = {
+            "authToken": JWTtoken
+        }
+        session['userId'] = userId
 
     return jsonify(reponse_body), code
 
@@ -70,7 +79,7 @@ def account_login():
 @authenticate
 def account_logout():
 
-    session.pop('username', None)
+    session.pop('userId', None)
 
     return jsonify({}), 204
 
@@ -82,7 +91,7 @@ def account_update():
     reponse_body = {}
 
     try:
-        user = PERSON.get(PERSON.Username == session['username'])
+        user = PERSON.get(PERSON.personId == session['userId'])
 
         if user.Password == content["current_password"]:
             if "username" in content:
@@ -91,20 +100,18 @@ def account_update():
                     try:
                         #This throw an error if there is no user found with this username
                         u = PERSON.get(PERSON.Username == content["username"])
-                        if u.Username != session["username"]:
+                        if u.Username != user.Username:
                             return sendError(409, "Username already taken !")
                     except:
                         pass
                     user.Username = content["username"]
-                    session["username"] = content["username"]
             if "email" in content:
                 if content["email"] != "":
                     #Test if email is already taken
                     try:
                         #This throw an error if there is no user found with this email
                         u = PERSON.get(PERSON.Email == content["email"])
-                        cur_u = PERSON.get(PERSON.Username == session["username"])
-                        if u.Email != cur_u.Email:
+                        if u.Email != user.Email:
                             return sendError(409, "Email already taken !")
                     except:
                         pass
@@ -136,7 +143,8 @@ def account_update():
 @authenticate
 def account_info():
 
-    username = session['username']
+    user = PERSON.get(PERSON.personId == session['userId'])
+    username = user.Username
     if request.args.get('username') is not None:
         username = request.args.get('username')
 
@@ -168,7 +176,7 @@ def account_info():
 @authenticate
 def account_invitation():
 
-    user = PERSON.select().where(PERSON.Username == session["username"])
+    user = PERSON.select().where(PERSON.personId == session["userId"])
     invitations = INVITATION.select().where(INVITATION.Recipient == user)
 
     invitData = []
@@ -212,8 +220,8 @@ def account_list():
 @authenticate
 def account_all_tasks_for_user():
 
-    user = PERSON.get(PERSON.Username == session["username"])
-    tasks_rep = TASK.select().where(TASK.TaskUser == user)
+    user = PERSON.get(PERSON.personId == session["userId"])
+    tasks_rep = TASK.select().where(TASK.TaskUser == user).order_by(TASK.DatetimeStart)
     tasks_list = []
 
     for task in tasks_rep:
@@ -229,10 +237,10 @@ def account_all_tasks_for_user():
             "taskUser": task.TaskUser.Username,
             "frequency": task.Frequency,
             "priority": task.PriorityLevel,
-            "duration" : task.Duration,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
 
         tasks_list.append(data)
@@ -247,9 +255,9 @@ def account_all_tasks_for_user():
 @authenticate
 def account_upcoming_tasks_for_user():
 
-    user = PERSON.get(PERSON.Username == session["username"])
+    user = PERSON.get(PERSON.personId == session["userId"])
     current_date = datetime.datetime.now()
-    tasks_rep = TASK.select().where(TASK.TaskUser)
+    tasks_rep = TASK.select().where(TASK.TaskUser).order_by(TASK.DatetimeStart)
 
     tasks_list = []
 
@@ -268,7 +276,8 @@ def account_upcoming_tasks_for_user():
             "priority": task.PriorityLevel,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
 
         if task.DatetimeStart is not None:
@@ -292,7 +301,7 @@ def group():
     if request.method == 'POST':
         content = request.get_json()
         code = 204
-        user = PERSON.get(PERSON.Username == session['username'])
+        user = PERSON.get(PERSON.personId == session['userId'])
         try:
             newGroup = GROUP(Name = content['group_name'], Description = content['description'], idImage=content['idImageGroup'])
         except:
@@ -311,7 +320,7 @@ def group():
         PARTICIPATE_IN.insert(User_id=user.personId,Group_id=newGroup.groupId).execute()
         return jsonify(reponse_body), code
     elif request.method == 'GET':
-        user = PERSON.get(PERSON.Username == session['username'])
+        user = PERSON.get(PERSON.personId == session['userId'])
         rep = PARTICIPATE_IN.select().where(PARTICIPATE_IN.User_id == user.personId)
 
         groupsData = []
@@ -367,7 +376,7 @@ def group_update(id_group):
 @app.route('/group/<id_group>/invite', methods=['DELETE'])
 def delete_invite(id_group):
     reponse_body = {}
-    user = PERSON.get(PERSON.Username == session['username'])
+    user = PERSON.get(PERSON.personId == session['userId'])
     code = 204
     rep = INVITATION.select().where( (INVITATION.Group_id == id_group) & (INVITATION.Recipient_id == user.personId) )
     for invitation in rep :
@@ -379,7 +388,7 @@ def delete_invite(id_group):
 @authenticate
 def create_invite(id_group):
     reponse_body = {}
-    user = PERSON.get(PERSON.Username == session['username'])
+    user = PERSON.get(PERSON.personId == session['userId'])
     code = 204
     rep = PERSON.select().where(PERSON.Username == request.args.get('username'))
     for guest in rep:
@@ -401,6 +410,7 @@ def create_invite(id_group):
     return jsonify(reponse_body), code
 
 @app.route('/group/<id_group>/accept', methods=['GET'])
+@authenticate
 def accept_invite(id_group):
     rep = INVITATION.select().where(INVITATION.invitationId == request.args.get('invite_id'))
     for invitation in rep :
@@ -412,7 +422,7 @@ def accept_invite(id_group):
 @app.route('/group/<id_group>/quit', methods=['GET'])
 @authenticate
 def quit_group(id_group):
-    user = PERSON.get(PERSON.Username == session['username'])
+    user = PERSON.get(PERSON.personId == session['userId'])
     PARTICIPATE_IN.delete().where( (PARTICIPATE_IN.User_id == user.personId) & (PARTICIPATE_IN.Group_id == id_group) ).execute()
 
     return jsonify({}), 204
@@ -425,7 +435,7 @@ def group_task_all(id_group):
     except:
         return sendError(404, "Group not found !")
 
-    tasks = TASK.select().where(TASK.Group == group)
+    tasks = TASK.select().where(TASK.Group == group).order_by(TASK.DatetimeStart)
     taskData = []
 
     for task in tasks:
@@ -448,10 +458,10 @@ def group_task_all(id_group):
             "frequency": task.Frequency,
             "taskUser": taskUserUsername,
             "priority": task.PriorityLevel,
-            "duration" : task.Duration,
             "datetimeStart" : task.DatetimeStart,
             "datetimeEnd": task.DatetimeEnd,
-            "dependancies" : dependanciesIds
+            "dependancies" : dependanciesIds,
+            "duration" : task.Duration
         }
         taskData.append(data)
 
@@ -483,7 +493,8 @@ def group_task_id(id_group, id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration" : task.Duration
     }
 
     reponse_body = {"task" : data}
@@ -499,24 +510,24 @@ def group_task(id_group):
         group = GROUP.get(GROUP.groupId == id_group)
     except:
         return sendError(404, "Group not found !")
-
-    if "datetimeStart" in content and "datetimeEnd" in content:
-        startTime = datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
-        endTime = datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
-        diff = endTime - startTime
-        duration = diff.seconds / 60
-    else:
-        duration = content['duration']
     
     try :
+        if "datetimeStart" in content and "datetimeEnd" in content and content["datetimeStart"] != "" and content["datetimeEnd"] != "":
+            startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
+            endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
+            diff = endTime - startTime
+            duration = diff.seconds / 60
+        else:
+            duration = content['duration']
+
         newTask = TASK(Description = content['description'], Frequency=content['frequency'], Group=group, PriorityLevel=content['priorityLevel'], Name=content["name"],  Duration=duration)
     except:
         return sendError(400, "Make sure to send all the parameters")
 
     #optional field
-    if "datetimeStart" in content:
+    if "datetimeStart" in content and content["datetimeStart"] != "":
         newTask.DatetimeStart = content["datetimeStart"]
-    if "datetimeEnd" in content:
+    if "datetimeEnd" in content and content["datetimeEnd"] != "":
         newTask.DatetimeEnd = content["datetimeEnd"]
 
     if "taskUser" in content:
@@ -573,6 +584,8 @@ def task_put(id_group,id_task):
             task.DatetimeEnd = content['datetimeEnd']
         if 'priority' in content:
             task.PriorityLevel = content['priority']
+        if 'duration' in content:
+            task.Duration = content['duration']
 
         task.save()
     except:
@@ -601,7 +614,22 @@ def task_put(id_group,id_task):
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
         "datetimeEnd": task.DatetimeEnd,
-        "dependancies" : dependanciesIds
+        "dependancies" : dependanciesIds,
+        "duration" : task.Duration
     }
     response_body = data
     return jsonify(response_body), 200
+
+@app.route('/group/<id_group>/order',  methods=['GET'])
+@authenticate
+def group_order_tasks(id_group):
+    content = request.get_json()
+
+    try:
+        group = GROUP.get(GROUP.groupId == id_group)
+    except:
+        return sendError(404, "Group not found !")
+
+    order_tasks(group)
+
+    return jsonify({}), 200

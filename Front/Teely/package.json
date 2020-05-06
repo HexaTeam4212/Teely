@@ -22,6 +22,7 @@
     "react-native-autocomplete-input": "^4.1.0",
     "react-native-calendars": "^1.265.0",
     "react-native-datepicker": "^1.7.2",
+    "react-native-duration-picker": "^1.0.1",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-git-upgrade": "^0.2.7",
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
@@ -36,7 +37,8 @@
     "react-navigation": "^4.3.7",
     "react-navigation-stack": "^2.3.12",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "expo-linear-gradient": "~8.1.0"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.1.0",

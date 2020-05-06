@@ -2,12 +2,13 @@
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { StyleSheet, Text, View, RefreshControl, ActivityIndicator, FlatList} from 'react-native'
+
 import accountServices from '../Services/AccountServices'
 import groupServices from '../Services/GroupServices'
 import ProfileIcon from '../Components/ProfileIcon'
 import GroupIcon from '../Components/GroupIcon'
 import MemberItem from '../Components/MemberItem'
-
+import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 export default class DetailedGroup extends React.Component {
     constructor(props) {
@@ -70,6 +71,7 @@ export default class DetailedGroup extends React.Component {
     render() {
         return (
             <View style={styles.main_container}>
+                {backgroundGradientColor()}
                 <ProfileIcon idImage={this.state.idImageProfile} />
                 <View style={{ flex: 1 }}>
                     <KeyboardAwareScrollView
@@ -95,10 +97,6 @@ export default class DetailedGroup extends React.Component {
                 </View>
                 {this.displayLoading()}
             </View>
-
-
-
-
         )
     }
 
@@ -106,7 +104,6 @@ export default class DetailedGroup extends React.Component {
 
 const styles = StyleSheet.create({
     main_container: {
-        backgroundColor: '#78e1db',
         flex: 1
     },
     content_container: {
@@ -132,17 +129,6 @@ const styles = StyleSheet.create({
         bottom: 100,
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    groupPic: {
-        marginTop: 5,
-        alignSelf: 'center',
-        resizeMode: 'contain',
-        width: 120,
-        height: 120,
-        borderColor: '#ffb4e2',
-        borderWidth: 3,
-        borderRadius: 60,
-        marginBottom: 10
     },
     name_text: {
         fontWeight: 'bold',
