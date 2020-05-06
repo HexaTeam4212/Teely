@@ -599,7 +599,10 @@ def task_put(id_task):
 
     try:
         task = TASK.get(TASK.taskId == id_task)
+    except:
+        return sendError(400, "Task not found")
 
+    try:
 
         if 'taskUser' in content :
             if content['taskUser']!= "" :
