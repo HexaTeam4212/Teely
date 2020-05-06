@@ -132,6 +132,7 @@ export default class GroupTasks extends React.Component {
           scrollEnabled={false}
           enableAutomaticScroll={(Platform.OS === 'ios')}
           enableOnAndroid={true}
+          refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
         >
           <Dialog dialogStyle={styles.dialog_container}
             visible={this.state.visibleDeleteTaskGroupDialog}
