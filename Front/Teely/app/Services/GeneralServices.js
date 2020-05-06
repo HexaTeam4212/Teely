@@ -27,6 +27,15 @@ class GeneralServices {
         return formattedDate
     }
 
+    formatDateTime(dateString) {
+        if (dateString == null) {
+            return ""
+        }
+        var date = new Date(dateString)
+        var formattedDate = moment.utc(date).format('DD/MM/YYYY à HH:mm')
+        return formattedDate
+    }
+
     orderTasksByDate(day, tasks) {
         let tasksForDay = []
         const arr = Object.keys(tasks);
@@ -40,12 +49,11 @@ class GeneralServices {
     }
 
     checkPrecedence(startDateString, endDateString) {
-        isVerified = true
-        if (startDateString == "" || endDateString == "") {
-            return isVerified
+        if (startDateString == "" || endDateString == "" || startDateString==endDateString) {
+            return true
         }
-        const startDate = moment.utc(startDateString, 'DD-MM-YYYY HH:mm:ss')
-        const endDate = moment.utc(endDateString, 'DD-MM-YYYY HH:mm:ss')
+        const startDate = moment.utc(startDateString, 'YYYY-MM-DD HH:mm:ss')
+        const endDate = moment.utc(endDateString, 'YYYY-MM-DD HH:mm:ss')
         var isVerified = moment(endDate).isAfter(startDate)
         return isVerified
     }

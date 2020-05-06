@@ -97,10 +97,10 @@ export default class GroupCalendar extends React.Component {
     return (
       <View style={styles.task_container}>
         <TouchableOpacity onPress={() => {this.props.navigation.navigate("DetailedTask", { taskId: item.taskId })}}>
-          <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeStart)}</Text></View>
+          <View><Text style={styles.time_text}>{generalServices.formatDateTime(item.datetimeStart)}</Text></View>
           <View><Text style={styles.name_text}>{item.name}</Text></View>
           <View><Text style={styles.description_text}>{item.description}</Text></View>
-          <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
+          <View><Text style={styles.time_text}>{generalServices.formatDateTime(item.datetimeEnd)}</Text></View>
           {this.renderTaskedUsers(item.taskUser)}
         </TouchableOpacity>
       </View>
@@ -108,7 +108,7 @@ export default class GroupCalendar extends React.Component {
   }
 
   renderTaskedUsers = (usersList) => {
-    if (usersList.length) {
+    if (usersList!=null) {
       return (
         <View style={styles.taskedUsers_container}>
           <Text style={styles.taskedUser_text}>Par : {usersList.toString()} </Text>

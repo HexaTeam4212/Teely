@@ -81,14 +81,17 @@ export default class PersonalCalendar extends React.Component {
     this.loadItems(this.state.selectedDate)
   }
 
+  displayStart = (item) => {
+  }
+  
   renderItem = (item) => {
     return (
       <View style={styles.task_container}>
         <TouchableOpacity onPress={() => {this.props.navigation.navigate("DetailedTask", { taskId: item.taskId })}}>
-          <View><Text style={styles.time_text}> {generalServices.formatTime(item.datetimeStart)}</Text></View>
+          <View><Text style={styles.time_text}> {generalServices.formatDateTime(item.datetimeStart)}</Text></View>
           <View><Text style={styles.name_text}>{item.name}</Text></View>
           <View><Text style={styles.description_text}>{item.description}</Text></View>
-          <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
+          <View><Text style={styles.time_text}>{generalServices.formatDateTime(item.datetimeEnd)}</Text></View>
         </TouchableOpacity>
       </View>
     );

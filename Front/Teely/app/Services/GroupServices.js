@@ -238,11 +238,12 @@ class GroupServices {
             const respBody = await response.json()
             if (response.status != 200) {
                 httpError(response.status)
+                console.warn(respBody.error)
             }
             else {
                 callback(respBody.tasks)
             }
-            console.warn(respBody.error)
+            
         }
         catch (error) {
             console.error(error)
