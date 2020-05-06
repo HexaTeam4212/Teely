@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   arrows_container: {
-    flex: 2,
+    flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
   },
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginRight: 20,
     marginLeft: 20,
-    marginBottom: 10,
+    marginBottom: 130,
     marginTop: 10
   },
   foot_container: {
