@@ -14,6 +14,7 @@ import GroupTaskItem from '../Components/GroupTaskItem'
 import ProfileIcon from '../Components/ProfileIcon'
 import MenuDrawer from 'react-native-side-drawer'
 import MenuButton from '../Components/MenuButton'
+import Images from '../modules/ImageProfile';
 
 export default class GroupTasks extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ export default class GroupTasks extends React.Component {
       groupName: '',
       visibleDeleteTaskGroupDialog: false,
       refreshing: false,
+      open: false
     }
     let params = this.props.route.params
     this.idGroup = params.idGroup
@@ -94,7 +96,7 @@ export default class GroupTasks extends React.Component {
 
   seeDetails = (task) => {
     console.log("see details task")
-    this.props.navigation.navigate("DetailedTask", {taskId:task.taskId, idGroup:this.idGroup})
+    this.props.navigation.navigate("DetailedTask", { taskId: task.taskId, idGroup: this.idGroup })
 
   }
 
@@ -219,7 +221,7 @@ export default class GroupTasks extends React.Component {
       <View style={styles.main_container}>
         {backgroundGradientColor()}
         <View style={{ flex: 1 }}>
-        <MenuDrawer
+          <MenuDrawer
             open={this.state.open}
             drawerContent={this.drawerContent()}
             drawerPercentage={55}
@@ -227,35 +229,38 @@ export default class GroupTasks extends React.Component {
             overlay={false}
             opacity={0.2}
           >
-          <KeyboardAwareScrollView
-            contentContainerStyle={{ flex: 1 }}
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}
-            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
-          >
-            <TouchableOpacity onPress={this.toggleOpen} >
-                <ProfileIcon idImage={this.state.idImageProfile} />
-            </TouchableOpacity>
-            <View style={styles.head_container}>
-              <GroupIcon idImage={this.state.idImageGroup} />
-              <Text style={styles.name_text}>{this.state.groupName}</Text>
-            </View>
-            <View style={styles.content_container}>
-              {this.displayTasks()}
-            </View>
-            <View style={styles.button_container}>
-              <CustomButton name="Ajouter une tâche" width={180} onPress={() => {
-                this.props.navigation.navigate("CreateTask", { idGroup: this.idGroup })
-              }}></CustomButton>
-              <TouchableOpacity style={styles.inviteButton} onPress={() => {
-                this.props.navigation.navigate("PlanningDetails", { idGroup: this.idGroup })
-              }}>
-                <Text style={styles.inviteButtonText}>Lancer l'organisation</Text>
-              </TouchableOpacity>
-            </View>
-          </KeyboardAwareScrollView>
+            <KeyboardAwareScrollView
+              contentContainerStyle={{ flex: 1 }}
+              resetScrollToCoords={{ x: 0, y: 0 }}
+              scrollEnabled={true}
+              enableAutomaticScroll={(Platform.OS === 'ios')}
+              enableOnAndroid={true}
+              refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+            >
+              <View style={styles.icon_container}>
+                <TouchableOpacity onPress={this.toggleOpen}>
+                  <Image style={styles.profil} source={Images[this.state.idImageProfile]} />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.head_container}>
+                <GroupIcon idImage={this.state.idImageGroup} />
+                <Text style={styles.name_text}>{this.state.groupName}</Text>
+              </View>
+              <View style={styles.content_container}>
+                {this.displayTasks()}
+              </View>
+              <View style={styles.button_container}>
+                <CustomButton name="Ajouter une tâche" width={180} onPress={() => {
+                  this.props.navigation.navigate("CreateTask", { idGroup: this.idGroup })
+                }}></CustomButton>
+                <TouchableOpacity style={styles.inviteButton} onPress={() => {
+                  this.props.navigation.navigate("PlanningDetails", { idGroup: this.idGroup })
+                }}>
+                  <Text style={styles.inviteButtonText}>Lancer l'organisation</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{ marginBottom: 80 }}></View>
+            </KeyboardAwareScrollView>
           </MenuDrawer>
           {this.displayLeaveGroupDialog()}
           {this.displayLoading()}
@@ -268,6 +273,12 @@ export default class GroupTasks extends React.Component {
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
+  },
+  icon_container: {
+    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    zIndex: 5
   },
   head_container: {
     marginRight: 10,
@@ -385,6 +396,22 @@ const styles = StyleSheet.create({
     borderColor: '#737373',
     borderRightWidth: 3,
     borderBottomWidth: 5
+  },
+  profil: {
+    resizeMode: 'contain',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderColor: '#ffb4e2',
+    borderWidth: 3,
+    borderRadius: 60,
+    margin: 10
+  },
+  menu: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: "#ffb4e2",
+    padding: 0
   },
 
 

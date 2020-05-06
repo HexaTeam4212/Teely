@@ -154,6 +154,7 @@ export default class DetailedGroup extends React.Component {
 
   toggleOpen = () => {
     this.setState({ open: !this.state.open });
+    
   }
 
   drawerContent = () => {
