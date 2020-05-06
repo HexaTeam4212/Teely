@@ -271,42 +271,33 @@ export default class EditTask extends React.Component {
     redirect = (result) => {
         this.setState({ isLoading: false })
         if (result) {
-            this.props.navigation.navigate("GroupTasks", { idGroup: this.groupId })
+            this.props.navigation.navigate("DetailedTask", {taskId: this.taskId })
         }
     }
 
     updateTask = () => {
-        console.log(this.state)
-    //     var isValid = true
-    //     var datetimeStart = this.state.datetimeStart
-    //     var datetimeEnd = this.state.datetimeEnd
-    //     if (this.state.datetimeStart == "00-00-0000 à 00:00" || this.state.datetimeEnd == "00-00-0000 à 00:00") {
-    //         if (this.state.datetimeStart == "00-00-0000 à 00:00") {
-    //             datetimeStart = ""
-    //         }
-    //         if (this.state.datetimeEnd == "00-00-0000 à 00:00") {
-    //             datetimeEnd = ""
-    //         }
-    //     }
-    //     if (this.state.taskName == "") {
-    //         isValid = false
-    //         alert("Veuillez renseigner un nom pour la tâche")
-    //     }
-    //     else if ((this.state.taskDuration == "" && !(datetimeStart != "" && datetimeEnd != ""))) {
-    //         isValid = false,
-    //             alert("Il n'y a pas assez d'informations pour estimer la durée de la tâche. \n" +
-    //                 "Veuillez renseigner soit : \n 1. le début et la fin de la tâche \n 2. le début et la durée \n 3.le début, la fin, et la durée. \n 4.la durée")
-    //     }
-    //     else if (!(generalServices.checkPrecedence(datetimeStart, datetimeEnd))) {
-    //         isValid = false
-    //         alert("Les dates de début et de fin sont invalides. Merci de saisir une date de fin supérieure à celle de début.")
-    //     }
+        //console.log(this.state)
+        var isValid = true
+        if (this.state.taskName == "") {
+            isValid = false
+            alert("Veuillez renseigner un nom pour la tâche")
+        }
+        else if (((this.state.taskDuration == null || this.state.taskDuration == "") && 
+                !(this.state.datetimeStart != null && this.state.datetimeEnd != null))) {
+            isValid = false,
+                alert("Il n'y a pas assez d'informations pour estimer la durée de la tâche. \n" +
+                    "Veuillez renseigner soit : \n 1. le début et la fin de la tâche \n 2. le début et la durée \n 3.le début, la fin, et la durée. \n 4.la durée")
+        }
+        else if (!(generalServices.checkPrecedence(this.state.datetimeStart, this.state.datetimeEnd))) {
+            isValid = false
+            alert("Les dates de début et de fin sont invalides. Merci de saisir une date de fin supérieure à celle de début.")
+        }
 
-    //     if (isValid) {
-    //         this.setState({ isLoading: true })
-    //         groupServices.createTask(this.groupId, this.state.taskName, this.state.taskDescription, datetimeStart, datetimeEnd,
-    //             this.state.taskDuration, this.state.taskDependencies, this.state.taskUser, this.state.taskPriority, this.redirect)
-    //     }
+        if (isValid) {
+            this.setState({ isLoading: true })
+            groupServices.updateTaskGroup(this.groupId, this.taskId, this.state.taskUser, this.state.taskDescription, this.state.taskName,
+                this.state.datetimeStart, this.state.datetimeEnd, this.state.taskPriority, this.state.taskDependencies, this.redirect)
+        }
  }
 
     render() {

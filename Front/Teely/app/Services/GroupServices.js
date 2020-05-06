@@ -243,7 +243,7 @@ class GroupServices {
             else {
                 callback(respBody.tasks)
             }
-            
+
         }
         catch (error) {
             console.error(error)
@@ -261,7 +261,7 @@ class GroupServices {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
                         'invit_id': invitId,
-                        Authorization:token,
+                        Authorization: token,
                     }
                 })
                 .catch(err => {
@@ -313,7 +313,7 @@ class GroupServices {
         }
     }
 
-    async createTask(groupId, name, description, datetimeStart, datetimeEnd, 
+    async createTask(groupId, name, description, datetimeStart, datetimeEnd,
         duration, dependencies, taskUser, priority, callback) {
         const requestBody = JSON.stringify({
             name: name,
@@ -327,7 +327,7 @@ class GroupServices {
             duration: duration,
         })
         console.log(requestBody)
-        const fullEndpoint = endpoint + '/'+groupId+'/task'
+        const fullEndpoint = endpoint + '/' + groupId + '/task'
         const token = await getToken()
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -361,13 +361,14 @@ class GroupServices {
                 callback(true)
             }
         }
-        catch (error) {         
+        catch (error) {
             console.error(error)
         }
     }
 
 
     async deleteTaskGroup(taskId, groupId, callback) {
+        const token = await getToken()
         const fullEndpoint = endpoint + '/' + groupId + '/task/' + taskId
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -376,12 +377,13 @@ class GroupServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
+                        Authorization: token
                     }
                 })
             if (response.status != 204) {
                 if (response.status == 404) {
                     alert("La tâche n'existe pas ou a déjà été supprimée")
-                } 
+                }
                 else {
                     httpError(response.status)
                 }
@@ -397,20 +399,19 @@ class GroupServices {
         }
     }
 
-    async updateTaskGroup(groupId, taskId, taskUser, description, frequency, name, datetimeStart, datetimeEnd, priority, dependancies,callback) {
-       
+    async updateTaskGroup(groupId, taskId, taskUser, description, name, datetimeStart, datetimeEnd, priority, dependencies, callback) {
+        const token = await getToken()
         const requestBody = JSON.stringify({
             taskUser: taskUser,
-            description:description,
-            frequency:frequency,
+            description: description,
+            frequency: 1,
             name: name,
-            datetimeStart:datetimeStart,
-            datetimeEnd:datetimeEnd,
-            priority:priority,
-            dependancies:dependancies
-
+            datetimeStart: datetimeStart,
+            datetimeEnd: datetimeEnd,
+            priority: priority,
+            dependencies: dependencies,
         })
-        const fullEndpoint = endpoint + '/' + groupId + '/task/'+taskId
+        const fullEndpoint = endpoint + '/' + groupId + '/task/' + taskId
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -418,6 +419,7 @@ class GroupServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
+                        Authorization: token
                     },
                     body: requestBody
                 })
@@ -430,9 +432,10 @@ class GroupServices {
                 }
                 else {
                     httpError(response.status)
+                    console.warn(respBody.error)
                 }
                 const respBody = await response.json()
-                console.warn(respBody.error)
+                console.log(respBody)
                 callback(false);
             }
             else {

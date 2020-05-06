@@ -150,9 +150,8 @@ export default class Groups extends React.Component {
               overlay={false}
               opacity={0.2}
           >
-           
             <KeyboardAwareScrollView
-              contentContainerStyle={{ flex: 1 }}
+              contentContainerStyle={{flex: 1}}
               resetScrollToCoords={{ x: 0, y: 0 }}
               scrollEnabled={true}
               enableAutomaticScroll={(Platform.OS === 'ios')}

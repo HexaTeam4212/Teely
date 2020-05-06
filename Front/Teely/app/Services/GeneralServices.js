@@ -49,7 +49,8 @@ class GeneralServices {
     }
 
     checkPrecedence(startDateString, endDateString) {
-        if (startDateString == "" || endDateString == "" || startDateString==endDateString) {
+        if (startDateString == "" || endDateString == "" || startDateString == endDateString ||
+            startDateString == null || endDateString == null) {
             return true
         }
         const startDate = moment.utc(startDateString, 'YYYY-MM-DD HH:mm:ss')
@@ -62,10 +63,10 @@ class GeneralServices {
         if (dateString == null) {
             return ""
         }
-        let duree = ((parseInt(dateString, 10)/60)).toString()
-        const hour = duree.substring(0,duree.lastIndexOf("."));
-        const min = (parseInt(dateString, 10)%60).toString()
-        duree = hour+"h"+min
+        let duree = ((parseInt(dateString, 10) / 60)).toString()
+        const hour = duree.substring(0, duree.lastIndexOf("."));
+        const min = (parseInt(dateString, 10) % 60).toString()
+        duree = hour + "h" + min
         return duree
     }
 }

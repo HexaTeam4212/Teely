@@ -636,11 +636,11 @@ def task_put(id_group,id_task):
             newDependance.save()
 
 
-    dependanciesIds = []
+    dependenciesIds = []
 
     dependencies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
     for dep in dependencies:
-        dependanciesIds.append(dep.TaskDependency.taskId)
+        dependenciesIds.append(dep.TaskDependency.taskId)
 
     data = {
         "taskId": task.taskId,
