@@ -8,6 +8,10 @@ export default class TexstRow extends React.Component {
         const type = this.props.type
         const name = this.props.name
         const name2 = this.props.name2
+        let colorText2 = "white"
+        if(this.props.color!=null){
+            colorText2 = this.props.color
+        }
         let style_container
         if(name2!=null && name2.length<=25){
             style_container = styles.main_container
@@ -17,7 +21,7 @@ export default class TexstRow extends React.Component {
         return (
             <View style={style_container} >
                 <Text style={styles.text}> {name}</Text>
-                <Text style={styles.text2}>{name2}</Text>
+                <Text style={[styles.text2, {color:colorText2}]}>{name2}</Text>
             </View>
 
         )
