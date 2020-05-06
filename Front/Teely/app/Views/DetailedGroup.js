@@ -239,7 +239,6 @@ export default class DetailedGroup extends React.Component {
             </MenuDrawer>
             {this.displayLoading()}
             {this.displayLeaveGroupDialog()}
-
         </View>
       </View >
     )
@@ -278,7 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginRight: 20,
     marginLeft: 20,
-    marginBottom: 10,
+    marginBottom: 85,
     marginTop: 10
   },
   foot_container: {
