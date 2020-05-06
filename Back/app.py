@@ -596,7 +596,8 @@ def task_put(id_task):
 
         if 'taskUser' in content :
             if content['taskUser']!= "" :
-                task.TaskUser = content['taskUser']
+                people= PERSON.get(PERSON.Username == content['taskUser'])
+                task.TaskUser = people
             elif task.TaskUSer is None :
                 task.TaskUser = None
         if 'description' in content:
