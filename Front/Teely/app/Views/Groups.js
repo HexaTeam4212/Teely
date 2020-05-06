@@ -1,7 +1,7 @@
 // app/Views/Groups.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { RefreshControl, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator, Button } from 'react-native'
+import { RefreshControl, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native'
 
 import groupServices from '../Services/GroupServices';
 import accountServices from '../Services/AccountServices';
@@ -129,8 +129,8 @@ export default class Groups extends React.Component {
 
   drawerContent = () => {
     return (
-      <View style={styles.menu}>
-        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1 }} >
+      <ScrollView style={styles.menu}>
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 60 }} >
           <ProfileIcon idImage={this.state.idImageProfile} />
         </TouchableOpacity>
         <View style={{ flex: 12 }}>
@@ -144,7 +144,7 @@ export default class Groups extends React.Component {
             this.props.navigation.navigate("Login")
           }} />
         </View>
-      </View>
+      </ScrollView>
     )
   }
 
@@ -158,7 +158,7 @@ export default class Groups extends React.Component {
             open={this.state.open}
             drawerContent={this.drawerContent()}
             drawerPercentage={55}
-            animationTime={0}
+            animationTime={200}
             overlay={false}
             opacity={0.2}
           >
