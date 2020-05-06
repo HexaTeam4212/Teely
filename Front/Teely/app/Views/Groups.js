@@ -19,6 +19,7 @@ export default class Groups extends React.Component {
     this.idImageProfile = 18
     this.groups = []
     this.invitations = []
+    this.nbInvit = 0 
     this.firstload = true
     this.state = { isLoading: true, refreshing: false, idImageProfile: 18, open : false}
 
@@ -57,7 +58,9 @@ export default class Groups extends React.Component {
   getInvitations() {
     accountServices.accountInvitations((dataInvit) => {
       this.invitations = dataInvit
+      this.nbInvit = dataInvit.length
     })
+    
   }
 
   getGroups() {
@@ -68,16 +71,11 @@ export default class Groups extends React.Component {
   }
 
   displayInvitations() {
-    let nbInvit = this.invitations.length
 
-    if(!nbInvit){
-      nbInvit = 0
-    }
-
-    const title = 'MES INVITATIONS (' + nbInvit + ')'
+    const title = 'MES INVITATIONS (' + this.nbInvit + ')'
 
     return (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })}>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate("Invitations")}>
         <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text={title} />
       </TouchableOpacity>
     )

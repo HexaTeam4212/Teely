@@ -31,9 +31,9 @@ export default class InviteMembers extends React.Component {
     redirect = (result) => {
         this.setState({ isLoading: false })
         if (result) {
-          this.props.navigation.navigate("DetailedGroup", { idGroup: this.groupId })
+            this.props.navigation.navigate("DetailedGroup", { idGroup: this.groupId })
         }
-      }
+    }
 
 
     render() {
@@ -46,9 +46,16 @@ export default class InviteMembers extends React.Component {
                     enableOnAndroid={true}>
                     <FlatList data={this.state.invitedUsers}
                         renderItem={({ item }) =>
-                            <View style={styles.item}>
-                                <Text style={styles.itemText}>{item.key} </Text>
-                            </View>
+                                <View style={styles.item}>
+                                    <Text style={styles.itemText}>{item.key} </Text>
+                                    <TouchableOpacity style={styles.crossButton} onPress={() => {
+                                        const username = item.key
+                                        this.state.invitedUsers.splice(this.state.invitedUsers.findIndex(v => v.key === username), 1)
+                                        this.setState({ invitedUsers: this.state.invitedUsers })
+                                    }}>
+                                        <Image style={{height: 30, width: 30}}source={require('../../assets/Images/cross.png')} />
+                                    </TouchableOpacity>
+                                </View>
                         }>
                     </FlatList>
                     <Autocomplete
@@ -60,7 +67,7 @@ export default class InviteMembers extends React.Component {
                         onChangeText={text => {
                             this.setState({ usernameInput: text })
                             this.isUsernameValid = this.state.usernameList.some((item) => item.key === text)
-                            accountServices.getAccountUsernames(text, true, (usernameResults) => {
+                            accountServices.getAccountUsernames(text, false, (usernameResults) => {
                                 let newUsernameList = []
                                 for (let i = 0; i < usernameResults.length; i++) {
                                     newUsernameList.push({ key: usernameResults[i] })
@@ -157,5 +164,10 @@ const styles = StyleSheet.create({
     addButton: {
         marginBottom: 70,
         marginTop: -10
+    },
+    crossButton: {
+        alignSelf: 'flex-end',
+        marginRight: -55,
+        marginTop: -26
     }
 });

@@ -250,6 +250,7 @@ class GroupServices {
     }
 
     async acceptInvitGroup(groupId, invitId, callback) {
+        const token = await getToken()
         const fullEndpoint = endpoint + '/' + groupId + '/accept'
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -258,7 +259,8 @@ class GroupServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'invit_id': invitId
+                        'invit_id': invitId,
+                        Authorization:token,
                     }
                 })
                 .catch(err => {
