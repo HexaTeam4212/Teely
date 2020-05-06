@@ -125,12 +125,12 @@ export default class Groups extends React.Component {
           <ProfileIcon idImage={this.state.idImageProfile} /> 
         </TouchableOpacity> 
         <View style={{flex : 12}}>
-          <MenuButton name='Profil' width={200}  onPress={() => this.props.navigation.navigate("Profile")}/>
-          <MenuButton name='Calendrier' width={200} onPress={() => this.props.navigation.navigate("PersonalCalendar")}/>
-          <MenuButton name='Groupes' width={200} onPress={() => this.props.navigation.navigate("Groups")}/>
-          <MenuButton name='Invitations' width={200} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })}/> 
-          <MenuButton name='Paramètres' width={200} onPress={() => this.props.navigation.navigate("EditProfile")}/> 
-          <MenuButton name='Déconnexion' width={200} onPress={() => {
+          <MenuButton name='Profil' width={'95%'}  onPress={() => this.props.navigation.navigate("Profile")}/>
+          <MenuButton name='Calendrier' width={'95%'}  onPress={() => this.props.navigation.navigate("PersonalCalendar")}/>
+          <MenuButton name='Groupes' width={'95%'}  onPress={() => this.props.navigation.navigate("Groups")}/>
+          <MenuButton name='Invitations' width={'95%'}  onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })}/> 
+          <MenuButton name='Paramètres' width={'95%'}  onPress={() => this.props.navigation.navigate("EditProfile")}/> 
+          <MenuButton name='Déconnexion' width={'95%'}  onPress={() => {
                   accountServices.logout()
                   this.props.navigation.navigate("Login")
               }} />
