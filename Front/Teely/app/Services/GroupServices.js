@@ -252,7 +252,7 @@ class GroupServices {
 
     async acceptInvitGroup(groupId, invitId, callback) {
         const token = await getToken()
-        const fullEndpoint = endpoint + '/' + groupId + '/accept?invite_id='+invitId
+        const fullEndpoint = endpoint + '/' + groupId + '/accept?invite_id=' + invitId
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -260,7 +260,7 @@ class GroupServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization:token,
+                        Authorization: token,
                     }
                 })
                 .catch(err => {
@@ -358,6 +358,43 @@ class GroupServices {
             }
             else {
                 callback(true)
+            }
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    async orderTaks(groupId, startHour, startMinute, endHour, endMinute, callback) {
+        const fullEndpoint = endpoint + '/' + groupId + '/order?startHour=' + startHour + '&startMinute=' + startMinute
+            + '&endHour=' + endHour + '&endMinute=' + endMinute
+        const token = await getToken()
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    },
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            const respBody = await response.json()
+            if (response.status != 200) {
+                if (response.status == 400) {
+                    alert("Paramètres manquants à la requête")
+                }
+                else {
+                    httpError(response.status)
+                }
+                console.warn(respBody.error)
+                callback(false)
+            }
+            else {
+                callback(true, respBody.tasks_modified)
             }
         }
         catch (error) {

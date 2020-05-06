@@ -212,7 +212,9 @@ export default class GroupTasks extends React.Component {
               <CustomButton name="Ajouter une tâche" width={180} onPress={() => {
                 this.props.navigation.navigate("CreateTask", { idGroup: this.idGroup })
               }}></CustomButton>
-              <TouchableOpacity style={styles.inviteButton}>
+              <TouchableOpacity style={styles.inviteButton} onPress={() => {
+                this.props.navigation.navigate("PlanningDetails", { idGroup: this.idGroup })
+              }}>
                 <Text style={styles.inviteButtonText}>Lancer l'organisation</Text>
               </TouchableOpacity>
             </View>

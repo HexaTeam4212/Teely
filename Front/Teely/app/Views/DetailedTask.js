@@ -35,7 +35,7 @@ export default class DetailedTask extends React.Component {
             refreshing: false
         }
         this.groupId = this.props.route.params.idGroup
-        this.taskId = this.props.route.params.idTask
+        this.taskId = this.props.route.params.taskId
         this.getDataProfile()
         this.getGroupInfos()
         this.getGroupTasks()

@@ -21,7 +21,7 @@ import GroupTasks from './app/Views/GroupTasks'
 import CreateTask from './app/Views/CreateTask'
 import DetailedTask from './app/Views/DetailedTask'
 import EditTask from './app/Views/EditTask'
-
+import PlanningDetails from './app/Views/PlanningDetails'
 
 export default function App() {
 
@@ -311,6 +311,23 @@ export default function App() {
             title: "Edition d'une tâche",
             headerStyle: {
               backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+              fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="PlanningDetails"
+          component={PlanningDetails}
+          options={{
+            title: 'Détails de la planification',
+            headerStyle: {
+              backgroundColor: '#ffb4e2',
             },
             headerTruncatedBackTitle: true,
             headerTintColor: 'white',
