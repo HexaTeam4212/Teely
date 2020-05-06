@@ -250,7 +250,7 @@ export default class EditTask extends React.Component {
 
     addTaskDependency = (task) => {
         this.taskSelection.set(task.taskId, true)
-        var newDependencies = this.state.taskDependencies
+        let newDependencies = this.state.taskDependencies
         newDependencies.push(task.taskId)
         this.setState({
             taskDependencies: newDependencies
@@ -259,7 +259,7 @@ export default class EditTask extends React.Component {
 
     removeTaskDependency = (task) => {
         this.taskSelection.set(task.taskId, false)
-        var newDependencies = this.state.taskDependencies
+        let newDependencies = this.state.taskDependencies
         for (let i = 0; i < newDependencies.length; i++) {
             if (newDependencies[i] == task.taskId.toString()) {
                 newDependencies.splice(i, 1)
@@ -343,7 +343,7 @@ export default class EditTask extends React.Component {
                             <Text style={styles.text}> Début : </Text>
                         </View>
                         <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' width= {200} name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
+                            <DateTimePicker mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
                         </View>
                     </View>
                     <View style={styles.groupLined_container}>
@@ -351,7 +351,7 @@ export default class EditTask extends React.Component {
                             <Text style={styles.text}> Fin : </Text>
                         </View>
                         <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' width= {200} name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
+                            <DateTimePicker mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
                         </View>
                     </View>
                     <View style={styles.groupLined_container}>
@@ -389,7 +389,7 @@ export default class EditTask extends React.Component {
                     </View>
                     {this.displayPossibleDependencies()}
                     <View style={{ marginBottom: 100 }}>
-                        <CustomButton name='Modifier' width={100} onPress={this.updateTask}>
+                        <CustomButton name='Enregistrer' width={170} onPress={this.updateTask}>
                         </CustomButton>
                     </View>
                 </KeyboardAwareScrollView>
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
         flex: 6,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
     },
     checkedImage_container: {
         flex: 1,
