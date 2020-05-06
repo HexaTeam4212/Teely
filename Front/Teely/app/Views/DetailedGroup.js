@@ -10,6 +10,8 @@ import ImageWithText from '../Components/ImageWithText'
 import ProfileIcon from '../Components/ProfileIcon'
 import GroupIcon from '../Components/GroupIcon'
 import accountServices from '../Services/AccountServices'
+import MenuButton from '../Components/MenuButton'
+import MenuDrawer from 'react-native-side-drawer'
 import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
 
@@ -32,7 +34,8 @@ export default class DetailedGroup extends React.Component {
       visibleLeaveGroupDialog: false,
       usernameInput: "",
       usernameList: [],
-      invitedUser: []
+      invitedUser: [],
+      open : false
     }
     this.isUsernameValid = true
     let params = this.props.route.params
@@ -150,12 +153,45 @@ export default class DetailedGroup extends React.Component {
     accountServices.dataProfile(this.updateDataProfile, "")
   }
 
+  toggleOpen = () => {
+    this.setState({ open: !this.state.open });
+  }
+
+  drawerContent = () => {
+    return (
+      <View style={styles.menu}>
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1 }} >
+          <ProfileIcon idImage={this.state.idImageProfile} />
+        </TouchableOpacity>
+        <View style={{ flex: 12 }}>
+          <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
+          <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
+          <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
+          <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
+          <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
+          <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
+            accountServices.logout()
+            this.props.navigation.navigate("Login")
+          }} />
+        </View>
+      </View>
+    )
+  }
+
+
   render() {
     return (
       <View style={styles.main_container}>
         {backgroundGradientColor()}
-        <ProfileIcon idImage={this.state.idImageProfile} />
         <View style={{ flex: 1 }}>
+        <MenuDrawer
+            open={this.state.open}
+            drawerContent={this.drawerContent()}
+            drawerPercentage={55}
+            animationTime={0}
+            overlay={false}
+            opacity={0.2}
+          >
           <KeyboardAwareScrollView
             contentContainerStyle={{ flex: 1 }}
             resetScrollToCoords={{ x: 0, y: 0 }}
@@ -164,6 +200,9 @@ export default class DetailedGroup extends React.Component {
             enableOnAndroid={true}
             refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
           >
+            <TouchableOpacity onPress={this.toggleOpen} >
+                <ProfileIcon idImage={this.state.idImageProfile} />
+            </TouchableOpacity>
             <GroupIcon idImage={this.state.idImageGroup} />
             <Text style={styles.name_text}>{this.state.name}</Text>
             <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
@@ -196,9 +235,10 @@ export default class DetailedGroup extends React.Component {
                 <Text style={styles.inviteButtonText}>Inviter des participants</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAwareScrollView>
-          {this.displayLoading()}
-          {this.displayLeaveGroupDialog()}
+            </KeyboardAwareScrollView>
+            </MenuDrawer>
+            {this.displayLoading()}
+            {this.displayLeaveGroupDialog()}
 
         </View>
       </View >
@@ -368,6 +408,12 @@ const styles = StyleSheet.create({
     borderColor: '#737373',
     borderRightWidth: 3,
     borderBottomWidth: 5
+  },
+  menu: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: "#ffb4e2",
+    padding: 0
   },
 
 })

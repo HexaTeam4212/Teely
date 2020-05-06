@@ -6,7 +6,7 @@ import DateTimePicker from '../Components/DateTimePicker'
 
 import CustomButton from '../Components/CustomButton'
 import groupServices from '../Services/GroupServices'
-import generalServices from '../Services/GeneralServices'
+import TaskItem from '../Components/TaskItem'
 
 
 export default class PlanningDetails extends React.Component {
@@ -43,29 +43,24 @@ export default class PlanningDetails extends React.Component {
 
     callbackFunctionStartInput = (childData) => {
         this.setState({ startInput: childData })
-        console.log("child data start " + childData)
-        console.log("startInput : " + this.state.startInput)
     }
 
     callbackFunctionEndInput = (childData) => {
         this.setState({ endInput: childData })
-        console.log("child data end " + childData)
-        console.log("endInput : " + this.state.endInput)
     }
 
     displayModifiedTasks(tasks) {
         if (this.state.displayedResult) {
-        //return (
-        //     <View>
-        //         <Text style={styles.container_title}> Tâches modifiées : </Text>
-        //         <FlatList
-        //             data={this.state.modifiedTasks}
-        //             keyExtractor={(item) => item.toString()}
-        //             renderItem={({ item }) => <TaskItemFromId task={item} />}
-        //         />
-        //     </View>
-
-        //)
+        return (
+            <View>
+                <Text style={styles.container_title}> Tâches modifiées : </Text>
+                <FlatList
+                    data={this.state.modifiedTasks}
+                    keyExtractor={(item) => item.toString()}
+                    renderItem={({ item }) => <TaskItem task={item} />}
+                />
+            </View>
+        )
         }
     }
 
@@ -74,7 +69,7 @@ export default class PlanningDetails extends React.Component {
             this.setState({ modifiedTasks: data, displayedResult: true })
         }
         this.setState({ isLoading: false })
-
+        console.log(this.state)
 
     }
 

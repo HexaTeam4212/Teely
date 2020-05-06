@@ -25,7 +25,10 @@ class GroupTaskItem extends React.Component {
                 <Text style={styles.date_text}>Le {generalServices.formatDate(this.task.datetimeStart)} à {generalServices.formatTime(this.task.datetimeStart)} </Text>
                 
             )
-        }
+        }   
+    }
+
+    displayDuration(){
         if(this.task.duration){
             return(
                 <Text style={styles.date_text}>Durée : {generalServices.convertMinInHour(this.task.duration)}</Text>
@@ -34,6 +37,10 @@ class GroupTaskItem extends React.Component {
     }
     
     render() {
+        let pers = this.task.taskUser
+        if(pers=="" || pers==null){
+            pers = "Non défini"
+        }
         return (
             <View style={styles.main_container}>
                 <View style={styles.left_container}>
@@ -42,9 +49,10 @@ class GroupTaskItem extends React.Component {
                     </View>
                     <View style={styles.date_container}>
                     {this.displayTimes()}
+                    {this.displayDuration()}
                     </View>
                     <View style={styles.pers_container}>
-                        <Text style={styles.date_text}>Par : {this.task.taskUser} </Text>
+                        <Text style={styles.date_text}>Par : {pers} </Text>
                     </View>
                 </View>
                 <View style={styles.right_container}>

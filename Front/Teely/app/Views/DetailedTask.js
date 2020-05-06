@@ -188,9 +188,6 @@ export default class DetailedTask extends React.Component {
                     <View style={styles.leftAligned_container}>
                         <TaskItem task={task} />
                     </View>
-                    <View style={styles.checkedImage_container}>
-                        <Image style={styles.checkedImage} source={require('../../assets/Images/checked.png')} />
-                    </View>
                 </View>
             );
     }
