@@ -153,7 +153,7 @@ export default class Groups extends React.Component {
   }
 
   render() {
-    this.reload()
+    //this.reload()
     return (
       <View style={styles.main_container}>
         {backgroundGradientColor()}
@@ -177,21 +177,19 @@ export default class Groups extends React.Component {
               <TouchableOpacity onPress={this.toggleOpen} >
                 <ProfileIcon idImage={this.state.idImageProfile} />
               </TouchableOpacity>
-              <View style={styles.title_container}>
-                <Text style={styles.title_text}>Mes groupes</Text>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
-                  <Image style={styles.image_plus} source={require('../../assets/Images/plus.png')} />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.content_container}>
-                {this.displayGroups()}
-              </View>
-              <View style={styles.invit_container}>
-                {/* <TouchableOpacity onPress={() => this.props.navigation.navigate("Invitations")}>
-        <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text={title} />
-      </TouchableOpacity> */}
+               
+                <View style={styles.title_container}>
+                  <Text style={styles.title_text}>Mes groupes</Text>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
+                    <Image style={styles.image_plus} source={require('../../assets/Images/plus.png')} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.content_container}> 
+                  {this.displayGroups()}
+                </View>
+                <View style={styles.invit_container}>
                 {this.displayInvitations()}
-              </View>
+                </View>
             </KeyboardAwareScrollView>
           </MenuDrawer>
         </View>
@@ -218,7 +216,7 @@ const styles = StyleSheet.create({
     marginLeft: 80
   },
   content_container: {
-    flex: 8,
+    flex: 3,
     marginBottom: 5,
     marginTop: 10,
     flexDirection: 'column',
@@ -237,7 +235,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   invit_container: {
-    flex: 1,
+    flex: 3,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
