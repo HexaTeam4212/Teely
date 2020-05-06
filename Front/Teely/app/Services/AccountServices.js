@@ -165,11 +165,11 @@ class AccountServices {
     }
 
     async dataProfile(callback, username) {
-        if (username == "") {
-            username = await getToken('username')
+        if (username.length === 0) {
+            username = await getKeyValue('username')
         }
         const token = await getToken()
-        const fullEndpoint = endpoint + "/info"
+        const fullEndpoint = endpoint + "/info?username=" + username
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {

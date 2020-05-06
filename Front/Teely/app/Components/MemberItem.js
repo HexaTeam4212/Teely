@@ -18,7 +18,6 @@ export default class MemberItem extends React.Component {
             biography: "",
             idImageProfile: 18,
         }
-
         this.getDataProfile()
     }
 

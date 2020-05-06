@@ -1,7 +1,7 @@
 // app/Views/DetailedGroup.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { RefreshControl, YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { RefreshControl, YellowBox, StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native'
 import Dialog, { SlideAnimation, DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 
 import groupServices from '../Services/GroupServices'
@@ -155,12 +155,13 @@ export default class DetailedGroup extends React.Component {
 
   toggleOpen = () => {
     this.setState({ open: !this.state.open });
+    
   }
 
   drawerContent = () => {
     return (
-      <View style={styles.menu}>
-        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1 }} >
+      <ScrollView style={styles.menu}>
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 60 }} >
           <ProfileIcon idImage={this.state.idImageProfile} />
         </TouchableOpacity>
         <View style={{ flex: 12 }}>
@@ -174,7 +175,7 @@ export default class DetailedGroup extends React.Component {
             this.props.navigation.navigate("Login")
           }} />
         </View>
-      </View>
+      </ScrollView>
     )
   }
 
