@@ -27,7 +27,7 @@ class TaskServices {
                 console.warn(respBody.error)
             }
             else {
-                callback(respBody)
+                callback(respBody.task)
             }
         }
         catch (error) {

@@ -490,7 +490,7 @@ def group_task_id(id_task):
     dependencies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
     try :
         for dep in dependencies :
-            dependenciesIds.append(dep.TaskConcerned.taskId)
+            dependenciesIds.append(dep.TaskDependency.taskId)
     except :
         dependenciesIds.append("")
 

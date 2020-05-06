@@ -164,7 +164,7 @@ export default class GroupCalendar extends React.Component {
               refreshing={false}
               refreshControl={null}
               theme={{
-                // backgroundColor: '#78e1db',
+                backgroundColor: '#78e1db',
                 calendarBackground: 'white',
                 textSectionTitleColor: '#b6c1cd',
                 selectedDayBackgroundColor: '#ffb4e2',
@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 30,
     marginBottom: 10,
+
   },
   taskedUsers_container: {
     marginTop: 5,

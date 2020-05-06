@@ -87,7 +87,7 @@ export default class PersonalCalendar extends React.Component {
   renderItem = (item) => {
     return (
       <View style={styles.task_container}>
-        <TouchableOpacity onPress={() => {this.props.navigation.navigate("DetailedTask", { taskId: item.taskId })}}>
+        <TouchableOpacity onPress={() => {this.props.navigation.navigate("DetailedTask", { taskId: item.taskId, groupId : 1 })}}>
           <View><Text style={styles.time_text}> {generalServices.formatDateTime(item.datetimeStart)}</Text></View>
           <View><Text style={styles.name_text}>{item.name}</Text></View>
           <View><Text style={styles.description_text}>{item.description}</Text></View>
@@ -176,7 +176,6 @@ const styles = StyleSheet.create({
     flex: 1
   },
   emptyTask_container: {
-    // backgroundColor: '#78e1db',
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
