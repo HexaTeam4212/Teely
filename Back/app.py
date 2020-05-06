@@ -728,10 +728,13 @@ def group_order_tasks(id_group):
         start = datetime.time(hour=int(startHour), minute=int(startMinute))
         end = datetime.time(hour=int(endHour), minute=int(endMinute))
         if start > end:
-            return sendError(400, "Start must be less than end !")
+            return sendError(412, "Start must be less than end !")
     except:
         return sendError(400, "Parameters should be digits !")
 
-    rep = order_tasks(group, startHour, startMinute, endHour, endMinute)
+    try:
+        rep = order_tasks(group, startHour, startMinute, endHour, endMinute)
+    except:
+        return sendError(409, "Tasks duration too big for interval given !")
 
     return jsonify(rep), 200
