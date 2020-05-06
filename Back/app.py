@@ -597,7 +597,7 @@ def task_put(id_task):
         if 'taskUser' in content :
             if content['taskUser']!= "" :
                 task.TaskUser = content['taskUser']
-            elif task.TaskUSer!=None :
+            elif task.TaskUSer is None :
                 task.TaskUser = None
         if 'description' in content:
             task.Description = content['description']
@@ -645,11 +645,16 @@ def task_put(id_task):
     for dep in dependencies:
         dependenciesIds.append(dep.TaskDependency.taskId)
 
+    if task.TaskUser is None:
+        taskUserUsername = None
+    else:
+        taskUserUsername = task.TaskUser.Username
+
     data = {
         "taskId": task.taskId,
         "name": task.Name,
         "description": task.Description,
-        "taskUser": task.TaskUser.Username,
+        "taskUser": taskUserUsername,
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
