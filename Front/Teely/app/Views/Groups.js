@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     marginLeft: 80
   },
   content_container: {
-    flex: 3,
+    flex: 5,
     marginBottom: 5,
     marginTop: 10,
     flexDirection: 'column',
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   noGroup_container: {
     width: 350,
     height: 350,
-    margin: 5,
+    margin:5,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -231,21 +231,11 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   invit_container: {
-    flex: 3,
+    flex: 1.5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-  },
-  noInvit_container: {
-    width: 350,
-    height: 100,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'white',
-    borderWidth: 2,
-    borderRadius: 15,
-    backgroundColor: '#60dbd3',
+    marginBottom:70,
   },
 
   title_text: {
