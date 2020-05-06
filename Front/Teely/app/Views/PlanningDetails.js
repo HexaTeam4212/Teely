@@ -23,13 +23,13 @@ export default class PlanningDetails extends React.Component {
         }
     }
 
-    onRefresh = () => {
+    /*onRefresh = () => {
         this.setState({ refreshing: true })
         this.setState({
             startInput: "hh:mm", endInput: "hh:mm", displayedResult: false,
             refreshing: false, modifiedTasks: []
         })
-    }
+    }*/
 
     displayLoading() {
         if (this.state.isLoading) {
