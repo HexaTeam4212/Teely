@@ -3,6 +3,28 @@ from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPEN
 import datetime
 import math
 
+def give_task_info(task):
+
+	dependenciesIds = []
+	dependencies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
+	for dep in dependencies:
+		dependenciesIds.append(dep.TaskDependency.taskId)
+
+	return {
+        "taskId": task.taskId,
+        "name": task.Name,
+        "description": task.Description,
+        "taskUser": task.TaskUser.Username,
+        "frequency": task.Frequency,
+        "priority": task.PriorityLevel,
+        "datetimeStart" : task.DatetimeStart,
+        "datetimeEnd": task.DatetimeEnd,
+        "dependencies" : dependenciesIds,
+        "duration" : task.Duration
+    }
+
+
+
 def order_tasks(group, startHour, startMinute, endHour, endMinute):
 	tasks_modified = []
 
@@ -40,7 +62,7 @@ def order_tasks(group, startHour, startMinute, endHour, endMinute):
 		else:
 			task.TaskUser = selected_user
 			task.save()
-			tasks_modified.append(task.taskId)
+			tasks_modified.append(give_task_info(task))
 
 	# get all tasks to schedule
 	all_tasks = TASK.select().where(TASK.Group == group, TASK.DatetimeEnd.is_null())
@@ -132,7 +154,7 @@ def order_tasks(group, startHour, startMinute, endHour, endMinute):
 		shortest_task.DatetimeStart = latter_date
 		shortest_task.DatetimeEnd = task_end_time
 		shortest_task.save()
-		tasks_modified.append(shortest_task.taskId)
+		tasks_modified.append(give_task_info(shortest_task))
 
 		# add all task that has a dependency with the one we just treated
 		task_whit_shortest_task_as_dep = DEPENDANCE.select().where(DEPENDANCE.TaskDependency == shortest_task)
