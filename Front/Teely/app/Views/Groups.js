@@ -1,7 +1,7 @@
 // app/Views/Groups.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { RefreshControl, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator, Button } from 'react-native'
+import { RefreshControl, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native'
 
 import groupServices from '../Services/GroupServices';
 import accountServices from '../Services/AccountServices';
@@ -129,8 +129,8 @@ export default class Groups extends React.Component {
 
   drawerContent = () => {
     return (
-      <View style={styles.menu}>
-        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1 }} >
+      <ScrollView style={styles.menu}>
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 60 }} >
           <ProfileIcon idImage={this.state.idImageProfile} />
         </TouchableOpacity>
         <View style={{ flex: 12 }}>
@@ -144,7 +144,7 @@ export default class Groups extends React.Component {
             this.props.navigation.navigate("Login")
           }} />
         </View>
-      </View>
+      </ScrollView>
     )
   }
 
@@ -158,7 +158,7 @@ export default class Groups extends React.Component {
             open={this.state.open}
             drawerContent={this.drawerContent()}
             drawerPercentage={55}
-            animationTime={0}
+            animationTime={200}
             overlay={false}
             opacity={0.2}
           >
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     marginLeft: 80
   },
   content_container: {
-    flex: 3,
+    flex: 5,
     marginBottom: 5,
     marginTop: 10,
     flexDirection: 'column',
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   noGroup_container: {
     width: 350,
     height: 350,
-    margin: 5,
+    margin:5,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -231,21 +231,11 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   invit_container: {
-    flex: 3,
+    flex: 1.5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-  },
-  noInvit_container: {
-    width: 350,
-    height: 100,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'white',
-    borderWidth: 2,
-    borderRadius: 15,
-    backgroundColor: '#60dbd3',
+    marginBottom:70,
   },
 
   title_text: {
