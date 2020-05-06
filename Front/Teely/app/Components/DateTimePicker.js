@@ -22,7 +22,10 @@ export default class DateTimePickerComponent extends Component {
     };
 
     displayedFormatDateTime = (datetime) => {
-        var formattedDateTime = moment(datetime).format("DD-MM-YYYY") + " à " + moment(datetime).format("HH:mm")
+        if (datetime == null) {
+            return "Non défini"
+        }
+        var formattedDateTime = moment(datetime).format("DD-MM-YYYY") + " à " + moment.utc(datetime).format("HH:mm")
         return formattedDateTime
     }
     formatDateTime = (datetime) => {
@@ -36,10 +39,12 @@ export default class DateTimePickerComponent extends Component {
     };
 
     displayedFormatDate = (date) => {
+        if (date == null) {
+            return "Non défini"
+        }
         var formattedDate = moment(date).format("DD-MM-YYYY")
         return formattedDate
     }
-
 
     formatTime = (time) => {
         var formattedTime = moment(time).format("HH:mm:ss")
@@ -47,6 +52,9 @@ export default class DateTimePickerComponent extends Component {
     }
 
     displayedFormatTime = (time) => {
+        if (time == null) {
+            return "Non défini"
+        }
         var formattedTime = moment(time).format("HH:mm:ss")
         return formattedTime
     }
@@ -59,7 +67,7 @@ export default class DateTimePickerComponent extends Component {
             data = this.displayedFormatDateTime(date);
         } else if (this.state.mode == 'time') {
             data = this.displayedFormatTime(date);
-        }else {
+        } else {
             data = ""
         }
         return data
@@ -80,17 +88,17 @@ export default class DateTimePickerComponent extends Component {
 
 
     render() {
-        if(this.props.name!="jj-mm-aaaa" && this.props.name!="00-00-0000 à 00:00"){
+        if (this.props.name != "jj-mm-aaaa" && this.props.name != "00-00-0000 à 00:00") {
             this.name = this.datePicked(this.props.name)
         }
-        else{
+        else {
             this.name = this.props.name
         }
         const marginRight = this.props.marginRight
         const width = this.props.width
         return (
             <View style={styles.main_container}>
-                <TouchableOpacity style={[styles.button, { marginRight: marginRight, width: width } ]} onPress={this.showDateTimePicker}>
+                <TouchableOpacity style={[styles.button, { marginRight: marginRight, width: width }]} onPress={this.showDateTimePicker}>
                     <Text style={styles.buttonText}> {this.name} </Text>
                 </TouchableOpacity>
                 <DateTimePicker

@@ -243,7 +243,7 @@ class GroupServices {
             else {
                 callback(respBody.tasks)
             }
-            
+
         }
         catch (error) {
             console.error(error)
@@ -252,7 +252,7 @@ class GroupServices {
 
     async acceptInvitGroup(groupId, invitId, callback) {
         const token = await getToken()
-        const fullEndpoint = endpoint + '/' + groupId + '/accept'
+        const fullEndpoint = endpoint + '/' + groupId + '/accept?invite_id='+invitId
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {
@@ -260,7 +260,6 @@ class GroupServices {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'invit_id': invitId,
                         Authorization:token,
                     }
                 })
@@ -313,7 +312,7 @@ class GroupServices {
         }
     }
 
-    async createTask(groupId, name, description, datetimeStart, datetimeEnd, 
+    async createTask(groupId, name, description, datetimeStart, datetimeEnd,
         duration, dependencies, taskUser, priority, callback) {
         const requestBody = JSON.stringify({
             name: name,
@@ -327,7 +326,7 @@ class GroupServices {
             duration: duration,
         })
         console.log(requestBody)
-        const fullEndpoint = endpoint + '/'+groupId+'/task'
+        const fullEndpoint = endpoint + '/' + groupId + '/task'
         const token = await getToken()
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -361,89 +360,11 @@ class GroupServices {
                 callback(true)
             }
         }
-        catch (error) {         
+        catch (error) {
             console.error(error)
         }
     }
 
-
-    async deleteTaskGroup(taskId, groupId, callback) {
-        const fullEndpoint = endpoint + '/' + groupId + '/task/' + taskId
-        try {
-            const response = await fetch(backendURL + fullEndpoint,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    }
-                })
-            if (response.status != 204) {
-                if (response.status == 404) {
-                    alert("La tâche n'existe pas ou a déjà été supprimée")
-                } 
-                else {
-                    httpError(response.status)
-                }
-                const respBody = await response.json()
-                console.warn(respBody.error)
-                callback(false);
-            }
-            else {
-                callback(true);
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    async updateTaskGroup(groupId, taskId, taskUser, description, frequency, name, datetimeStart, datetimeEnd, priority, dependancies,callback) {
-       
-        const requestBody = JSON.stringify({
-            taskUser: taskUser,
-            description:description,
-            frequency:frequency,
-            name: name,
-            datetimeStart:datetimeStart,
-            datetimeEnd:datetimeEnd,
-            priority:priority,
-            dependancies:dependancies
-
-        })
-        const fullEndpoint = endpoint + '/' + groupId + '/task/'+taskId
-        try {
-            const response = await fetch(backendURL + fullEndpoint,
-                {
-                    method: 'PUT',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: requestBody
-                })
-                .catch(err => {
-                    console.error("Promise error : " + err)
-                })
-            if (response.status != 200) {
-                if (response.status == 404) {
-                    alert("La tâche n'existe pas")
-                }
-                else {
-                    httpError(response.status)
-                }
-                const respBody = await response.json()
-                console.warn(respBody.error)
-                callback(false);
-            }
-            else {
-                alert("Modification enregistrée :)")
-                callback(true);
-            }
-
-        } catch (error) {
-            console.error(error)
-        }
-    }
 }
 const groupServices = new GroupServices()
 export default groupServices

@@ -490,7 +490,7 @@ def group_task_id(id_task):
     dependencies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
     try :
         for dep in dependencies :
-            dependenciesIds.append(dep.TaskConcerned.taskId)
+            dependenciesIds.append(dep.TaskDependency.taskId)
     except :
         dependenciesIds.append("")
 
@@ -543,10 +543,13 @@ def group_task(id_group):
         return sendError(400, "Make sure to send all the parameters")
 
     #optional field
+    """elif "datetimeEnd" in content and  "datetimeStart" in content and content['datetimeEnd'] == "" and content['datetimeStart'] != "": """
+
     if "datetimeStart" in content and content['datetimeStart'] != "":
         newTask.DatetimeStart = content['datetimeStart']
     if "datetimeEnd" in content and content['datetimeEnd'] != "":
         newTask.DatetimeEnd = content['datetimeEnd']
+
 
     if "taskUser" in content and content['taskUser'] != "":
         try:
@@ -556,21 +559,21 @@ def group_task(id_group):
             return sendError(404, "User not found !")
 
     newTask.save()
-    if "dependencies" in content and content["dependencies"] != []:
-        try :
-            for dep in content["dependencies"]:
-                taskDep = TASK.get(TASK.taskId == dep)
-                newDependance = DEPENDANCE(TaskConcerned = newTask, TaskDependency = taskDep)
-                newDependance.save()
-        except:
-            return sendError(400, "Fail to add dependencies. Make sure to send the dependencies field with correct task value !")
+
+    try :
+        for dep in content["dependencies"]:
+            taskDep = TASK.get(TASK.taskId == dep)
+            newDependance = DEPENDANCE(TaskConcerned = newTask, TaskDependency = taskDep)
+            newDependance.save()
+    except:
+        return sendError(400, "Fail to add dependencies. Make sure to send the dependencies field with correct task value !")
 
     return jsonify({}), 200
 
 
-@app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])
+@app.route('/task/<id_task>', methods=['DELETE'])
 @authenticate
-def delete_task(id_group,id_task):
+def delete_task(id_task):
 
     try:
         task = TASK.get(TASK.taskId == id_task)
@@ -581,15 +584,15 @@ def delete_task(id_group,id_task):
     TASK.delete().where(TASK.taskId == id_task).execute()
     return jsonify({}), 204
 
-@app.route('/group/<id_group>/task/<id_task>',  methods=['PUT'])
+@app.route('/task/<id_task>',  methods=['PUT'])
 @authenticate
-def task_put(id_group,id_task):
+def task_put(id_task):
     user = PERSON.get(PERSON.personId == session["userId"])
     content = request.get_json()
 
     try:
         task = TASK.get(TASK.taskId == id_task)
-        task.Group = id_group
+
 
         if 'taskUser' in content :
             if content['taskUser']!= "" :
@@ -636,11 +639,11 @@ def task_put(id_group,id_task):
             newDependance.save()
 
 
-    dependanciesIds = []
+    dependenciesIds = []
 
     dependencies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
     for dep in dependencies:
-        dependanciesIds.append(dep.TaskDependency.taskId)
+        dependenciesIds.append(dep.TaskDependency.taskId)
 
     data = {
         "taskId": task.taskId,

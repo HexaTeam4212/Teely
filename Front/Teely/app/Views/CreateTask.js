@@ -28,11 +28,10 @@ export default class CreateTask extends React.Component {
       datetimeStart: "00-00-0000 à 00:00",
       datetimeEnd: "00-00-0000 à 00:00",
       taskDuration: "",
-      taskPrioriy: 1,
+      taskPriority: 1,
       groupTasks: [],
       isLoading: true
     }
-    this.selectedPriority = "Basse"
     this.groupId = this.props.route.params.idGroup
     this.userSelection = new Map()
     this.taskSelection = new Map()
@@ -110,16 +109,6 @@ export default class CreateTask extends React.Component {
     this.setState({ taskDuration: value })
   }
 
-  updatePriority = (value) => {
-    this.selectedPriority = value
-    var priorityLevel = 1
-    if (value == "Moyenne") {
-      priorityLevel = 2
-    } else if (value == "Haute") {
-      priorityLevel = 3
-    }
-    this.setState({ taskPrioriy: priorityLevel })
-  }
 
   displayPossibleDependencies = () => {
     if (this.state.groupTasks.length) {
@@ -278,7 +267,7 @@ export default class CreateTask extends React.Component {
     if (isValid) {
       this.setState({ isLoading: true })
       groupServices.createTask(this.groupId, this.state.taskName, this.state.taskDescription, datetimeStart, datetimeEnd,
-        this.state.taskDuration, this.state.taskDependencies, this.state.taskUser, this.state.taskPrioriy, this.redirect)
+        this.state.taskDuration, this.state.taskDependencies, this.state.taskUser, this.state.taskPriority, this.redirect)
     }
   }
 
@@ -359,12 +348,12 @@ export default class CreateTask extends React.Component {
                 <Picker
                   style={styles.picker}
                   itemStyle={styles.pickerItem}
-                  selectedValue={this.selectedPriority}
-                  onValueChange={(itemValue, itemIndex) => this.updatePriority(itemValue)}
+                  selectedValue={this.state.taskPriority}
+                  onValueChange={(itemValue, itemIndex) => { this.setState({ taskPriority: itemValue }) }}
                 >
-                  <Picker.Item label="Basse" value="Basse" />
-                  <Picker.Item label="Moyenne" value="Moyenne" />
-                  <Picker.Item label="Haute" value="Haute" />
+                  <Picker.Item label="Basse" value={1} />
+                  <Picker.Item label="Moyenne" value={2} />
+                  <Picker.Item label="Haute" value={3} />
                 </Picker>
               </View>
             </View>
@@ -403,6 +392,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   taskUser_container: {
+    backgroundColor: '#78e1db',
     marginBottom: 10,
     marginLeft: 10,
     marginRight: 10,

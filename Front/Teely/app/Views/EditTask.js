@@ -1,7 +1,7 @@
 // app/Views/CreateTask.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, TextInput, ActivityIndicator, FlatList, Image, Picker, TouchableOpacity } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, TextInput, ActivityIndicator, FlatList, Image, Picker, TouchableOpacity } from 'react-native'
 import accountServices from '../Services/AccountServices'
 import groupServices from '../Services/GroupServices'
 import taskServices from '../Services/TaskServices'
@@ -14,7 +14,7 @@ import CustomButton from '../Components/CustomButton'
 import generalServices from '../Services/GeneralServices'
 import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
 
-export default class CreateTask extends React.Component {
+export default class EditTask extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -26,39 +26,49 @@ export default class CreateTask extends React.Component {
             taskUser: "",
             groupMembers: [],
             taskDependencies: [],
-            datetimeStart: "",
-            datetimeEnd: "",
+            datetimeStart: "00-00-0000 à 00:00",
+            datetimeEnd: "00-00-0000 à 00:00",
             taskDuration: "",
-            taskPrioriy: "",
+            taskPriority: "",
             groupTasks: [],
-            isLoading: true
+            isLoading: true,
+            refreshing: false
         }
-        this.selectedPriority = "Basse"
+        this.groupId = this.props.route.params.groupId
         this.taskId = this.props.route.params.taskId
         this.userSelection = new Map()
         this.taskSelection = new Map()
         this.getDataProfile()
         this.getGroupInfos()
-        this.getGroupTasks()
         this.getTaskInfos()
+
     }
 
-
-    initSelection() {
+    initSelection = () => {
         for (let i = 0; i < this.state.groupMembers.length; i++) {
-            if (this.state.groupMember[i]==this.state.taskUser) {
+            if (this.state.groupMembers[i] === this.state.taskUser) {
                 this.userSelection.set(this.state.groupMembers[i], true)
             } else {
                 this.userSelection.set(this.state.groupMembers[i], false)
             }
         }
         for (let i = 0; i < this.state.groupTasks.length; i++) {
-            if (this.state.taskDependencies.includes(this.state.groupTasks)) {
-                this.taskSelection.set(this.state.groupTasks[i].taskId, true)
-            } else {
+            if (this.state.groupTasks[i].taskId == this.state.taskId) {
+                var newTasks = this.state.groupTasks
+                newTasks.splice(i, 1)
+                this.setState({ groupTasks: newTasks })
+            }
+            else {
                 this.taskSelection.set(this.state.groupTasks[i].taskId, false)
             }
         }
+        if (this.state.taskDependencies != null) {
+            for (let i = 0; i < this.state.taskDependencies.length; i++) {
+                this.taskSelection.set(this.state.taskDependencies[i], true)
+            }
+        }
+        this.setState({isLoading: false})
+
     }
 
     displayLoading() {
@@ -73,7 +83,7 @@ export default class CreateTask extends React.Component {
 
     updateGroupInfos = (data) => {
         this.setState({
-            groupName: data.name, idImageGroup: data.idImageGroup, groupMembers: data.members
+            groupName: data.group_name, idImageGroup: data.idImageGroup, groupMembers: data.members
         })
     }
 
@@ -91,24 +101,27 @@ export default class CreateTask extends React.Component {
 
     updateGroupTasks = (data) => {
         this.setState({ groupTasks: data })
-    }
-
-    getGroupTasks() {
-        groupServices.getGroupTasks(this.groupId, this.updateGroupTasks)
+        this.initSelection()
     }
 
     updateTaskInfos = (data) => {
         this.setState({
             taskName: data.name, taskDescription: data.description, taskUser: data.taskUser,
-            priorityLevel: data.priority, datetimeStart: data.datetimeStart, datetimeEnd: data.datetimeEnd,
-            taskDescription: data.dependencies, taskDuration: data.duration, isLoading: false
+            taskPriority: data.priority, taskDependencies: data.dependencies, datetimeStart: data.datetimeStart,
+            datetimeEnd: data.datetimeEnd, taskDuration: data.duration
         })
-        this.initSelection()
-        this.selectedPriority=this.state.taskPrioriy
+        if (data.datetimeStart!=null) {
+            this.setState({datetimeStart: generalServices.formatDateTimeForTask(data.datetimeStart)})
+        }
+        if (data.datetimeEnd!=null) {
+            this.setState({datetimeEnd: generalServices.formatDateTimeForTask(data.datetimeEnd)})
+        }
+        groupServices.getGroupTasks(this.groupId, this.updateGroupTasks)
+
     }
 
     getTaskInfos() {
-        taskServices.getTaskInfo(this.taskId, this.updateTaskInfos)
+        taskServices.getTaskInfos(this.taskId, this.updateTaskInfos)
     }
 
     callbackFunctionTaskName = (childData) => {
@@ -132,14 +145,8 @@ export default class CreateTask extends React.Component {
     }
 
     updatePriority = (value) => {
-        this.selectedPriority = value
-        var priorityLevel = 1
-        if (value == "Moyenne") {
-            priorityLevel = 2
-        } else if (value == "Haute") {
-            priorityLevel = 3
-        }
-        this.setState({ taskPrioriy: priorityLevel })
+        console.log(value)
+        this.setState({ taskPrioriy: value })
     }
 
     displayPossibleDependencies = () => {
@@ -147,12 +154,12 @@ export default class CreateTask extends React.Component {
             return (
                 <View>
                     <Text style={styles.container_title}> Tâches précédentes : </Text>
-                    <KeyboardAwareScrollView
+                    <ScrollView
                         resetScrollToCoords={{ x: 0, y: 0 }}
                         scrollEnabled={true}
                         enableAutomaticScroll={(Platform.OS === 'ios')}
                         enableOnAndroid={true}
-                        contentContainerStyle={styles.taskUser_container}
+                        contentContainerStyle={[styles.taskUser_container, { maxHeight: 300 }]}
                     >
                         <View>
                             <FlatList
@@ -161,7 +168,7 @@ export default class CreateTask extends React.Component {
                                 renderItem={({ item }) => this.renderTaskItem(item)}
                             />
                         </View>
-                    </KeyboardAwareScrollView>
+                    </ScrollView>
                 </View>
             )
         }
@@ -245,7 +252,10 @@ export default class CreateTask extends React.Component {
 
     addTaskDependency = (task) => {
         this.taskSelection.set(task.taskId, true)
-        var newDependencies = this.state.taskDependencies
+        var newDependencies = new Map()
+        if (this.state.taskDependencies != null) {
+            newDependencies = this.state.taskDependencies
+        }
         newDependencies.push(task.taskId)
         this.setState({
             taskDependencies: newDependencies
@@ -254,7 +264,7 @@ export default class CreateTask extends React.Component {
 
     removeTaskDependency = (task) => {
         this.taskSelection.set(task.taskId, false)
-        var newDependencies = this.state.taskDependencies
+        let newDependencies = this.state.taskDependencies
         for (let i = 0; i < newDependencies.length; i++) {
             if (newDependencies[i] == task.taskId.toString()) {
                 newDependencies.splice(i, 1)
@@ -266,30 +276,34 @@ export default class CreateTask extends React.Component {
     redirect = (result) => {
         this.setState({ isLoading: false })
         if (result) {
-            this.props.navigation.navigate("GroupTasks", { idGroup: this.groupId })
+            this.props.navigation.navigate("DetailedTask", { taskId: this.taskId })
         }
     }
 
-    createTask = () => {
+    updateTask = () => {
         var isValid = true
+        if (this.state.datetimeStart != null && this.state.datetimeEnd != null) {
+            isValid = generalServices.checkPrecedence(this.state.datetimeStart, this.state.datetimeEnd)
+            if (!isValid) {
+                alert("Les dates de début et de fin sont invalides. Merci de saisir une date de fin supérieure à celle de début.")
+            }
+        }
         if (this.state.taskName == "") {
             isValid = false
             alert("Veuillez renseigner un nom pour la tâche")
         }
-        else if ((this.state.taskDuration == "" && !(this.state.datetimeStart != "" && this.state.datetimeEnd != ""))) {
+        else if (((this.state.taskDuration == null || this.state.taskDuration == "") &&
+            !(this.state.datetimeStart != null && this.state.datetimeEnd != null))) {
             isValid = false,
                 alert("Il n'y a pas assez d'informations pour estimer la durée de la tâche. \n" +
                     "Veuillez renseigner soit : \n 1. le début et la fin de la tâche \n 2. le début et la durée \n 3.le début, la fin, et la durée. \n 4.la durée")
         }
-        else if (!(generalServices.checkPrecedence(this.state.datetimeStart, this.state.datetimeEnd))) {
-            isValid = false
-            alert("Les dates de début et de fin sont invalides.")
-        }
 
         if (isValid) {
             this.setState({ isLoading: true })
-            groupServices.createTask(this.groupId, this.state.taskName, this.state.taskDescription, this.state.datetimeStart, this.state.datetimeEnd,
-                this.state.taskDuration, this.state.taskDependencies, this.state.taskUser, this.state.taskPrioriy, this.redirect)
+            taskServices.updateTask(this.taskId, this.state.taskUser, this.state.taskDescription, this.state.taskName,
+                this.state.datetimeStart, this.state.datetimeEnd, this.state.taskPriority, this.state.taskDependencies,
+                this.state.taskDuration, this.redirect)
         }
     }
 
@@ -304,31 +318,39 @@ export default class CreateTask extends React.Component {
                     enableAutomaticScroll={(Platform.OS === 'ios')}
                     enableOnAndroid={true}
                     keyboardOpeningTime={0}
+                    enableResetScrollToCoords={true}
                     contentContainerStyle={styles.content_container}
                 >
-                    <NameWithInput name='Nom de la tâche : ' type='none' placeholder={"Nom"} height={40}
+                    <NameWithInput value={this.state.taskName} name='Nom de la tâche : ' type='none' placeholder={"Nom"} height={40}
                         secureTextEntry={false} parentCallback={this.callbackFunctionTaskName} />
                     <View style={styles.groupLined_container}>
                         <Text style={styles.text}> Groupe : </Text>
                         <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
                         <Text style={styles.name_text}>{this.state.groupName}</Text>
                     </View>
-                    <NameWithInput name='Description : ' type='none' placeholder={"Description"} height={60}
+                    <NameWithInput value={this.state.taskDescription} name='Description : ' type='none' placeholder={"Description"} height={60}
                         secureTextEntry={false} parentCallback={this.callbackFunctionTaskDescription} />
                     <Text style={styles.container_title}> Personne en charge : </Text>
-                    <View style={styles.taskUser_container}>
+                    <ScrollView
+                        resetScrollToCoords={{ x: 0, y: 0 }}
+                        scrollEnabled={true}
+                        enableAutomaticScroll={(Platform.OS === 'ios')}
+                        enableOnAndroid={true}
+                        contentContainerStyle={[styles.taskUser_container, { maxHeight: 300 }]}
+                    >
                         <FlatList
                             data={this.state.groupMembers}
                             keyExtractor={(item) => item.toString()}
                             renderItem={({ item }) => this.renderMemberItem(item)}
                         />
-                    </View>
+                    </ScrollView>
+
                     <View style={styles.groupLined_container}>
                         <View style={styles.centered_container}>
                             <Text style={styles.text}> Début : </Text>
                         </View>
                         <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
+                            <DateTimePicker mode='datetime' width={200} name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
                         </View>
                     </View>
                     <View style={styles.groupLined_container}>
@@ -336,7 +358,7 @@ export default class CreateTask extends React.Component {
                             <Text style={styles.text}> Fin : </Text>
                         </View>
                         <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
+                            <DateTimePicker mode='datetime' width={200} name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
                         </View>
                     </View>
                     <View style={styles.groupLined_container}>
@@ -350,7 +372,7 @@ export default class CreateTask extends React.Component {
                                     style={styles.textInput}
                                     keyboardType='numeric'
                                     onChangeText={(text) => this.updateDuration(text)}
-                                    value={this.state.taskDuration}
+                                    value={this.state.taskDuration.toString()}
                                 />
                             </View>
                         </View>
@@ -362,19 +384,19 @@ export default class CreateTask extends React.Component {
                                 <Picker
                                     style={styles.picker}
                                     itemStyle={styles.pickerItem}
-                                    selectedValue={this.selectedPriority}
-                                    onValueChange={(itemValue, itemIndex) => this.updatePriority(itemValue)}
+                                    selectedValue={this.state.taskPriority}
+                                    onValueChange={(itemValue, itemIndex) => { this.setState({ taskPriority: itemValue }) }}
                                 >
-                                    <Picker.Item label="Basse" value="Basse" />
-                                    <Picker.Item label="Moyenne" value="Moyenne" />
-                                    <Picker.Item label="Haute" value="Haute" />
+                                    <Picker.Item label="Basse" value={1} />
+                                    <Picker.Item label="Moyenne" value={2} />
+                                    <Picker.Item label="Haute" value={3} />
                                 </Picker>
                             </View>
                         </View>
                     </View>
                     {this.displayPossibleDependencies()}
                     <View style={{ marginBottom: 100 }}>
-                        <CustomButton name='Modifier' width={100} onPress={this.createTask}>
+                        <CustomButton name='Enregistrer' width={170} onPress={this.updateTask}>
                         </CustomButton>
                     </View>
                 </KeyboardAwareScrollView>
@@ -406,6 +428,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     taskUser_container: {
+        backgroundColor: '#78e1db',
         marginBottom: 10,
         marginLeft: 10,
         marginRight: 10,
@@ -453,7 +476,7 @@ const styles = StyleSheet.create({
         flex: 6,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
     },
     checkedImage_container: {
         flex: 1,

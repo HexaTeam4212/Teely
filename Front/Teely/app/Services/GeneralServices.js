@@ -36,6 +36,11 @@ class GeneralServices {
         return formattedDate
     }
 
+    formatDateTimeForTask(date) {
+        var formattedDate = moment.utc(date).format('YYYY-MM-DD HH:mm:ss')
+        return formattedDate
+    }    
+
     orderTasksByDate(day, tasks) {
         let tasksForDay = []
         const arr = Object.keys(tasks);
@@ -49,11 +54,15 @@ class GeneralServices {
     }
 
     checkPrecedence(startDateString, endDateString) {
-        if (startDateString == "" || endDateString == "" || startDateString==endDateString) {
+        console.log(startDateString)
+        console.log(endDateString)
+        if (startDateString == "" || endDateString == "" || startDateString == endDateString ||
+            startDateString == null || endDateString == null) {
             return true
         }
         const startDate = moment.utc(startDateString, 'YYYY-MM-DD HH:mm:ss')
         const endDate = moment.utc(endDateString, 'YYYY-MM-DD HH:mm:ss')
+        
         var isVerified = moment(endDate).isAfter(startDate)
         return isVerified
     }
@@ -62,10 +71,18 @@ class GeneralServices {
         if (dateString == null) {
             return ""
         }
-        let duree = ((parseInt(dateString, 10)/60)).toString()
-        const hour = duree.substring(0,duree.lastIndexOf("."));
-        const min = (parseInt(dateString, 10)%60).toString()
-        duree = hour+"h"+min
+        let hour = ((parseInt(dateString, 10)/60)).toString()
+        const pos = hour.lastIndexOf(".")
+        if(pos!=-1){
+            hour = hour.substr(0,pos)
+        }
+        
+        let min = (parseInt(dateString, 10)%60)
+    
+        if(min<=9){
+            min = "0"+min.toString()
+        }
+        const duree = hour+"h"+min
         return duree
     }
 }
