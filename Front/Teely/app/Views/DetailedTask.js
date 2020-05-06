@@ -1,7 +1,7 @@
 // app/Views/DetailedTask.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { RefreshControl, StyleSheet, Text, View, TextInput, ActivityIndicator, FlatList, Image, Picker, TouchableOpacity } from 'react-native'
+import { RefreshControl, StyleSheet, Text, View, ScrollView, ActivityIndicator, FlatList, Image , TouchableOpacity } from 'react-native'
 import accountServices from '../Services/AccountServices'
 import groupServices from '../Services/GroupServices'
 import ProfileIcon from '../Components/ProfileIcon'
@@ -20,6 +20,7 @@ export default class DetailedTask extends React.Component {
         this.state = {
             idImageProfile: 18,
             idImageGroup: 18,
+            groupId:"",
             groupName: "",
             taskName: "",
             taskDescription: "",
@@ -34,21 +35,19 @@ export default class DetailedTask extends React.Component {
             isLoading: true,
             refreshing: false
         }
-        this.groupId = this.props.route.params.idGroup
         this.taskId = this.props.route.params.taskId
+        this.tabTaskDependencies = []
         this.getDataProfile()
-        this.getGroupInfos()
-        this.getGroupTasks()
         this.getTaskInfos()
-
+        
+        
     }
 
     onRefresh = () => {
         this.setState({ refreshing: true })
         this.getDataProfile()
-        this.getGroupInfos()
-        this.getGroupTasks()
         this.getTaskInfos()
+        
     }
 
     displayLoading() {
@@ -59,6 +58,13 @@ export default class DetailedTask extends React.Component {
                 </View>
             )
         }
+    }
+
+    checkDataNotNull(data){
+        if(data==null){
+            data ="Aucune"
+        }
+        return data
     }
 
     updateTaskInfos = (data) => {
@@ -78,12 +84,14 @@ export default class DetailedTask extends React.Component {
             this.colorPrio = "red"
         }
         this.setState({
-            taskName: data.name, taskDescription: data.description, taskUser: data.taskUser,
+            groupId: data.idGroup,taskName: data.name, taskDescription: this.checkDataNotNull(data.description), 
+            taskUser: this.checkDataNotNull(data.taskUser),
             taskPriority: priority, datetimeStart: this.displayedFormatDateTime(data.datetimeStart),
             datetimeEnd: this.displayedFormatDateTime(data.datetimeEnd), taskDependencies: data.dependencies,
-            taskDuration: generalServices.convertMinInHour(data.duration),
-            isLoading: false, refreshing: false
+            taskDuration: this.checkDataNotNull(generalServices.convertMinInHour(data.duration))
+            
         })
+        this.getGroupInfos()
     }
 
     getTaskInfos() {
@@ -94,10 +102,11 @@ export default class DetailedTask extends React.Component {
         this.setState({
             groupName: data.group_name, idImageGroup: data.idImageGroup
         });
+        this.getGroupTasks()
     }
 
     getGroupInfos = () => {
-        groupServices.getGroupInfos(this.groupId, this.updateGroupInfos)
+        groupServices.getGroupInfos(this.state.groupId, this.updateGroupInfos)
     }
 
     updateDataProfile = (dataProfile) => {
@@ -110,10 +119,11 @@ export default class DetailedTask extends React.Component {
 
     updateGroupTasks = (data) => {
         this.setState({ groupTasks: data })
+        this.findDependentTasks()
     }
 
     getGroupTasks() {
-        groupServices.getGroupTasks(this.groupId, this.updateGroupTasks)
+        groupServices.getGroupTasks(this.state.groupId, this.updateGroupTasks)
     }
 
     displayedFormatDateTime = (datetime) => {
@@ -124,48 +134,53 @@ export default class DetailedTask extends React.Component {
         return formattedDateTime
     }
 
-    displayPossibleDependencies = () => {
-        if (this.state.taskDependencies != null && this.state.taskDependencies.length) {
-            let dependentTasks = []
-            if (this.state.groupTasks != null && this.state.groupTasks.length) {
-                for (let task in this.state.groupTasks) {
-                    if (this.state.taskDependencies.get(task.taskId)) {
-                        dependentTasks.push(task)
-                    }
-                }
+    findDependentTasks(){
+        if(this.state.taskDependencies!=null && this.state.groupTasks.length){
+            for (let i = 0; i < this.state.groupTasks.length; i++) {
+                if(this.state.taskDependencies.includes(this.state.groupTasks[i].taskId))
+                this.tabTaskDependencies.push(this.state.groupTasks[i])
             }
+        }
 
+        this.setState({ isLoading: false, refreshing: false})
+    }
+
+    displayPossibleDependencies = () => {
+        if (this.tabTaskDependencies.length) {
             return (
                 <View>
                     <Text style={styles.container_title}> Tâches précédentes : </Text>
-                    <KeyboardAwareScrollView
+                    <ScrollView
                         resetScrollToCoords={{ x: 0, y: 0 }}
                         scrollEnabled={true}
                         enableAutomaticScroll={(Platform.OS === 'ios')}
                         enableOnAndroid={true}
-                        contentContainerStyle={styles.taskUser_container}
+                        contentContainerStyle={[styles.taskUser_container, { maxHeight: 300 }]}
                     >
                         <View>
                             <FlatList
-                                data={dependentTasks}
+                                data={this.tabTaskDependencies}
                                 keyExtractor={(item) => item.taskId.toString()}
                                 renderItem={({ item }) => this.renderTaskItem(item)}
                             />
                         </View>
-                    </KeyboardAwareScrollView>
+                    </ScrollView>
                 </View>
             )
         }
     }
 
     renderTaskItem = (task) => {
-        return (
-            <View style={styles.task_container}>
-                <View style={styles.leftAligned_container}>
-                    <TaskItem task={task} />
+            return (
+                <View style={styles.task_container}>
+                    <View style={styles.leftAligned_container}>
+                        <TaskItem task={task} />
+                    </View>
+                    <View style={styles.checkedImage_container}>
+                        <Image style={styles.checkedImage} source={require('../../assets/Images/checked.png')} />
+                    </View>
                 </View>
-            </View>
-        );
+            );
     }
 
     render() {
@@ -197,7 +212,7 @@ export default class DetailedTask extends React.Component {
                         <TextsRow name="Priorité :" name2={this.state.taskPriority} color={this.colorPrio}></TextsRow>
                         {this.displayPossibleDependencies()}
                         <CustomButton name="Modifier" width={180} onPress={() => {
-                            this.props.navigation.navigate("EditTask", { groupId: this.groupId, taskId: this.taskId })
+                            this.props.navigation.navigate("EditTask", { groupId: this.state.groupId, taskId: this.taskId })
                         }}>
                         </CustomButton>
                         <View style={{ marginBottom: 100 }}></View>

@@ -5,6 +5,7 @@ import { RefreshControl, StyleSheet, Text, View, Image, ActivityIndicator, FlatL
 import Dialog, { SlideAnimation, DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 
 import groupServices from '../Services/GroupServices';
+import taskServices from '../Services/TaskServices';
 import accountServices from '../Services/AccountServices';
 import GroupIcon from '../Components/GroupIcon'
 import CustomButton from '../Components/CustomButton';
@@ -91,7 +92,7 @@ export default class GroupTasks extends React.Component {
 
   seeDetails = (task) => {
     console.log("see details task")
-    this.props.navigation.navigate("DetailedTask", {idTask:task.taskId, idGroup:this.idGroup})
+    this.props.navigation.navigate("DetailedTask", {taskId:task.taskId, idGroup:this.idGroup})
 
   }
 
@@ -106,7 +107,7 @@ export default class GroupTasks extends React.Component {
 
   confirmDeletingTask = () => {
     this.setState({ visibleDeleteTaskGroupDialog: false, isLoading: true })
-    groupServices.deleteTaskGroup(this.taskDeleted.taskId, this.idGroup, this.redirect)
+    taskServices.deleteTask(this.taskDeleted.taskId, this.redirect)
   }
 
   displayLoading() {
