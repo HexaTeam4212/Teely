@@ -684,6 +684,14 @@ def group_order_tasks(id_group):
     except:
         return sendError(400, "You must send those parameters : startHour, startMinute, endHour, endMinute")
 
+    try:
+        start = datetime.time(hour=int(startHour), minute=int(startMinute))
+        end = datetime.time(hour=int(endHour), minute=int(endMinute))
+        if start > end:
+            return sendError(400, "Start must be less than end !")
+    except:
+        return sendError(400, "Parameters should be digits !")
+
     rep = order_tasks(group, startHour, startMinute, endHour, endMinute)
 
     return jsonify(rep), 200
