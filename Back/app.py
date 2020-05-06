@@ -596,8 +596,9 @@ def task_put(id_task):
 
         if 'taskUser' in content :
             if content['taskUser']!= "" :
-                task.TaskUser = content['taskUser']
-            elif task.TaskUSer!=None :
+                people= PERSON.get(PERSON.Username == content['taskUser'])
+                task.TaskUser = people
+            elif task.TaskUSer is None :
                 task.TaskUser = None
         if 'description' in content:
             task.Description = content['description']
@@ -612,7 +613,7 @@ def task_put(id_task):
                 task.DatetimeStart = None
         if 'datetimeEnd' in content and  content['datetimeEnd']!= "":
             if content['taskUser']!= "" :
-                task.DatetimeEnd = content['datetimeStart']
+                task.DatetimeEnd = content['datetimeEnd']
             elif task.DatetimeEnd!=None :
                 task.DatetimeEnd = None
         if 'priority' in content:
@@ -645,11 +646,16 @@ def task_put(id_task):
     for dep in dependencies:
         dependenciesIds.append(dep.TaskDependency.taskId)
 
+    if task.TaskUser is None:
+        taskUserUsername = None
+    else:
+        taskUserUsername = task.TaskUser.Username
+
     data = {
         "taskId": task.taskId,
         "name": task.Name,
         "description": task.Description,
-        "taskUser": task.TaskUser.Username,
+        "taskUser": taskUserUsername,
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
@@ -670,6 +676,22 @@ def group_order_tasks(id_group):
     except:
         return sendError(404, "Group not found !")
 
-    order_tasks(group)
+    try:
+        startHour = request.args.get('startHour')
+        startMinute = request.args.get('startMinute')
+        endHour = request.args.get('endHour')
+        endMinute = request.args.get('endMinute')
+    except:
+        return sendError(400, "You must send those parameters : startHour, startMinute, endHour, endMinute")
 
-    return jsonify({}), 200
+    try:
+        start = datetime.time(hour=int(startHour), minute=int(startMinute))
+        end = datetime.time(hour=int(endHour), minute=int(endMinute))
+        if start > end:
+            return sendError(400, "Start must be less than end !")
+    except:
+        return sendError(400, "Parameters should be digits !")
+
+    rep = order_tasks(group, startHour, startMinute, endHour, endMinute)
+
+    return jsonify(rep), 200

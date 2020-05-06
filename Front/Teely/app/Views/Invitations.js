@@ -71,8 +71,6 @@ export default class Invitations extends React.Component {
     })
       console.log("invitation : "+this.invitations[0].invitationId)
     
-    
-
   }
 
   getInvitations() {

@@ -18,6 +18,7 @@ class GeneralServices {
         return formattedDate
     }
 
+
     formatTime(dateString) {
         if (dateString == null) {
             return ""

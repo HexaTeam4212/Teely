@@ -44,20 +44,17 @@ export default class DateTimePickerComponent extends Component {
         }
         var formattedDate = moment(date).format("DD-MM-YYYY")
         return formattedDate
-    }
+    };
 
+
+    
     formatTime = (time) => {
-        var formattedTime = moment(time).format("HH:mm:ss")
+        console.log("time : " +time)
+        var formattedTime=moment(time).format("HH:mm")
+        console.log("formattedTime : " +formattedTime)
         return formattedTime
     }
 
-    displayedFormatTime = (time) => {
-        if (time == null) {
-            return "Non défini"
-        }
-        var formattedTime = moment(time).format("HH:mm:ss")
-        return formattedTime
-    }
 
     datePicked = (date) => {
         let data;
@@ -66,7 +63,7 @@ export default class DateTimePickerComponent extends Component {
         } else if (this.state.mode == 'datetime') {
             data = this.displayedFormatDateTime(date);
         } else if (this.state.mode == 'time') {
-            data = this.displayedFormatTime(date);
+            data = this.formatTime(date)
         } else {
             data = ""
         }
@@ -74,6 +71,7 @@ export default class DateTimePickerComponent extends Component {
     }
 
     handleDatePicked = date => {
+        console.log("date picked : "+date)
         var data = ""
         if (this.state.mode == 'date') {
             data = this.formatDate(date)
@@ -88,7 +86,8 @@ export default class DateTimePickerComponent extends Component {
 
 
     render() {
-        if (this.props.name != "jj-mm-aaaa" && this.props.name != "00-00-0000 à 00:00") {
+        if (this.props.name != "jj-mm-aaaa" && this.props.name != "00-00-0000 à 00:00"
+         && this.name != "hh:mm") {
             this.name = this.datePicked(this.props.name)
         }
         else {

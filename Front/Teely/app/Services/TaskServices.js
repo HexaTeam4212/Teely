@@ -49,6 +49,7 @@ class TaskServices {
                         Authorization: token
                     }
                 })
+            const respBody = await response.json()
             if (response.status != 204) {
                 if (response.status == 404) {
                     alert("La tâche n'existe pas ou a déjà été supprimée")
@@ -57,7 +58,7 @@ class TaskServices {
                     httpError(response.status)
                     console.warn(respBody.error)
                 }
-                const respBody = await response.json()
+
                 callback(false);
             }
             else {
@@ -98,6 +99,7 @@ class TaskServices {
                 .catch(err => {
                     console.error("Promise error : " + err)
                 })
+            const respBody = await response.json()
             if (response.status != 200) {
                 if (response.status == 404) {
                     alert("La tâche n'existe pas")
@@ -106,7 +108,6 @@ class TaskServices {
                     httpError(response.status)
                     console.warn(respBody.error)
                 }
-                const respBody = await response.json()
                 callback(false);
             }
             else {
