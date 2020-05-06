@@ -574,6 +574,7 @@ def delete_task(id_task):
     try:
         task = TASK.get(TASK.taskId == id_task)
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
+        DEPENDANCE.delete().where(DEPENDANCE.TaskDependency == task).execute()
     except:
         return sendError(404, "Task doesnt't exist or has already been deleted !")
 
