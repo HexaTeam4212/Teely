@@ -19,6 +19,8 @@ import GroupMembers from './app/Views/GroupMembers'
 import InviteMembers from './app/Views/InviteMembers'
 import GroupTasks from './app/Views/GroupTasks'
 import CreateTask from './app/Views/CreateTask'
+import DetailedTask from './app/Views/DetailedTask'
+
 
 export default function App() {
 
@@ -272,6 +274,23 @@ export default function App() {
           component={CreateTask}
           options={{
             title: 'Nouvelle tâche',
+            headerStyle: {
+              backgroundColor: '#78e1db',
+            },
+            headerTruncatedBackTitle: true,
+            headerTintColor: 'white',
+            headerTitleStyle: {
+              fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'Roboto',
+              fontWeight: 'bold',
+              fontSize: 17,fontWeight: 'bold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="DetailedTask"
+          component={DetailedTask}
+          options={{
+            title: 'Détails de la tâche',
             headerStyle: {
               backgroundColor: '#78e1db',
             },
