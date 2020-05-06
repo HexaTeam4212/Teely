@@ -599,7 +599,10 @@ def task_put(id_task):
 
     try:
         task = TASK.get(TASK.taskId == id_task)
+    except:
+        return sendError(400, "Task not found")
 
+    try:
 
         if 'taskUser' in content :
             if content['taskUser']!= "" :
@@ -641,7 +644,7 @@ def task_put(id_task):
         task.save()
     except:
         return sendError(400, "Make sure to send all the parameters")
-
+	"""
     try :
         if 'datetimeStart' in content and  content['datetimeStart']!= "" and 'datetimeEnd' in content and  content['datetimeEnd']!= "" :
             startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
@@ -657,15 +660,15 @@ def task_put(id_task):
             endTime = datetime.strptime(task.DatetimeStart , "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=task.Duration)
             newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
 
-            """endTime = datetime.strptime(task.DatetimeStart , "%a, %d %b %Y %H:%M:%S GMT") + datetime.timedelta(minutes=task.Duration)
-            newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%a, %d %b %Y %H:%M:%S GMT")"""
+            endTime = datetime.strptime(task.DatetimeStart , "%a, %d %b %Y %H:%M:%S GMT") + datetime.timedelta(minutes=task.Duration)
+            newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%a, %d %b %Y %H:%M:%S GMT")
 
         if task.DatetimeEnd is not None and task.DatetimeStart is None:
             startTime = datetime.datetime.strptime(task.DatetimeEnd , "%Y-%m-%d %H:%M:%S")  - datetime.timedelta(minutes=task.Duration)
             newTask.DatetimeStart = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
         task.save()
     except:
-        return sendError(400, "Durée et Heures incohérentes")
+        return sendError(400, "Durée et Heures incohérentes")"""
 
     if 'dependencies' in content  :
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
