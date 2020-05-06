@@ -284,7 +284,7 @@ class AccountServices {
                 console.warn(respBody.error)
             }
             else {
-                callback(respBody)
+                callback(respBody.invitations)
             }
         }
         catch (error) {
