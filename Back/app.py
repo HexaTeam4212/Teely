@@ -257,7 +257,7 @@ def account_upcoming_tasks_for_user():
 
     user = PERSON.get(PERSON.personId == session["userId"])
     current_date = datetime.datetime.now()
-    tasks_rep = TASK.select().where(TASK.TaskUser).order_by(TASK.DatetimeStart)
+    tasks_rep = TASK.select().where(TASK.TaskUser == user, TASK.DatetimeStart > current_date).order_by(TASK.DatetimeStart)
 
     tasks_list = []
 
@@ -280,11 +280,7 @@ def account_upcoming_tasks_for_user():
             "duration" : task.Duration
         }
 
-        if task.DatetimeStart is not None:
-            if task.DatetimeStart.year >= current_date.year:
-                if task.DatetimeStart.month >= current_date.month or task.DatetimeStart.year > current_date.year:
-                    if task.DatetimeStart.day >= current_date.day or task.DatetimeStart.month > current_date.month or task.DatetimeStart.year > current_date.year:
-                        tasks_list.append(data)
+        tasks_list.append(data)
 
     reponse_body = {
         "tasks": tasks_list
