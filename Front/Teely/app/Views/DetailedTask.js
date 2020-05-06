@@ -30,6 +30,7 @@ export default class DetailedTask extends React.Component {
             taskDuration: "",
             taskPrioriy: "",
             groupTasks: [],
+            colorPrio: "black",
             isLoading: true,
             refreshing: false
         }
@@ -62,15 +63,19 @@ export default class DetailedTask extends React.Component {
 
     updateTaskInfos = (data) => {
         console.log("priorité : " + data.priority)
-        let priority = ""
+        let priority = "Aucune"
         if (data.priority == 1) {
-            priority = "Basse"
+            //priority = "Basse"
+            priority="★"
+            this.colorPrio = "green"
         } else if (data.priority == 2) {
-            priority = "Moyenne"
+            //priority = "Moyenne"
+            priority="★★"
+            this.colorPrio = "orange"
         } else if (data.priority == 3) {
-            priority = "Haute"
-        } else {
-            priority = "Aucune"
+            //priority = "Haute"
+            priority="★★★"
+            this.colorPrio = "red"
         }
         this.setState({
             taskName: data.name, taskDescription: data.description, taskUser: data.taskUser,
@@ -189,7 +194,7 @@ export default class DetailedTask extends React.Component {
                         <TextsRow name="Début :" name2={this.state.datetimeStart}></TextsRow>
                         <TextsRow name="Fin :" name2={this.state.datetimeEnd}></TextsRow>
                         <TextsRow name="Durée :" name2={this.state.taskDuration}></TextsRow>
-                        <TextsRow name="Priorité :" name2={this.state.taskPriority}></TextsRow>
+                        <TextsRow name="Priorité :" name2={this.state.taskPriority} color={this.colorPrio}></TextsRow>
                         {this.displayPossibleDependencies()}
                         <CustomButton name="Modifier" width={180} onPress={() => {
                             this.props.navigation.navigate("EditTask", { groupId: this.groupId, taskId: this.taskId })
