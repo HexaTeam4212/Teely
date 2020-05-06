@@ -145,12 +145,12 @@ export default class Groups extends React.Component {
           <MenuDrawer 
               open={this.state.open} 
               drawerContent={this.drawerContent()}
-              drawerPercentage={50}
+              drawerPercentage={55}
               animationTime={0}
               overlay={false}
               opacity={0.2}
           >
-          
+           
             <KeyboardAwareScrollView
               contentContainerStyle={{ flex: 1 }}
               resetScrollToCoords={{ x: 0, y: 0 }}
@@ -161,7 +161,7 @@ export default class Groups extends React.Component {
             >
               <TouchableOpacity onPress={this.toggleOpen} >
                 <ProfileIcon idImage={this.state.idImageProfile} /> 
-              </TouchableOpacity> 
+              </TouchableOpacity>
               <View style={styles.title_container}>
                 <Text style={styles.title_text}>Mes groupes</Text>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate("CreateGroup")}>
@@ -177,7 +177,6 @@ export default class Groups extends React.Component {
             </KeyboardAwareScrollView>
           </MenuDrawer>
         </View>
-
         {this.displayLoading()}
       </View>
     )
@@ -277,7 +276,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },  
   menu: {
-    flex : 1,
+    flex: 1,
     flexDirection: 'column',
     backgroundColor: "#ffb4e2",
     padding: 0

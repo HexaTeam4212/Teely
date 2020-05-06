@@ -6,11 +6,10 @@ export default class MenuButton extends React.Component {
   render() {
     const name = this.props.name
     const width = this.props.width
-    const flex = this.props.flex
     const onPressAction = this.props.onPress
     return (
       <View style={styles.main_container}>
-        <TouchableOpacity style={[styles.button, { width: width }, { flex: flex }]} onPress={onPressAction}>
+        <TouchableOpacity style={[styles.button, { width: width }]} onPress={onPressAction}>
           <Text style={styles.buttonText}>{name}</Text>
         </TouchableOpacity>
       </View>
@@ -21,10 +20,9 @@ export default class MenuButton extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-around',
     alignItems: 'flex-start',
+    marginVertical: 30
   },
   buttonText: {
     fontSize: 20,
