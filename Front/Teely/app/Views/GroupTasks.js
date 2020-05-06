@@ -148,7 +148,7 @@ export default class GroupTasks extends React.Component {
 
           >
             <DialogContent style={styles.dialogContent_container}>
-              <Text style={styles.dialog_text}> Etes-vous sûrs de vouloir supprimer cette tâche ?</Text>
+              <Text style={styles.dialog_text}> Etes-vous sûr de vouloir supprimer cette tâche ?</Text>
             </DialogContent>
           </Dialog>
         </KeyboardAwareScrollView>
