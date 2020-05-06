@@ -56,6 +56,13 @@ export default class CreateGroup extends React.Component {
             renderItem={({ item }) =>
               <View style={styles.item}>
                 <Text style={styles.itemText}>{item.key} </Text>
+                <TouchableOpacity style={styles.crossButton} onPress={() => {
+                  const username = item.key
+                  this.state.invitedUsers.splice(this.state.invitedUsers.findIndex(v => v.key === username), 1)
+                  this.setState({ invitedUsers: this.state.invitedUsers })
+                }}>
+                  <Image style={{ height: 30, width: 30 }} source={require('../../assets/Images/cross.png')} />
+                </TouchableOpacity>
               </View>
             }>
           </FlatList>
@@ -122,7 +129,7 @@ export default class CreateGroup extends React.Component {
                   invitedUsersArray.push(this.state.invitedUsers[i].key)
                 }
                 groupServices.createGroup(this.groupName, this.description, invitedUsersArray, this.idImageGroup,
-                  () => this.props.navigation.navigate("Groups", {refresh: true}))
+                  () => this.props.navigation.navigate("Groups", { refresh: true }))
 
               }
             }}></CustomButton>
@@ -183,6 +190,11 @@ const styles = StyleSheet.create({
   addButton: {
     marginBottom: 70,
     marginTop: -10
+  },
+  crossButton: {
+      alignSelf: 'flex-end',
+      marginRight: -55,
+      marginTop: -26
   }
 
 });
