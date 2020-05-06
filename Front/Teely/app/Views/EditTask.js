@@ -40,19 +40,11 @@ export default class EditTask extends React.Component {
         this.taskSelection = new Map()
         this.getDataProfile()
         this.getGroupInfos()
-        this.getGroupTasks()
         this.getTaskInfos()
-        
+
     }
 
-    onRefresh = () => {
-        this.setState({ refreshing: true })
-        this.getGroupInfos()
-        this.getGroupTasks()
-        this.getTaskInfos()
-    }
-
-    initSelection() {
+    initSelection = () => {
         for (let i = 0; i < this.state.groupMembers.length; i++) {
             if (this.state.groupMembers[i] === this.state.taskUser) {
                 this.userSelection.set(this.state.groupMembers[i], true)
@@ -61,7 +53,12 @@ export default class EditTask extends React.Component {
             }
         }
         for (let i = 0; i < this.state.groupTasks.length; i++) {
-            if(this.state.groupTasks[i].taskId != this.state.taslId) {
+            if (this.state.groupTasks[i].taskId == this.state.taskId) {
+                var newTasks = this.state.groupTasks
+                newTasks.splice(i, 1)
+                this.setState({ groupTasks: newTasks })
+            }
+            else {
                 this.taskSelection.set(this.state.groupTasks[i].taskId, false)
             }
         }
@@ -70,6 +67,7 @@ export default class EditTask extends React.Component {
                 this.taskSelection.set(this.state.taskDependencies[i], true)
             }
         }
+        this.setState({isLoading: false})
 
     }
 
@@ -103,19 +101,23 @@ export default class EditTask extends React.Component {
 
     updateGroupTasks = (data) => {
         this.setState({ groupTasks: data })
-    }
-
-    getGroupTasks() {
-        groupServices.getGroupTasks(this.groupId, this.updateGroupTasks)
+        this.initSelection()
     }
 
     updateTaskInfos = (data) => {
         this.setState({
             taskName: data.name, taskDescription: data.description, taskUser: data.taskUser,
-            taskPriority: data.priority, datetimeStart: data.datetimeStart, datetimeEnd: data.datetimeEnd,
-            taskDependencies: data.dependencies, taskDuration: data.duration, isLoading: false, refreshing: false
+            taskPriority: data.priority, taskDependencies: data.dependencies, datetimeStart: data.datetimeStart,
+            datetimeEnd: data.datetimeEnd, taskDuration: data.duration
         })
-        this.initSelection()
+        if (data.datetimeStart!=null) {
+            this.setState({datetimeStart: generalServices.formatDateTimeForTask(data.datetimeStart)})
+        }
+        if (data.datetimeEnd!=null) {
+            this.setState({datetimeEnd: generalServices.formatDateTimeForTask(data.datetimeEnd)})
+        }
+        groupServices.getGroupTasks(this.groupId, this.updateGroupTasks)
+
     }
 
     getTaskInfos() {
@@ -139,7 +141,7 @@ export default class EditTask extends React.Component {
     }
 
     updateDuration = (value) => {
-        this.setState({taskDuration: value })
+        this.setState({ taskDuration: value })
     }
 
     updatePriority = (value) => {
@@ -250,7 +252,10 @@ export default class EditTask extends React.Component {
 
     addTaskDependency = (task) => {
         this.taskSelection.set(task.taskId, true)
-        var newDependencies = this.state.taskDependencies
+        var newDependencies = new Map()
+        if (this.state.taskDependencies != null) {
+            newDependencies = this.state.taskDependencies
+        }
         newDependencies.push(task.taskId)
         this.setState({
             taskDependencies: newDependencies
@@ -271,34 +276,36 @@ export default class EditTask extends React.Component {
     redirect = (result) => {
         this.setState({ isLoading: false })
         if (result) {
-            this.props.navigation.navigate("DetailedTask", {taskId: this.taskId })
+            this.props.navigation.navigate("DetailedTask", { taskId: this.taskId })
         }
     }
 
     updateTask = () => {
-        //console.log(this.state)
         var isValid = true
+        if (this.state.datetimeStart != null && this.state.datetimeEnd != null) {
+            isValid = generalServices.checkPrecedence(this.state.datetimeStart, this.state.datetimeEnd)
+            if (!isValid) {
+                alert("Les dates de début et de fin sont invalides. Merci de saisir une date de fin supérieure à celle de début.")
+            }
+        }
         if (this.state.taskName == "") {
             isValid = false
             alert("Veuillez renseigner un nom pour la tâche")
         }
-        else if (((this.state.taskDuration == null || this.state.taskDuration == "") && 
-                !(this.state.datetimeStart != null && this.state.datetimeEnd != null))) {
+        else if (((this.state.taskDuration == null || this.state.taskDuration == "") &&
+            !(this.state.datetimeStart != null && this.state.datetimeEnd != null))) {
             isValid = false,
                 alert("Il n'y a pas assez d'informations pour estimer la durée de la tâche. \n" +
                     "Veuillez renseigner soit : \n 1. le début et la fin de la tâche \n 2. le début et la durée \n 3.le début, la fin, et la durée. \n 4.la durée")
         }
-        else if (!(generalServices.checkPrecedence(this.state.datetimeStart, this.state.datetimeEnd))) {
-            isValid = false
-            alert("Les dates de début et de fin sont invalides. Merci de saisir une date de fin supérieure à celle de début.")
-        }
 
         if (isValid) {
             this.setState({ isLoading: true })
-            groupServices.updateTaskGroup(this.groupId, this.taskId, this.state.taskUser, this.state.taskDescription, this.state.taskName,
-                this.state.datetimeStart, this.state.datetimeEnd, this.state.taskPriority, this.state.taskDependencies, this.redirect)
+            taskServices.updateTask(this.taskId, this.state.taskUser, this.state.taskDescription, this.state.taskName,
+                this.state.datetimeStart, this.state.datetimeEnd, this.state.taskPriority, this.state.taskDependencies,
+                this.state.taskDuration, this.redirect)
         }
- }
+    }
 
     render() {
         return (
@@ -343,7 +350,7 @@ export default class EditTask extends React.Component {
                             <Text style={styles.text}> Début : </Text>
                         </View>
                         <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' width= {200} name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
+                            <DateTimePicker mode='datetime' width={200} name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
                         </View>
                     </View>
                     <View style={styles.groupLined_container}>
@@ -351,7 +358,7 @@ export default class EditTask extends React.Component {
                             <Text style={styles.text}> Fin : </Text>
                         </View>
                         <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' width= {200} name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
+                            <DateTimePicker mode='datetime' width={200} name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
                         </View>
                     </View>
                     <View style={styles.groupLined_container}>
@@ -378,7 +385,7 @@ export default class EditTask extends React.Component {
                                     style={styles.picker}
                                     itemStyle={styles.pickerItem}
                                     selectedValue={this.state.taskPriority}
-                                    onValueChange={(itemValue, itemIndex) => {this.setState({taskPriority: itemValue})}}
+                                    onValueChange={(itemValue, itemIndex) => { this.setState({ taskPriority: itemValue }) }}
                                 >
                                     <Picker.Item label="Basse" value={1} />
                                     <Picker.Item label="Moyenne" value={2} />

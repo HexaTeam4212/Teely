@@ -34,6 +34,89 @@ class TaskServices {
             console.error(error)
         }
     }
+
+    async deleteTask(taskId, callback) {
+        const token = await getToken()
+        const fullEndpoint = endpoint + '/' + taskId
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    }
+                })
+            if (response.status != 204) {
+                if (response.status == 404) {
+                    alert("La tâche n'existe pas ou a déjà été supprimée")
+                }
+                else {
+                    httpError(response.status)
+                    console.warn(respBody.error)
+                }
+                const respBody = await response.json()
+                callback(false);
+            }
+            else {
+                callback(true);
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async updateTask(taskId, taskUser, description, name, datetimeStart, datetimeEnd, priority, dependencies, duration, callback) {
+        const token = await getToken()
+        const requestBody = JSON.stringify({
+            taskUser: taskUser,
+            description: description,
+            frequency: 1,
+            name: name,
+            datetimeStart: datetimeStart,
+            datetimeEnd: datetimeEnd,
+            priority: priority,
+            dependencies: dependencies,
+            duration: duration,
+        })
+        console.log(requestBody)
+        const fullEndpoint = endpoint + '/' + taskId
+        console.log(backendURL + fullEndpoint)
+        try {
+            const response = await fetch(backendURL + fullEndpoint,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: token
+                    },
+                    body: requestBody
+                })
+                .catch(err => {
+                    console.error("Promise error : " + err)
+                })
+            if (response.status != 200) {
+                if (response.status == 404) {
+                    alert("La tâche n'existe pas")
+                }
+                else {
+                    httpError(response.status)
+                    console.warn(respBody.error)
+                }
+                const respBody = await response.json()
+                callback(false);
+            }
+            else {
+                alert("Modification enregistrée :)")
+                callback(true);
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 const taskServices = new TaskServices()
 export default taskServices
