@@ -1,7 +1,7 @@
 // app/Views/GroupCalendar.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator, RefreshControl } from 'react-native'
+import { StyleSheet, Text, View, Image, ActivityIndicator, RefreshControl, TouchableOpacity} from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
 
@@ -38,7 +38,7 @@ export default class GroupCalendar extends React.Component {
     this.getGroupId()
     this.getAllTasks()
   }
-  
+
   getAllTasks() {
     groupServices.getGroupTasks(this.groupId, this.updateTasksLists)
   }
@@ -88,7 +88,7 @@ export default class GroupCalendar extends React.Component {
   }
 
   updateTasksLists = (data) => {
-    this.setState({ currentTasksLists: data, isLoading: false, refreshing:false})
+    this.setState({ currentTasksLists: data, isLoading: false, refreshing: false })
     this.loadItems(this.state.selectedDate)
   }
 
@@ -96,13 +96,14 @@ export default class GroupCalendar extends React.Component {
   renderItem = (item) => {
     return (
       <View style={styles.task_container}>
-        <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeStart)}</Text></View>
-        <View><Text style={styles.name_text}>{item.name}</Text></View>
-        <View><Text style={styles.description_text}>{item.description}</Text></View>
-        <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
-        {this.renderTaskedUsers(item.taskUser)}
+        <TouchableOpacity onPress={() => {this.props.navigation.navigate("DetailedTask", { taskId: item.taskId })}}>
+          <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeStart)}</Text></View>
+          <View><Text style={styles.name_text}>{item.name}</Text></View>
+          <View><Text style={styles.description_text}>{item.description}</Text></View>
+          <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
+          {this.renderTaskedUsers(item.taskUser)}
+        </TouchableOpacity>
       </View>
-
     );
   }
 

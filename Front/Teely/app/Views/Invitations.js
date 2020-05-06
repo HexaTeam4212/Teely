@@ -65,9 +65,13 @@ export default class Invitations extends React.Component {
 
   updateInvitations = (dataInvit) => {
     this.invitations = dataInvit
+    console.log("invitation get : "+this.invitations)
     this.setState({
       tabInvit: dataInvit, isLoading: false, refreshing: false
     })
+      console.log("invitation : "+this.invitations[0].invitationId)
+    
+    
 
   }
 
