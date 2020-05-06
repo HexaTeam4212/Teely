@@ -1,14 +1,17 @@
 // app/Views/GroupMembers.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, RefreshControl, ActivityIndicator, FlatList} from 'react-native'
+import { StyleSheet, Text, View, Image,RefreshControl, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native'
 
 import accountServices from '../Services/AccountServices'
 import groupServices from '../Services/GroupServices'
 import ProfileIcon from '../Components/ProfileIcon'
 import GroupIcon from '../Components/GroupIcon'
 import MemberItem from '../Components/MemberItem'
+import MenuButton from '../Components/MenuButton'
+import MenuDrawer from 'react-native-side-drawer'
 import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+import Images from '../modules/ImageProfile';
 
 export default class DetailedGroup extends React.Component {
     constructor(props) {
@@ -20,7 +23,8 @@ export default class DetailedGroup extends React.Component {
             idImageGroup: 18,
             members: [],
             isLoading: true,
-            refreshing: false
+            refreshing: false,
+            open: false
         }
         this.groupId = ""
         this.getGroupId()
@@ -52,7 +56,7 @@ export default class DetailedGroup extends React.Component {
     updateGroupInfos = (data) => {
         this.setState({
             name: data.group_name, description: data.description, idImageGroup: data.idImageGroup,
-            members: data.members, isLoading: false, refreshing:false
+            members: data.members, isLoading: false, refreshing: false
         });
     }
 
@@ -68,34 +72,73 @@ export default class DetailedGroup extends React.Component {
         accountServices.dataProfile(this.updateDataProfile, "")
     }
 
+    toggleOpen = () => {
+        this.setState({ open: !this.state.open });
+    }
+
+    drawerContent = () => {
+        return (
+            <View style={styles.menu}>
+                <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 10 }} >
+                    <ProfileIcon idImage={this.state.idImageProfile} />
+                </TouchableOpacity>
+                <View style={{ flex: 12 }}>
+                    <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
+                    <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
+                    <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
+                    <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
+                    <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
+                    <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
+                        accountServices.logout()
+                        this.props.navigation.navigate("Login")
+                    }} />
+                </View>
+            </View>
+        )
+    }
+
     render() {
         return (
             <View style={styles.main_container}>
                 {backgroundGradientColor()}
-                <ProfileIcon idImage={this.state.idImageProfile} />
                 <View style={{ flex: 1 }}>
-                    <KeyboardAwareScrollView
-                        contentContainerStyle={{ flex: 1 }}
-                        resetScrollToCoords={{ x: 0, y: 0 }}
-                        scrollEnabled={true}
-                        enableAutomaticScroll={(Platform.OS === 'ios')}
-                        enableOnAndroid={true}
-                        refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+                    <MenuDrawer
+                        open={this.state.open}
+                        drawerContent={this.drawerContent()}
+                        drawerPercentage={55}
+                        animationTime={0}
+                        overlay={false}
+                        opacity={0.2}
                     >
-                        <View style={styles.head_container}>
-                            <GroupIcon idImage={this.state.idImageGroup} />
-                            <Text style={styles.name_text}>{this.state.name}</Text>
-                            <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
-                            <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
-                        </View>
-                        <FlatList
-                            data={this.state.members}
-                            keyExtractor={(item) => item}
-                            renderItem={({ item }) => <MemberItem username={item} />}
-                        />
-                    </KeyboardAwareScrollView>
+                        <KeyboardAwareScrollView
+                            contentContainerStyle={{ flex: 1 }}
+                            resetScrollToCoords={{ x: 0, y: 0 }}
+                            scrollEnabled={true}
+                            enableAutomaticScroll={(Platform.OS === 'ios')}
+                            enableOnAndroid={true}
+                            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+                        >
+                            <View style={styles.icon_container}>
+                                <TouchableOpacity onPress={this.toggleOpen}>
+                                    <Image style={styles.profil} source={Images[this.state.idImageProfile]} />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.head_container}>
+                                <GroupIcon idImage={this.state.idImageGroup} />
+                                <Text style={styles.name_text}>{this.state.name}</Text>
+                                <Text style={styles.description_text} numberOfLines={4}> {this.state.description}</Text>
+                                <Text style={styles.participant_text}>{this.state.members.length} participants</Text>
+                            </View>
+                            <FlatList
+                                data={this.state.members}
+                                keyExtractor={(item) => item}
+                                renderItem={({ item }) => <MemberItem username={item} />}
+                            />
+                            <View style={{ marginBottom: 80 }}></View>
+                        </KeyboardAwareScrollView>
+                    </MenuDrawer>
+                    {this.displayLoading()}
                 </View>
-                {this.displayLoading()}
             </View>
         )
     }
@@ -130,6 +173,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    icon_container: {
+        position: 'absolute',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        zIndex: 5
+    },
     name_text: {
         fontWeight: 'bold',
         fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
@@ -153,6 +202,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         flexWrap: 'wrap'
+    },
+    profil: {
+        resizeMode: 'contain',
+        alignItems: 'center',
+        width: 60,
+        height: 60,
+        borderColor: '#ffb4e2',
+        borderWidth: 3,
+        borderRadius: 60,
+        margin: 10
+    },
+    menu: {
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: "#ffb4e2",
+        padding: 0
     },
 })
 

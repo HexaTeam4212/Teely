@@ -1,7 +1,7 @@
 // app/Views/DetailedTask.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { RefreshControl, StyleSheet, Text, View, ScrollView, ActivityIndicator, FlatList, Image , TouchableOpacity } from 'react-native'
+import { RefreshControl, StyleSheet, Text, View, ScrollView, ActivityIndicator, FlatList, Image, TouchableOpacity } from 'react-native'
 import accountServices from '../Services/AccountServices'
 import groupServices from '../Services/GroupServices'
 import ProfileIcon from '../Components/ProfileIcon'
@@ -13,6 +13,9 @@ import generalServices from '../Services/GeneralServices'
 import taskServices from '../Services/TaskServices'
 import moment from 'moment'
 import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+import MenuDrawer from 'react-native-side-drawer'
+import MenuButton from '../Components/MenuButton'
+import Images from '../modules/ImageProfile';
 
 export default class DetailedTask extends React.Component {
     constructor(props) {
@@ -20,7 +23,7 @@ export default class DetailedTask extends React.Component {
         this.state = {
             idImageProfile: 18,
             idImageGroup: 18,
-            groupId:"",
+            groupId: "",
             groupName: "",
             taskName: "",
             taskDescription: "",
@@ -33,14 +36,15 @@ export default class DetailedTask extends React.Component {
             groupTasks: [],
             colorPrio: "black",
             isLoading: true,
-            refreshing: false
+            refreshing: false,
+            open: false
         }
         this.taskId = this.props.route.params.taskId
         this.tabTaskDependencies = []
         this.getDataProfile()
         this.getTaskInfos()
-        
-        
+
+
     }
 
     componentDidMount() {
@@ -59,7 +63,7 @@ export default class DetailedTask extends React.Component {
         this.setState({ refreshing: true })
         this.getDataProfile()
         this.getTaskInfos()
-        
+
     }
 
     displayLoading() {
@@ -72,9 +76,9 @@ export default class DetailedTask extends React.Component {
         }
     }
 
-    checkDataNotNull(data){
-        if(data==null){
-            data ="Aucune"
+    checkDataNotNull(data) {
+        if (data == null) {
+            data = "Aucune"
         }
         return data
     }
@@ -84,24 +88,24 @@ export default class DetailedTask extends React.Component {
         let priority = "Aucune"
         if (data.priority == 1) {
             //priority = "Basse"
-            priority="★"
+            priority = "★"
             this.colorPrio = "green"
         } else if (data.priority == 2) {
             //priority = "Moyenne"
-            priority="★★"
+            priority = "★★"
             this.colorPrio = "orange"
         } else if (data.priority == 3) {
             //priority = "Haute"
-            priority="★★★"
+            priority = "★★★"
             this.colorPrio = "red"
         }
         this.setState({
-            groupId: data.idGroup,taskName: data.name, taskDescription: this.checkDataNotNull(data.description), 
+            groupId: data.idGroup, taskName: data.name, taskDescription: this.checkDataNotNull(data.description),
             taskUser: this.checkDataNotNull(data.taskUser),
             taskPriority: priority, datetimeStart: this.displayedFormatDateTime(data.datetimeStart),
             datetimeEnd: this.displayedFormatDateTime(data.datetimeEnd), taskDependencies: data.dependencies,
             taskDuration: this.checkDataNotNull(generalServices.convertMinInHour(data.duration))
-            
+
         })
         this.getGroupInfos()
     }
@@ -146,15 +150,16 @@ export default class DetailedTask extends React.Component {
         return formattedDateTime
     }
 
-    findDependentTasks(){
-        if(this.state.taskDependencies!=null && this.state.groupTasks.length){
+    findDependentTasks() {
+        if (this.state.taskDependencies != null && this.state.groupTasks.length) {
             for (let i = 0; i < this.state.groupTasks.length; i++) {
-                if(this.state.taskDependencies.includes(this.state.groupTasks[i].taskId))
-                this.tabTaskDependencies.push(this.state.groupTasks[i])
+                if (this.state.taskDependencies.includes(this.state.groupTasks[i].taskId)
+                && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId))
+                    this.tabTaskDependencies.push(this.state.groupTasks[i])
             }
         }
 
-        this.setState({ isLoading: false, refreshing: false})
+        this.setState({ isLoading: false, refreshing: false })
     }
 
     displayPossibleDependencies = () => {
@@ -183,49 +188,88 @@ export default class DetailedTask extends React.Component {
     }
 
     renderTaskItem = (task) => {
-            return (
-                <View style={styles.task_container}>
-                    <View style={styles.leftAligned_container}>
-                        <TaskItem task={task} />
-                    </View>
+        return (
+            <View style={styles.task_container}>
+                <View style={styles.leftAligned_container}>
+                    <TaskItem task={task} />
                 </View>
-            );
+            </View>
+        );
+    }
+
+    toggleOpen = () => {
+        this.setState({ open: !this.state.open });
+    }
+
+    drawerContent = () => {
+        return (
+            <ScrollView style={styles.menu}>
+                <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 60 }} >
+                    <ProfileIcon idImage={this.state.idImageProfile} />
+                </TouchableOpacity>
+                <View style={{ flex: 12 }}>
+                    <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
+                    <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
+                    <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
+                    <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
+                    <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
+                    <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
+                        accountServices.logout()
+                        this.props.navigation.navigate("Login")
+                    }} />
+                </View>
+            </ScrollView>
+        )
     }
 
     render() {
         return (
             <View style={styles.main_container}>
                 {backgroundGradientColor()}
-                <ProfileIcon idImage={this.state.idImageProfile} />
                 <View style={{ flex: 1 }}>
-                    <KeyboardAwareScrollView
-                        scrollEnabled={true}
-                        enableAutomaticScroll={(Platform.OS === 'ios')}
-                        enableOnAndroid={true}
-                        keyboardOpeningTime={0}
-                        contentContainerStyle={styles.content_container}
-                        refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+                    <MenuDrawer
+                        open={this.state.open}
+                        drawerContent={this.drawerContent()}
+                        drawerPercentage={55}
+                        animationTime={0}
+                        overlay={false}
+                        opacity={0.2}
                     >
-                        <Text style={styles.container_title}> Infos tâche : </Text>
-                        <TextsRow name="Nom de la tâche :" name2={this.state.taskName}></TextsRow>
-                        <View style={styles.groupLined_container}>
-                            <Text style={styles.text}> Groupe : </Text>
-                            <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
-                            <Text style={styles.name_text}>{this.state.groupName}</Text>
+                        <View style={styles.icon_container}>
+                            <TouchableOpacity onPress={this.toggleOpen}>
+                                <Image style={styles.profil} source={Images[this.state.idImageProfile]} />
+                            </TouchableOpacity>
                         </View>
-                        <TextsRow name="Description :" name2={this.state.taskDescription}></TextsRow>
-                        <TextsRow name="Personne en charge :" name2={this.state.taskUser}></TextsRow>
-                        <TextsRow name="Début :" name2={this.state.datetimeStart}></TextsRow>
-                        <TextsRow name="Fin :" name2={this.state.datetimeEnd}></TextsRow>
-                        <TextsRow name="Durée :" name2={this.state.taskDuration}></TextsRow>
-                        <TextsRow name="Priorité :" name2={this.state.taskPriority} color={this.colorPrio}></TextsRow>
-                        {this.displayPossibleDependencies()}
-                        <CustomButton name="Modifier" width={180} onPress={() => {
-                            this.props.navigation.navigate("EditTask", { groupId: this.state.groupId, taskId: this.taskId })
-                        }}>
-                        </CustomButton>
-                        <View style={{ marginBottom: 100 }}></View>
-                    </KeyboardAwareScrollView>
+                        <KeyboardAwareScrollView
+                            scrollEnabled={true}
+                            enableAutomaticScroll={(Platform.OS === 'ios')}
+                            enableOnAndroid={true}
+                            keyboardOpeningTime={0}
+                            contentContainerStyle={styles.content_container}
+                            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
+                        >
+
+                            <Text style={styles.container_title}> Infos tâche : </Text>
+                            <TextsRow name="Nom de la tâche :" name2={this.state.taskName}></TextsRow>
+                            <View style={styles.groupLined_container}>
+                                <Text style={styles.text}> Groupe : </Text>
+                                <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
+                                <Text style={styles.name_text}>{this.state.groupName}</Text>
+                            </View>
+                            <TextsRow name="Description :" name2={this.state.taskDescription}></TextsRow>
+                            <TextsRow name="Personne en charge :" name2={this.state.taskUser}></TextsRow>
+                            <TextsRow name="Début :" name2={this.state.datetimeStart}></TextsRow>
+                            <TextsRow name="Fin :" name2={this.state.datetimeEnd}></TextsRow>
+                            <TextsRow name="Durée :" name2={this.state.taskDuration}></TextsRow>
+                            <TextsRow name="Priorité :" name2={this.state.taskPriority} color={this.colorPrio}></TextsRow>
+                            {this.displayPossibleDependencies()}
+                            <CustomButton name="Modifier" width={180} onPress={() => {
+                                this.props.navigation.navigate("EditTask", { groupId: this.state.groupId, taskId: this.taskId })
+                            }}>
+                            </CustomButton>
+                            <View style={{ marginBottom: 130 }}></View>
+                        </KeyboardAwareScrollView>
+                    </MenuDrawer>
                     {this.displayLoading()}
                 </View>
             </View >
@@ -238,6 +282,12 @@ export default class DetailedTask extends React.Component {
 const styles = StyleSheet.create({
     main_container: {
         flex: 1
+    },
+    icon_container: {
+        position: 'absolute',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        zIndex: 5
     },
     content_container: {
         marginTop: 40,
@@ -350,6 +400,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'black',
         marginLeft: 20
+    },
+    profil: {
+        resizeMode: 'contain',
+        alignItems: 'center',
+        width: 60,
+        height: 60,
+        borderColor: '#ffb4e2',
+        borderWidth: 3,
+        borderRadius: 60,
+        margin: 10
+    },
+    menu: {
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: "#ffb4e2",
+        padding: 0
     },
 })
 

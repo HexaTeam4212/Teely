@@ -13,6 +13,9 @@ import TaskItem from '../Components/TaskItem'
 import CustomButton from '../Components/CustomButton'
 import generalServices from '../Services/GeneralServices'
 import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+import Images from '../modules/ImageProfile';
+import MenuButton from '../Components/MenuButton'
+import MenuDrawer from 'react-native-side-drawer'
 
 export default class EditTask extends React.Component {
     constructor(props) {
@@ -32,7 +35,8 @@ export default class EditTask extends React.Component {
             taskPriority: "",
             groupTasks: [],
             isLoading: true,
-            refreshing: false
+            refreshing: false,
+            open:false
         }
         this.groupId = this.props.route.params.groupId
         this.taskId = this.props.route.params.taskId
@@ -307,12 +311,49 @@ export default class EditTask extends React.Component {
         }
     }
 
+    toggleOpen = () => {
+        this.setState({ open: !this.state.open });
+      }
+    
+      drawerContent = () => {
+        return (
+          <View style={styles.menu}>
+            <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 10 }} >
+              <ProfileIcon idImage={this.state.idImageProfile} />
+            </TouchableOpacity>
+            <View style={{ flex: 12 }}>
+              <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
+              <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
+              <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
+              <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
+              <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
+              <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
+                accountServices.logout()
+                this.props.navigation.navigate("Login")
+              }} />
+            </View>
+          </View>
+        )
+      }
+
     render() {
         return (
             <View style={styles.main_container}>
                 {backgroundGradientColor()}
-                <ProfileIcon idImage={this.state.idImageProfile} />
-
+                <View style={{ flex: 1 }}>
+                <MenuDrawer
+            open={this.state.open}
+            drawerContent={this.drawerContent()}
+            drawerPercentage={55}
+            animationTime={0}
+            overlay={false}
+            opacity={0.2}
+          >
+              <View style={styles.icon_container}>
+              <TouchableOpacity onPress={this.toggleOpen}>
+                <Image style={styles.profil} source={Images[this.state.idImageProfile]} />
+              </TouchableOpacity>
+            </View>
                 <KeyboardAwareScrollView
                     scrollEnabled={true}
                     enableAutomaticScroll={(Platform.OS === 'ios')}
@@ -399,8 +440,11 @@ export default class EditTask extends React.Component {
                         <CustomButton name='Enregistrer' width={170} onPress={this.updateTask}>
                         </CustomButton>
                     </View>
+                    <View style={{ marginBottom: 80 }}></View>
                 </KeyboardAwareScrollView>
+                </MenuDrawer>
                 {this.displayLoading()}
+                </View>
             </View >
 
 
@@ -493,6 +537,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    icon_container: {
+        position: 'absolute',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        zIndex: 5
+    },
     groupPic: {
         resizeMode: 'contain',
         alignItems: 'center',
@@ -561,7 +611,23 @@ const styles = StyleSheet.create({
         color: 'grey',
         fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
         fontSize: 20
-    }
+    },
+    profil: {
+        resizeMode: 'contain',
+        alignItems: 'center',
+        width: 60,
+        height: 60,
+        borderColor: '#ffb4e2',
+        borderWidth: 3,
+        borderRadius: 60,
+        margin: 10
+    },
+      menu: {
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: "#ffb4e2",
+        padding: 0
+      },
 })
 
 

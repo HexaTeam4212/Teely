@@ -12,6 +12,9 @@ import TaskItem from '../Components/TaskItem'
 import CustomButton from '../Components/CustomButton'
 import generalServices from '../Services/GeneralServices'
 import { backgroundGradientColor } from '../modules/BackgroundGradientColor'
+import Images from '../modules/ImageProfile';
+import MenuButton from '../Components/MenuButton'
+import MenuDrawer from 'react-native-side-drawer'
 
 export default class CreateTask extends React.Component {
   constructor(props) {
@@ -30,7 +33,8 @@ export default class CreateTask extends React.Component {
       taskDuration: "",
       taskPriority: 1,
       groupTasks: [],
-      isLoading: true
+      isLoading: true,
+      open: false
     }
     this.groupId = this.props.route.params.idGroup
     this.userSelection = new Map()
@@ -271,100 +275,141 @@ export default class CreateTask extends React.Component {
     }
   }
 
+  toggleOpen = () => {
+    this.setState({ open: !this.state.open });
+  }
+
+  drawerContent = () => {
+    return (
+      <View style={styles.menu}>
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 10 }} >
+          <ProfileIcon idImage={this.state.idImageProfile} />
+        </TouchableOpacity>
+        <View style={{ flex: 12 }}>
+          <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
+          <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
+          <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
+          <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
+          <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
+          <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
+            accountServices.logout()
+            this.props.navigation.navigate("Login")
+          }} />
+        </View>
+      </View>
+    )
+  }
+
   render() {
     return (
       <View style={styles.main_container}>
         {backgroundGradientColor()}
-        <ProfileIcon idImage={this.state.idImageProfile} />
-
-        <KeyboardAwareScrollView
-          scrollEnabled={true}
-          enableAutomaticScroll={(Platform.OS === 'ios')}
-          enableOnAndroid={true}
-          keyboardOpeningTime={0}
-          enableResetScrollToCoords={true}
-          contentContainerStyle={styles.content_container}
-        >
-          <NameWithInput name='Nom de la tâche : ' type='none' placeholder={"Nom"} height={40}
-            secureTextEntry={false} parentCallback={this.callbackFunctionTaskName} />
-          <View style={styles.groupLined_container}>
-            <Text style={styles.text}> Groupe : </Text>
-            <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
-            <Text style={styles.name_text}>{this.state.groupName}</Text>
-          </View>
-          <NameWithInput name='Description : ' type='none' placeholder={"Description"} height={60}
-            secureTextEntry={false} parentCallback={this.callbackFunctionTaskDescription} />
-          <Text style={styles.container_title}> Personne en charge : </Text>
-          <ScrollView
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            enableOnAndroid={true}
-            contentContainerStyle={[styles.taskUser_container, { maxHeight: 300 }]}
+        <View style={{ flex: 1 }}>
+          <MenuDrawer
+            open={this.state.open}
+            drawerContent={this.drawerContent()}
+            drawerPercentage={55}
+            animationTime={0}
+            overlay={false}
+            opacity={0.2}
           >
-            <FlatList
-              data={this.state.groupMembers}
-              keyExtractor={(item) => item.toString()}
-              renderItem={({ item }) => this.renderMemberItem(item)}
-            />
-          </ScrollView>
+            <View style={styles.icon_container}>
+              <TouchableOpacity onPress={this.toggleOpen}>
+                <Image style={styles.profil} source={Images[this.state.idImageProfile]} />
+              </TouchableOpacity>
+            </View>
+            <KeyboardAwareScrollView
+              scrollEnabled={true}
+              enableAutomaticScroll={(Platform.OS === 'ios')}
+              enableOnAndroid={true}
+              keyboardOpeningTime={0}
+              enableResetScrollToCoords={true}
+              contentContainerStyle={styles.content_container}
+            >
 
-          <View style={styles.groupLined_container}>
-            <View style={styles.centered_container}>
-              <Text style={styles.text}> Début : </Text>
-            </View>
-            <View style={styles.rightAligned_container}>
-              <DateTimePicker mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
-            </View>
-          </View>
-          <View style={styles.groupLined_container}>
-            <View style={styles.centered_container}>
-              <Text style={styles.text}> Fin : </Text>
-            </View>
-            <View style={styles.rightAligned_container}>
-              <DateTimePicker mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
-            </View>
-          </View>
-          <View style={styles.groupLined_container}>
-            <View style={styles.leftAligned_container}>
-              <View style={styles.leftAligned_container}>
-                <Text style={styles.text}>Durée : </Text>
+              <NameWithInput name='Nom de la tâche : ' type='none' placeholder={"Nom"} height={40}
+                secureTextEntry={false} parentCallback={this.callbackFunctionTaskName} />
+              <View style={styles.groupLined_container}>
+                <Text style={styles.text}> Groupe : </Text>
+                <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
+                <Text style={styles.name_text}>{this.state.groupName}</Text>
               </View>
-              <View style={styles.rightAligned_container}>
-                <TextInput
-                  placeholder="en minutes"
-                  style={styles.textInput}
-                  keyboardType='numeric'
-                  onChangeText={(text) => this.updateDuration(text)}
-                  value={this.state.taskDuration}
+              <NameWithInput name='Description : ' type='none' placeholder={"Description"} height={60}
+                secureTextEntry={false} parentCallback={this.callbackFunctionTaskDescription} />
+              <Text style={styles.container_title}> Personne en charge : </Text>
+              <ScrollView
+                resetScrollToCoords={{ x: 0, y: 0 }}
+                scrollEnabled={true}
+                enableAutomaticScroll={(Platform.OS === 'ios')}
+                enableOnAndroid={true}
+                contentContainerStyle={[styles.taskUser_container, { maxHeight: 300 }]}
+              >
+                <FlatList
+                  data={this.state.groupMembers}
+                  keyExtractor={(item) => item.toString()}
+                  renderItem={({ item }) => this.renderMemberItem(item)}
                 />
+              </ScrollView>
+
+              <View style={styles.groupLined_container}>
+                <View style={styles.centered_container}>
+                  <Text style={styles.text}> Début : </Text>
+                </View>
+                <View style={styles.rightAligned_container}>
+                  <DateTimePicker mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
+                </View>
               </View>
-            </View>
-            <View style={styles.rightAligned_container}>
-              <View style={styles.leftAligned_container}>
-                <Text style={styles.text}> Priorité : </Text>
+              <View style={styles.groupLined_container}>
+                <View style={styles.centered_container}>
+                  <Text style={styles.text}> Fin : </Text>
+                </View>
+                <View style={styles.rightAligned_container}>
+                  <DateTimePicker mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
+                </View>
               </View>
-              <View style={styles.rightAligned_container}>
-                <Picker
-                  style={styles.picker}
-                  itemStyle={styles.pickerItem}
-                  selectedValue={this.state.taskPriority}
-                  onValueChange={(itemValue, itemIndex) => { this.setState({ taskPriority: itemValue }) }}
-                >
-                  <Picker.Item label="Basse" value={1} />
-                  <Picker.Item label="Moyenne" value={2} />
-                  <Picker.Item label="Haute" value={3} />
-                </Picker>
+              <View style={styles.groupLined_container}>
+                <View style={styles.leftAligned_container}>
+                  <View style={styles.leftAligned_container}>
+                    <Text style={styles.text}>Durée : </Text>
+                  </View>
+                  <View style={styles.rightAligned_container}>
+                    <TextInput
+                      placeholder="en minutes"
+                      style={styles.textInput}
+                      keyboardType='numeric'
+                      onChangeText={(text) => this.updateDuration(text)}
+                      value={this.state.taskDuration}
+                    />
+                  </View>
+                </View>
+                <View style={styles.rightAligned_container}>
+                  <View style={styles.leftAligned_container}>
+                    <Text style={styles.text}> Priorité : </Text>
+                  </View>
+                  <View style={styles.rightAligned_container}>
+                    <Picker
+                      style={styles.picker}
+                      itemStyle={styles.pickerItem}
+                      selectedValue={this.state.taskPriority}
+                      onValueChange={(itemValue, itemIndex) => { this.setState({ taskPriority: itemValue }) }}
+                    >
+                      <Picker.Item label="Basse" value={1} />
+                      <Picker.Item label="Moyenne" value={2} />
+                      <Picker.Item label="Haute" value={3} />
+                    </Picker>
+                  </View>
+                </View>
               </View>
-            </View>
-          </View>
-          {this.displayPossibleDependencies()}
-          <View style={{ marginBottom: 100 }}>
-            <CustomButton name='Créer' width={100} onPress={this.createTask}>
-            </CustomButton>
-          </View>
-        </KeyboardAwareScrollView>
-        {this.displayLoading()}
+              {this.displayPossibleDependencies()}
+              <View style={{ marginBottom: 100 }}>
+                <CustomButton name='Créer' width={100} onPress={this.createTask}>
+                </CustomButton>
+              </View>
+              <View style={{ marginBottom: 80 }}></View>
+            </KeyboardAwareScrollView>
+          </MenuDrawer>
+          {this.displayLoading()}
+        </View>
       </View >
 
 
@@ -458,6 +503,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  icon_container: {
+    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    zIndex: 5
+},
   groupPic: {
     resizeMode: 'contain',
     alignItems: 'center',
@@ -526,7 +577,23 @@ const styles = StyleSheet.create({
     color: 'grey',
     fontFamily: Platform.OS === 'ios' ? 'Optima' : 'Roboto',
     fontSize: 20
-  }
+  },
+  profil: {
+    resizeMode: 'contain',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderColor: '#ffb4e2',
+    borderWidth: 3,
+    borderRadius: 60,
+    margin: 10
+},
+  menu: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: "#ffb4e2",
+    padding: 0
+  },
 })
 
 

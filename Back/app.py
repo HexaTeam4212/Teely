@@ -599,7 +599,10 @@ def task_put(id_task):
 
     try:
         task = TASK.get(TASK.taskId == id_task)
+    except:
+        return sendError(400, "Task not found")
 
+    try:
 
         if 'taskUser' in content :
             if content['taskUser']!= "" :
@@ -637,11 +640,10 @@ def task_put(id_task):
                     task.Duration = duration
                 else :
                     return sendError(400, "Make sure to send all the parameters")
-        
-		task.save()
+        task.save()
     except:
         return sendError(400, "Make sure to send all the parameters")
-
+    """
     try :
         if 'datetimeStart' in content and  content['datetimeStart']!= "" and 'datetimeEnd' in content and  content['datetimeEnd']!= "" :
             startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
@@ -657,8 +659,8 @@ def task_put(id_task):
             endTime = datetime.strptime(task.DatetimeStart , "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=task.Duration)
             newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
 
-            """endTime = datetime.strptime(task.DatetimeStart , "%a, %d %b %Y %H:%M:%S GMT") + datetime.timedelta(minutes=task.Duration)
-            newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%a, %d %b %Y %H:%M:%S GMT")"""
+            endTime = datetime.strptime(task.DatetimeStart , "%a, %d %b %Y %H:%M:%S GMT") + datetime.timedelta(minutes=task.Duration)
+            newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%a, %d %b %Y %H:%M:%S GMT")
 
         if task.DatetimeEnd is not None and task.DatetimeStart is None:
             startTime = datetime.datetime.strptime(task.DatetimeEnd , "%Y-%m-%d %H:%M:%S")  - datetime.timedelta(minutes=task.Duration)
@@ -666,6 +668,7 @@ def task_put(id_task):
         task.save()
     except:
         return sendError(400, "Durée et Heures incohérentes")
+    """
 
     if 'dependencies' in content  :
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
@@ -724,10 +727,13 @@ def group_order_tasks(id_group):
         start = datetime.time(hour=int(startHour), minute=int(startMinute))
         end = datetime.time(hour=int(endHour), minute=int(endMinute))
         if start > end:
-            return sendError(400, "Start must be less than end !")
+            return sendError(412, "Start must be less than end !")
     except:
         return sendError(400, "Parameters should be digits !")
 
-    rep = order_tasks(group, startHour, startMinute, endHour, endMinute)
+    try:
+        rep = order_tasks(group, startHour, startMinute, endHour, endMinute)
+    except:
+        return sendError(409, "Tasks duration too big for interval given !")
 
     return jsonify(rep), 200

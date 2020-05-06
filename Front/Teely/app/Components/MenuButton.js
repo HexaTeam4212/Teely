@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   main_container: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    marginTop: 20,
+    marginTop: 17,
     marginBottom: 10
   },
   buttonText: {
