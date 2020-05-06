@@ -1,2 +1,2 @@
-export const backendURL = "http://64bf84bb.ngrok.io"
+export const backendURL = "http://e2fd42bd.ngrok.io"
 

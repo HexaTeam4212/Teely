@@ -613,7 +613,7 @@ def task_put(id_task):
                 task.DatetimeStart = None
         if 'datetimeEnd' in content and  content['datetimeEnd']!= "":
             if content['taskUser']!= "" :
-                task.DatetimeEnd = content['datetimeStart']
+                task.DatetimeEnd = content['datetimeEnd']
             elif task.DatetimeEnd!=None :
                 task.DatetimeEnd = None
         if 'priority' in content:
