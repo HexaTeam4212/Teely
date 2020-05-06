@@ -19,14 +19,25 @@ export default class Groups extends React.Component {
     this.idImageProfile = 18
     this.groups = []
     this.invitations = []
-    this.nbInvit = 0 
+    this.nbInvit = 0
     this.firstload = true
-    this.state = { isLoading: true, refreshing: false, idImageProfile: 18, open : false}
+    this.state = { isLoading: true, refreshing: false, idImageProfile: 18, open: false }
 
     this.getInvitations()
     this.getDataProfile()
     this.getGroups()
 
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.onRefresh()
+    });
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
   }
 
   onRefresh = () => {
@@ -60,13 +71,13 @@ export default class Groups extends React.Component {
       this.invitations = dataInvit
       this.nbInvit = dataInvit.length
     })
-    
+
   }
 
   getGroups() {
     groupServices.getGroupsUser((groupIds) => {
       this.groups = groupIds
-      this.setState({ isLoading: false, refreshing:false })
+      this.setState({ isLoading: false, refreshing: false })
     })
   }
 
@@ -111,7 +122,7 @@ export default class Groups extends React.Component {
       )
     }
   }
- 
+
   toggleOpen = () => {
     this.setState({ open: !this.state.open });
   }
@@ -119,19 +130,19 @@ export default class Groups extends React.Component {
   drawerContent = () => {
     return (
       <View style={styles.menu}>
-        <TouchableOpacity onPress={this.toggleOpen}  style={{flex : 1}} >
-          <ProfileIcon idImage={this.state.idImageProfile} /> 
-        </TouchableOpacity> 
-        <View style={{flex : 12}}>
-          <MenuButton name='Profil' width={'95%'}  onPress={() => this.props.navigation.navigate("Profile")}/>
-          <MenuButton name='Calendrier' width={'95%'}  onPress={() => this.props.navigation.navigate("PersonalCalendar")}/>
-          <MenuButton name='Groupes' width={'95%'}  onPress={() => this.props.navigation.navigate("Groups")}/>
-          <MenuButton name='Invitations' width={'95%'}  onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })}/> 
-          <MenuButton name='Paramètres' width={'95%'}  onPress={() => this.props.navigation.navigate("EditProfile")}/> 
-          <MenuButton name='Déconnexion' width={'95%'}  onPress={() => {
-                  accountServices.logout()
-                  this.props.navigation.navigate("Login")
-              }} />
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1 }} >
+          <ProfileIcon idImage={this.state.idImageProfile} />
+        </TouchableOpacity>
+        <View style={{ flex: 12 }}>
+          <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
+          <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
+          <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
+          <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
+          <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
+          <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
+            accountServices.logout()
+            this.props.navigation.navigate("Login")
+          }} />
         </View>
       </View>
     )
@@ -142,16 +153,16 @@ export default class Groups extends React.Component {
       <View style={styles.main_container}>
         {backgroundGradientColor()}
         <View style={{ flex: 1 }}>
-          <MenuDrawer 
-              open={this.state.open} 
-              drawerContent={this.drawerContent()}
-              drawerPercentage={55}
-              animationTime={0}
-              overlay={false}
-              opacity={0.2}
+          <MenuDrawer
+            open={this.state.open}
+            drawerContent={this.drawerContent()}
+            drawerPercentage={55}
+            animationTime={0}
+            overlay={false}
+            opacity={0.2}
           >
             <KeyboardAwareScrollView
-              contentContainerStyle={{flex: 1}}
+              contentContainerStyle={{ flex: 1 }}
               resetScrollToCoords={{ x: 0, y: 0 }}
               scrollEnabled={true}
               enableAutomaticScroll={(Platform.OS === 'ios')}
@@ -159,7 +170,7 @@ export default class Groups extends React.Component {
               refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />}
             >
               <TouchableOpacity onPress={this.toggleOpen} >
-                <ProfileIcon idImage={this.state.idImageProfile} /> 
+                <ProfileIcon idImage={this.state.idImageProfile} />
               </TouchableOpacity>
               <View style={styles.title_container}>
                 <Text style={styles.title_text}>Mes groupes</Text>
@@ -171,6 +182,9 @@ export default class Groups extends React.Component {
                 {this.displayGroups()}
               </View>
               <View style={styles.invit_container}>
+                {/* <TouchableOpacity onPress={() => this.props.navigation.navigate("Invitations")}>
+        <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text={title} />
+      </TouchableOpacity> */}
                 {this.displayInvitations()}
               </View>
             </KeyboardAwareScrollView>
@@ -273,7 +287,7 @@ const styles = StyleSheet.create({
     bottom: 100,
     alignItems: 'center',
     justifyContent: 'center'
-  },  
+  },
   menu: {
     flex: 1,
     flexDirection: 'column',

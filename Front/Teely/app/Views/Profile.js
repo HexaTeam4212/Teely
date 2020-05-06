@@ -34,6 +34,17 @@ export default class Profile extends React.Component {
 
     }
 
+    componentDidMount() {
+        const { navigation } = this.props
+        this._unsubscribe = navigation.addListener('focus', () => {
+            this.onRefresh()
+        });
+    }
+
+    componentWillUnmount() {
+        this._unsubscribe();
+    }
+
     onRefresh = () => {
         this.setState({ refreshing: true })
         this.getDataProfile()
@@ -81,7 +92,7 @@ export default class Profile extends React.Component {
         this.setState({
             username: dataProfile.username, name: dataProfile.name, lastName: dataProfile.lastName,
             birthDate: generalServices.formatDate(dataProfile.birthDate), biography: dataProfile.bio, idImage: dataProfile.idImage,
-            isLoading:false
+            isLoading: false
         })
         accountServices.accountUpcomingTasks(this.updateTasksList)
     }

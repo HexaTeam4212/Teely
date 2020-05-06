@@ -36,6 +36,17 @@ export default class GroupTasks extends React.Component {
     this.getGroupTasks()
   }
 
+  componentDidMount() {
+    const { navigation } = this.props
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.onRefresh()
+    });
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
   onRefresh = () => {
     this.setState({ refreshing: true })
     this.getGroupData()
@@ -48,7 +59,7 @@ export default class GroupTasks extends React.Component {
       console.log("tasks : " + tasks)
       this.groupTasks = tasks
       this.setState({
-        tabGroupTasks: tasks, isLoading: false, refreshing:false
+        tabGroupTasks: tasks, isLoading: false, refreshing: false
       })
     })
   }
@@ -199,7 +210,7 @@ export default class GroupTasks extends React.Component {
             </View>
             <View style={styles.button_container}>
               <CustomButton name="Ajouter une tâche" width={180} onPress={() => {
-                this.props.navigation.navigate("CreateTask", {idGroup: this.idGroup})
+                this.props.navigation.navigate("CreateTask", { idGroup: this.idGroup })
               }}></CustomButton>
               <TouchableOpacity style={styles.inviteButton}>
                 <Text style={styles.inviteButtonText}>Lancer l'organisation</Text>
