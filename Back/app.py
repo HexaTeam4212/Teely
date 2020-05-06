@@ -543,12 +543,12 @@ def group_task(id_group):
         return sendError(400, "Make sure to send all the parameters")
 
     #optional field
-    if "datetimeStart" in content and content["datetimeStart"] != "":
-        newTask.DatetimeStart = content["datetimeStart"]
-    if "datetimeEnd" in content and content["datetimeEnd"] != "":
-        newTask.DatetimeEnd = content["datetimeEnd"]
+    if "datetimeStart" in content and content['datetimeStart'] != "":
+        newTask.DatetimeStart = content['datetimeStart']
+    if "datetimeEnd" in content and content['datetimeEnd'] != "":
+        newTask.DatetimeEnd = content['datetimeEnd']
 
-    if "taskUser" in content and content["taskUser"] != "":
+    if "taskUser" in content and content['taskUser'] != "":
         try:
             userTask = PERSON.get(PERSON.Username == content['taskUser'])
             newTask.TaskUser = userTask
@@ -584,45 +584,63 @@ def delete_task(id_group,id_task):
 @app.route('/group/<id_group>/task/<id_task>',  methods=['PUT'])
 @authenticate
 def task_put(id_group,id_task):
+    user = PERSON.get(PERSON.personId == session["userId"])
     content = request.get_json()
 
     try:
         task = TASK.get(TASK.taskId == id_task)
         task.Group = id_group
-        if 'taskUser' in content:
-            task.TaskUser = content['taskUser']
+
+        if 'taskUser' in content :
+            if content['taskUser']!= "" :
+                task.TaskUser = content['taskUser']
+            elif task.TaskUSer!=None :
+                task.TaskUser = None
         if 'description' in content:
             task.Description = content['description']
         if 'frequency' in content:
             task.Frequency = content['frequency']
         if 'name' in content:
             task.Name = content['name']
-        if 'datetimeStart' in content:
-            task.DatetimeStart = content['datetimeStart']
-        if 'datetimeEnd' in content:
-            task.DatetimeEnd = content['datetimeEnd']
+        if 'datetimeStart' in content and  content['datetimeStart']!= "":
+            if content['datetimeStart']!= "" :
+                task.DatetimeStart = content['datetimeStart']
+            elif task.DatetimeStart!=None :
+                task.DatetimeStart = None
+        if 'datetimeEnd' in content and  content['datetimeEnd']!= "":
+            if content['taskUser']!= "" :
+                task.DatetimeEnd = content['datetimeStart']
+            elif task.DatetimeEnd!=None :
+                task.DatetimeEnd = None
         if 'priority' in content:
             task.PriorityLevel = content['priority']
-        if 'duration' in content:
-            task.Duration = content['duration']
+        if 'duration' in content and  content['duration']!= "":
+            if content['duration']!= "" :
+                task.Duration = content['duration']
+            elif task.Duration!=None :
+                task.Duration = None
+
+        """ Vérification et calcul à faire ici aussi """
 
         task.save()
     except:
         return sendError(404, "Task not found !")
 
-    if 'dependencies' in content:
+    if 'dependencies' in content  :
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
 
+    if 'dependencies' in content and content['dependencies']!= "" :
         for idDep in content['dependencies']:
             taskDep = TASK.get(TASK.taskId == idDep)
             newDependance = DEPENDANCE(TaskConcerned = task, TaskDependency = taskDep)
             newDependance.save()
 
 
-    dependenciesIds = []
+    dependanciesIds = []
+
     dependencies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
     for dep in dependencies:
-        dependenciesIds.append(dep.TaskDependency.taskId)
+        dependanciesIds.append(dep.TaskDependency.taskId)
 
     data = {
         "taskId": task.taskId,

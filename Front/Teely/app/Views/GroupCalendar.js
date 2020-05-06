@@ -128,6 +128,7 @@ export default class GroupCalendar extends React.Component {
   renderEmptyData = () => {
     return (
       <View style={styles.emptyTask_container}>
+                    {backgroundGradientColor()}
         <Image
           source={require('../../assets/Images/cat.png')} style={{ height: 400, width: 275 }} />
         <Text style={styles.emptyTask_text}>Rien à signaler pour le moment... </Text>
@@ -163,7 +164,7 @@ export default class GroupCalendar extends React.Component {
               refreshing={false}
               refreshControl={null}
               theme={{
-                backgroundColor: '#78e1db',
+                // backgroundColor: '#78e1db',
                 calendarBackground: 'white',
                 textSectionTitleColor: '#b6c1cd',
                 selectedDayBackgroundColor: '#ffb4e2',
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   emptyTask_text: {
     fontStyle: 'italic',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'lightblue',
     fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     fontSize: 24,
     textAlign: 'center',
