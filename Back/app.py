@@ -476,9 +476,9 @@ def group_task_all(id_group):
 
     return jsonify(response_body),200
 
-@app.route('/group/<id_group>/task/<id_task>', methods=['GET'])
+@app.route('/task/<id_task>', methods=['GET'])
 @authenticate
-def group_task_id(id_group, id_task):
+def group_task_id(id_task):
 
     user = PERSON.get(PERSON.personId == session["userId"])
     try:
@@ -488,14 +488,24 @@ def group_task_id(id_group, id_task):
 
     dependanciesIds=[]
     dependancies = DEPENDANCE.select().where( DEPENDANCE.TaskConcerned == task)
-    for dep in dependancies :
-        dependanciesIds.append(dep.TaskConcerned.taskId)
+    try :
+        for dep in dependancies :
+            dependanciesIds.append(dep.TaskConcerned.taskId)
+    except :
+        dependanciesIds.append("")
+
+    if task.TaskUser is None:
+        taskUserUsername = None
+    else:
+        taskUserUsername = task.TaskUser.Username
+
 
     data = {
+        "idGroup" : task.Group.groupId,
         "taskId": task.taskId,
         "name": task.Name,
         "description": task.Description,
-        "taskUser": task.TaskUser.Username,
+        "taskUser": taskUserUsername,
         "frequency": task.Frequency,
         "priority": task.PriorityLevel,
         "datetimeStart" : task.DatetimeStart,
@@ -538,7 +548,7 @@ def group_task(id_group):
     if "datetimeEnd" in content and content["datetimeEnd"] != "":
         newTask.DatetimeEnd = content["datetimeEnd"]
 
-    if "taskUser" in content:
+    if "taskUser" in content and content["taskUser"] != "":
         try:
             userTask = PERSON.get(PERSON.Username == content['taskUser'])
             newTask.TaskUser = userTask
@@ -561,6 +571,7 @@ def group_task(id_group):
 @app.route('/group/<id_group>/task/<id_task>', methods=['DELETE'])
 @authenticate
 def delete_task(id_group,id_task):
+
     try:
         task = TASK.get(TASK.taskId == id_task)
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
