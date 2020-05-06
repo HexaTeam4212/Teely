@@ -37,7 +37,7 @@ export default class Profile extends React.Component {
     componentDidMount() {
         const { navigation } = this.props
         this._unsubscribe = navigation.addListener('focus', () => {
-            this.onRefresh()
+            this.getDataProfile()
         });
     }
 

@@ -52,7 +52,8 @@ export default class DetailedGroup extends React.Component {
   componentDidMount() {
     const { navigation } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.onRefresh()
+      this.getDataProfile()
+      this.getGroupInfos()
     });
   }
 
@@ -179,7 +180,7 @@ export default class DetailedGroup extends React.Component {
               <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupCalendar", { idGroup: this.groupId })}>
                 <ImageWithText source={require('../../assets/Images/yellowArrow.png')} text='CALENDRIER' />
               </TouchableOpacity>
-              <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupTasks", {idGroup : this.groupId})}>
+              <TouchableOpacity style={{ flex: 1 }} onPress={() => this.props.navigation.navigate("GroupTasks", { idGroup: this.groupId })}>
                 <ImageWithText source={require('../../assets/Images/pinkArrow.png')} text='TACHES' />
               </TouchableOpacity>
               <TouchableOpacity style={{ flex: 1 }}
@@ -195,9 +196,9 @@ export default class DetailedGroup extends React.Component {
                 <Text style={styles.inviteButtonText}>Inviter des participants</Text>
               </TouchableOpacity>
             </View>
-            </KeyboardAwareScrollView>
-            {this.displayLoading()}
-            {this.displayLeaveGroupDialog()}
+          </KeyboardAwareScrollView>
+          {this.displayLoading()}
+          {this.displayLeaveGroupDialog()}
 
         </View>
       </View >

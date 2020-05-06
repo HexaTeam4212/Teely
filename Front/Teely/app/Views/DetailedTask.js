@@ -43,6 +43,18 @@ export default class DetailedTask extends React.Component {
         
     }
 
+    componentDidMount() {
+        const { navigation } = this.props
+        this._unsubscribe = navigation.addListener('focus', () => {
+            this.getDataProfile()
+            this.getTaskInfos()
+        });
+      }
+    
+      componentWillUnmount() {
+        this._unsubscribe();
+      }
+
     onRefresh = () => {
         this.setState({ refreshing: true })
         this.getDataProfile()

@@ -32,7 +32,8 @@ export default class Groups extends React.Component {
   componentDidMount() {
     const { navigation } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.onRefresh()
+      this.getInvitations()
+      this.getGroups()
     });
   }
 
