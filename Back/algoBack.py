@@ -3,15 +3,47 @@ from init_database import PERSON, PARTICIPATE_IN, TASK, GROUP, INVITATION, DEPEN
 import datetime
 import math
 
-def order_tasks(group):
-	print("order start")
+def order_tasks(group, startHour, startMinute, endHour, endMinute):
+	tasks_modified = []
 
 	#daily limits
-	dayStart = datetime.time(8,0)
-	dayEnd = datetime.time(17,0)
+	dayStart = datetime.time(int(startHour), int(startMinute))
+	dayEnd = datetime.time(int(endHour), int(endMinute))
+
+	# first get all task which have dates but no user assigned and give them a user
+	task_needing_user = TASK.select().where(TASK.TaskUser.is_null(), TASK.DatetimeStart.is_null(False), TASK.DatetimeEnd.is_null(False))
+	
+	for task in task_needing_user:
+		group_users = PARTICIPATE_IN.select().where(PARTICIPATE_IN.Group == group)
+		less_task_count = math.inf
+		selected_user = None
+
+		for user_part in group_users:
+			task_count = TASK.select().where(TASK.Group == group, TASK.TaskUser == user_part.User).count()
+
+			# [] = TASK et () = task
+			task_overlap = TASK.select().where( (TASK.taskId != task.taskId) & (TASK.TaskUser == user_part.User) & (
+				((TASK.DatetimeStart < task.DatetimeStart) & (TASK.DatetimeEnd > task.DatetimeStart)) # [ ( ] ) or [ ( ) ]
+				| ((TASK.DatetimeStart < task.DatetimeEnd) & (TASK.DatetimeEnd > task.DatetimeEnd)) # ( [ ) ] or [ ( ) ]
+				| ((TASK.DatetimeStart > task.DatetimeStart) & (TASK.DatetimeEnd < task.DatetimeEnd)) # ( [ ] )
+			))
+			
+			if task_count < less_task_count and len(task_overlap) == 0:
+				less_task_count = task_count
+				selected_user = user_part.User
+
+		# if no user can be found for the task, the task must be re-schedule
+		if selected_user is None:
+			task.DatetimeStart = None
+			task.DatetimeEnd = None
+			task.save()
+		else:
+			task.TaskUser = selected_user
+			task.save()
+			tasks_modified.append(task.taskId)
 
 	# get all tasks to schedule
-	all_tasks = TASK.select().where(TASK.Group == group & TASK.DatetimeEnd == None)
+	all_tasks = TASK.select().where(TASK.Group == group, TASK.DatetimeEnd.is_null())
 	
 	# get all tasks with no dependencies or with past dependencies
 	all_t = []
@@ -54,12 +86,7 @@ def order_tasks(group):
 			group_users = PARTICIPATE_IN.select().where(PARTICIPATE_IN.Group == group)
 			less_task_count = math.inf
 			for user_participate in group_users:
-				task_in_group = TASK.select().where(TASK.Group == group)
-				task_count = 0
-
-				for task in task_in_group:
-					if task.TaskUser == user_participate.User:
-						task_count += 1
+				task_count = TASK.select().where(TASK.Group == group, TASK.TaskUser == user_participate.User).count()
 
 				if task_count < less_task_count:
 					less_task_count = task_count
@@ -90,7 +117,7 @@ def order_tasks(group):
 				latter_date = latter_date.replace(hour=dayStart.hour, minute=dayStart.minute, second=0) + datetime.timedelta(days=1)
 				task_end_time = latter_date + datetime.timedelta(minutes=shortest_task.Duration)
 
-			all_next_tasks = TASK.select().where(TASK.DatetimeStart >= latter_date)
+			all_next_tasks = TASK.select().where(TASK.DatetimeStart >= latter_date, TASK.TaskUser == selected_user)
 			spot_found = True
 			for task in all_next_tasks:
 				# if a task start before task_end_time, spot is too short
@@ -105,6 +132,7 @@ def order_tasks(group):
 		shortest_task.DatetimeStart = latter_date
 		shortest_task.DatetimeEnd = task_end_time
 		shortest_task.save()
+		tasks_modified.append(shortest_task.taskId)
 
 		# add all task that has a dependency with the one we just treated
 		task_whit_shortest_task_as_dep = DEPENDANCE.select().where(DEPENDANCE.TaskDependency == shortest_task)
@@ -113,3 +141,5 @@ def order_tasks(group):
 
 		# remove the treated task from the no_dep_task list
 		no_dep_task.remove(shortest_task)
+
+	return { "tasks_modified": tasks_modified }

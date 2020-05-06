@@ -676,6 +676,14 @@ def group_order_tasks(id_group):
     except:
         return sendError(404, "Group not found !")
 
-    order_tasks(group)
+    try:
+        startHour = request.args.get('startHour')
+        startMinute = request.args.get('startMinute')
+        endHour = request.args.get('endHour')
+        endMinute = request.args.get('endMinute')
+    except:
+        return sendError(400, "You must send those parameters : startHour, startMinute, endHour, endMinute")
 
-    return jsonify({}), 200
+    rep = order_tasks(group, startHour, startMinute, endHour, endMinute)
+
+    return jsonify(rep), 200
