@@ -49,7 +49,7 @@ export default class CreateTask extends React.Component {
       this.userSelection.set(this.state.groupMembers[i], false)
     }
     for (let i = 0; i < this.state.groupTasks.length; i++) {
-      this.taskSelection.set(this.state.groupMembers[i].taskId, false)
+      this.taskSelection.set(this.state.groupTasks[i].taskId, false)
     }
   }
 

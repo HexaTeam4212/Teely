@@ -148,7 +148,7 @@ export default class Groups extends React.Component {
               open={this.state.open} 
               drawerContent={this.drawerContent()}
               drawerPercentage={50}
-              animationTime={250}
+              animationTime={0}
               overlay={false}
               opacity={0.2}
           >
