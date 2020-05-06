@@ -64,8 +64,9 @@ export default class PlanningDetails extends React.Component {
         }
     }
 
-    getResult = (result, data) => {
+    getResult = (result) => {
         if (result == true) {
+            console.log("true")
             this.setState({ modifiedTasks: data, displayedResult: true })
         }
         this.setState({ isLoading: false })

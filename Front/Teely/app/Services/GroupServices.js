@@ -366,8 +366,9 @@ class GroupServices {
     }
 
     async orderTaks(groupId, startHour, startMinute, endHour, endMinute, callback) {
-        const fullEndpoint = endpoint + '/' + groupId + '/order?startHour=' + startHour + '?startMinute=' + startMinute
-            + '?endHour=' + endHour + '?endMinute=' + endMinute
+        const fullEndpoint = endpoint + '/' + groupId + '/order?startHour=' + startHour + '&startMinute=' + startMinute
+            + '&endHour=' + endHour + '&endMinute=' + endMinute
+        console.log(backendURL + fullEndpoint)
         const token = await getToken()
         try {
             const response = await fetch(backendURL + fullEndpoint,
@@ -390,11 +391,10 @@ class GroupServices {
                 else {
                     httpError(response.status)
                 }
-                console.warn(respBody.error)
                 callback(false)
             }
             else {
-                callback(true, respBody.tasks_modified)
+                callback(true)
             }
         }
         catch (error) {
