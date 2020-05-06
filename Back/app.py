@@ -430,6 +430,8 @@ def quit_group(id_group):
 @app.route('/group/<id_group>/task/all', methods=['GET'])
 @authenticate
 def group_task_all(id_group):
+    user = PERSON.get(PERSON.personId == session["userId"])
+
     try:
         group = GROUP.get(GROUP.groupId == id_group)
     except:
@@ -440,11 +442,14 @@ def group_task_all(id_group):
 
     for task in tasks:
 
-        dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned == task)
+        dependancies = DEPENDANCE.select().where(DEPENDANCE.TaskConcerned.taskId == task.taskId)
         dependanciesIds=[]
 
-        for dep in dependancies :
-            dependanciesIds.append(dep.taskConcerned)
+        try :
+            for dep in dependancies :
+                dependanciesIds.append(dep.taskConcerned)
+        except :
+            dependanciesIds.append("")
 
         if task.TaskUser is None:
             taskUserUsername = None
@@ -474,6 +479,8 @@ def group_task_all(id_group):
 @app.route('/group/<id_group>/task/<id_task>', methods=['GET'])
 @authenticate
 def group_task_id(id_group, id_task):
+
+    user = PERSON.get(PERSON.personId == session["userId"])
     try:
         task = TASK.get(TASK.taskId == id_task)
     except:
@@ -504,13 +511,14 @@ def group_task_id(id_group, id_task):
 @app.route('/group/<id_group>/task', methods=['POST'])
 @authenticate
 def group_task(id_group):
+    user = PERSON.get(PERSON.personId == session["userId"])
     content = request.get_json()
 
     try:
         group = GROUP.get(GROUP.groupId == id_group)
     except:
         return sendError(404, "Group not found !")
-    
+
     try :
         if "datetimeStart" in content and "datetimeEnd" in content and content["datetimeStart"] != "" and content["datetimeEnd"] != "":
             startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
@@ -540,7 +548,7 @@ def group_task(id_group):
     newTask.save()
 
     try :
-        for dep in content["dependencies"]:
+        for dep in content["dependancies"]:
             taskDep = TASK.get(TASK.taskId == dep)
             newDependance = DEPENDANCE(TaskConcerned = newTask, TaskDependency = taskDep)
             newDependance.save()
