@@ -163,6 +163,7 @@ class GroupServices {
                 }
                 const respBody = await response.json()
                 console.warn(respBody.error)
+                callback(false)
             }
             else {
                 callback(true)

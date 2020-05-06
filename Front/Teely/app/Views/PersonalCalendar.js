@@ -1,7 +1,7 @@
 // app/Views/PersonalCalendar.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { StyleSheet, Text, View, Image, ActivityIndicator, RefreshControl } from 'react-native'
+import { StyleSheet, Text, View, Image, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native'
 import { Agenda, LocaleConfig } from 'react-native-calendars'
 import moment from "moment"
 
@@ -84,10 +84,12 @@ export default class PersonalCalendar extends React.Component {
   renderItem = (item) => {
     return (
       <View style={styles.task_container}>
-        <View><Text style={styles.time_text}> {generalServices.formatTime(item.datetimeStart)}</Text></View>
-        <View><Text style={styles.name_text}>{item.name}</Text></View>
-        <View><Text style={styles.description_text}>{item.description}</Text></View>
-        <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
+        <TouchableOpacity onPress={() => {this.props.navigation.navigate("DetailedTask", { taskId: item.taskId })}}>
+          <View><Text style={styles.time_text}> {generalServices.formatTime(item.datetimeStart)}</Text></View>
+          <View><Text style={styles.name_text}>{item.name}</Text></View>
+          <View><Text style={styles.description_text}>{item.description}</Text></View>
+          <View><Text style={styles.time_text}>{generalServices.formatTime(item.datetimeEnd)}</Text></View>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -95,7 +97,7 @@ export default class PersonalCalendar extends React.Component {
   renderEmptyData = () => {
     return (
       <View style={styles.emptyTask_container}>
-                {backgroundGradientColor()}
+        {backgroundGradientColor()}
         <Image
           source={require('../../assets/Images/cat.png')} style={{ height: 400, width: 275 }} />
         <Text style={styles.emptyTask_text}>Rien à signaler pour le moment... </Text>
