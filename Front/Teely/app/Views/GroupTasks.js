@@ -91,7 +91,7 @@ export default class GroupTasks extends React.Component {
 
   seeDetails = (task) => {
     console.log("see details task")
-    /*this.props.navigation.navigate("DetailedTask", {idTask:task.taskId, idGroup:this.groupId})*/
+    this.props.navigation.navigate("DetailedTask", {idTask:task.taskId, idGroup:this.idGroup})
 
   }
 
