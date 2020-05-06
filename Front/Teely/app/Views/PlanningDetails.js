@@ -64,10 +64,10 @@ export default class PlanningDetails extends React.Component {
         }
     }
 
-    getResult = (result) => {
+    getResult = (result, data) => {
         if (result == true) {
-            console.log("true")
             this.setState({ modifiedTasks: data, displayedResult: true })
+            alert("Planification effectuée !")
         }
         this.setState({ isLoading: false })
         console.log(this.state)

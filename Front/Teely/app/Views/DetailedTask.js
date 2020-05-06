@@ -252,6 +252,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     taskUser_container: {
+        backgroundColor: '#78e1db',
         marginBottom: 10,
         marginLeft: 10,
         marginRight: 10,

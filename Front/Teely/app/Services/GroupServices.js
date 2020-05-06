@@ -388,13 +388,18 @@ class GroupServices {
                 if (response.status == 400) {
                     alert("Paramètres manquants à la requête")
                 }
-                else {
-                    httpError(response.status)
+                else if (response.status==412) {
+                    alert("Les heures de début et de fin ne sont pas valides, veuillez choisir une heure de fin supérieure à celle de début")
                 }
+                else if (response.status == 409) {
+                    alert("Attention : certaines tâches ont une durée supérieure au créneau imposé et n'ont donc pas été agencées")
+                }
+                httpError(response.status)
                 callback(false)
+                console.warn(respBody.error)
             }
             else {
-                callback(true)
+                callback(true, respBody.tasks_modified)
             }
         }
         catch (error) {

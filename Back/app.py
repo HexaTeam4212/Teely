@@ -666,7 +666,6 @@ def task_put(id_task):
 @app.route('/group/<id_group>/order',  methods=['GET'])
 @authenticate
 def group_order_tasks(id_group):
-    content = request.get_json()
 
     try:
         group = GROUP.get(GROUP.groupId == id_group)
