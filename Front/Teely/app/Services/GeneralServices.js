@@ -38,9 +38,13 @@ class GeneralServices {
     }
 
     formatDateTimeForTask(date) {
-        var formattedDate = moment.utc(date).format('YYYY-MM-DD HH:mm:ss')
+        if (date != null) {
+            var formattedDate = moment.utc(date).format('YYYY-MM-DD HH:mm:ss')
         return formattedDate
-    }    
+        }
+        
+        return ""
+    }
 
     orderTasksByDate(day, tasks) {
         let tasksForDay = []
@@ -61,7 +65,7 @@ class GeneralServices {
         }
         const startDate = moment.utc(startDateString, 'YYYY-MM-DD HH:mm:ss')
         const endDate = moment.utc(endDateString, 'YYYY-MM-DD HH:mm:ss')
-        
+
         var isVerified = moment(endDate).isAfter(startDate)
         return isVerified
     }
@@ -70,18 +74,18 @@ class GeneralServices {
         if (dateString == null) {
             return ""
         }
-        let hour = ((parseInt(dateString, 10)/60)).toString()
+        let hour = ((parseInt(dateString, 10) / 60)).toString()
         const pos = hour.lastIndexOf(".")
-        if(pos!=-1){
-            hour = hour.substr(0,pos)
+        if (pos != -1) {
+            hour = hour.substr(0, pos)
         }
-        
-        let min = (parseInt(dateString, 10)%60)
-    
-        if(min<=9){
-            min = "0"+min.toString()
+
+        let min = (parseInt(dateString, 10) % 60)
+
+        if (min <= 9) {
+            min = "0" + min.toString()
         }
-        const duree = hour+"h"+min
+        const duree = hour + "h" + min
         return duree
     }
 }

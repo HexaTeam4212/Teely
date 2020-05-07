@@ -102,6 +102,9 @@ class TaskServices {
                 if (response.status == 404) {
                     alert("La tâche n'existe pas")
                 }
+                else if (response.status==400) {
+                    alert("La durée et les heures saisies sont incohérentes")
+                }
                 else {
                     httpError(response.status)
                     console.warn(respBody.error)

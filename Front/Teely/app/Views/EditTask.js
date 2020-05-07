@@ -1,4 +1,4 @@
-// app/Views/CreateTask.js
+// app/Views/EditTask.js
 import React from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { ScrollView, StyleSheet, Text, View, TextInput, ActivityIndicator, FlatList, Image, Picker, TouchableOpacity } from 'react-native'
@@ -307,11 +307,18 @@ export default class EditTask extends React.Component {
                 alert("Il n'y a pas assez d'informations pour estimer la durée de la tâche. \n" +
                     "Veuillez renseigner soit : \n 1. le début et la fin de la tâche \n 2. le début et la durée \n 3.le début, la fin, et la durée. \n 4.la durée")
         }
-
+        var start=this.state.datetimeStart
+        var end = this.state.datetimeEnd
+        if (!(this.state.datetimeStart!=null)) {
+            start=""
+        } 
+        if (!(this.state.datetimeEnd!=null)) {
+            end=""
+        } 
         if (isValid) {
             this.setState({ isLoading: true })
             taskServices.updateTask(this.taskId, this.state.taskUser, this.state.taskDescription, this.state.taskName,
-                this.state.datetimeStart, this.state.datetimeEnd, this.state.taskPriority, this.state.taskDependencies,
+                start, end, this.state.taskPriority, this.state.taskDependencies,
                 this.state.taskDuration, this.redirect)
         }
     }
