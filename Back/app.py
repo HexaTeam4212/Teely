@@ -419,6 +419,13 @@ def accept_invite(id_group):
 @authenticate
 def quit_group(id_group):
     user = PERSON.get(PERSON.personId == session['userId'])
+
+    # unbind task from user
+    tasks = TASK.select().where(TASK.TaskUser == user, TASK.Group == id_group)
+    for task in tasks:
+        task.TaskUser = None
+        task.save()
+
     PARTICIPATE_IN.delete().where( (PARTICIPATE_IN.User_id == user.personId) & (PARTICIPATE_IN.Group_id == id_group) ).execute()
 
     return jsonify({}), 204
