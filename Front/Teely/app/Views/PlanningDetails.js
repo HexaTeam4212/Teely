@@ -70,7 +70,6 @@ export default class PlanningDetails extends React.Component {
             alert("Planification effectuée !")
         }
         this.setState({ isLoading: false })
-        console.log(this.state)
 
     }
 
@@ -96,7 +95,6 @@ export default class PlanningDetails extends React.Component {
             endHour= elts[0]
             endMinute= elts[1]
         }
-        console.log(startHour + ':' + startMinute + ' ' + endHour + ':' + endMinute)
         groupServices.orderTaks(this.groupId, startHour, startMinute, endHour, endMinute, this.getResult)
     }
 

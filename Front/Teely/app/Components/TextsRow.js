@@ -8,7 +8,7 @@ export default class TexstRow extends React.Component {
         const type = this.props.type
         const name = this.props.name
         const name2 = this.props.name2
-        let colorText2 = "white"
+        let colorText2 = "#03ACAC"
         if(this.props.color!=null){
             colorText2 = this.props.color
         }
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 17,
         textAlign: 'center',
-        color: 'white',
+        color: 'lightblue',
         marginBottom: 5,
         marginRight: 20
     }

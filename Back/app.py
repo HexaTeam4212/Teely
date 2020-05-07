@@ -543,13 +543,13 @@ def group_task(id_group):
 
         if "datetimeStart" in content and content['datetimeStart'] != "":
             newTask.DatetimeStart = content['datetimeStart']
-            if "datetimeEnd" not in content:
+            if "datetimeEnd" not in content or content['datetimeEnd'] != "":
                 startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=duration)
                 newTask.DatetimeEnd  = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
 
         if "datetimeEnd" in content and content['datetimeEnd'] != "":
             newTask.DatetimeEnd = content['datetimeEnd']
-            if "datetimeStart" not in content:
+            if "datetimeStart" not in content or content['datetimeStart'] != "":
                 endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S") - datetime.timedelta(minutes=duration)
                 newTask.DatetimeStart  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
 

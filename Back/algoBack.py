@@ -145,7 +145,7 @@ def order_tasks(group, startHour, startMinute, endHour, endMinute):
 				latter_date = latter_date.replace(hour=dayStart.hour, minute=dayStart.minute, second=0) + datetime.timedelta(days=1)
 				task_end_time = latter_date + datetime.timedelta(minutes=shortest_task.Duration)
 
-			all_next_tasks = TASK.select().where(TASK.DatetimeStart >= latter_date, TASK.TaskUser == selected_user)
+			all_next_tasks = TASK.select().where(TASK.DatetimeStart >= latter_date, TASK.TaskUser == shortest_task.TaskUser)
 			spot_found = True
 			for task in all_next_tasks:
 				# if a task start before task_end_time, spot is too short

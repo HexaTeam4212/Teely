@@ -63,7 +63,6 @@ export default class DetailedTask extends React.Component {
         this.setState({ refreshing: true })
         this.getDataProfile()
         this.getTaskInfos()
-
     }
 
     displayLoading() {
@@ -84,18 +83,14 @@ export default class DetailedTask extends React.Component {
     }
 
     updateTaskInfos = (data) => {
-        console.log("priorité : " + data.priority)
         let priority = "Aucune"
         if (data.priority == 1) {
-            //priority = "Basse"
             priority = "★"
             this.colorPrio = "green"
         } else if (data.priority == 2) {
-            //priority = "Moyenne"
             priority = "★★"
             this.colorPrio = "orange"
         } else if (data.priority == 3) {
-            //priority = "Haute"
             priority = "★★★"
             this.colorPrio = "red"
         }
@@ -151,11 +146,15 @@ export default class DetailedTask extends React.Component {
     }
 
     findDependentTasks() {
+        this.tabTaskDependencies = []
         if (this.state.taskDependencies != null && this.state.groupTasks.length) {
             for (let i = 0; i < this.state.groupTasks.length; i++) {
                 if (this.state.taskDependencies.includes(this.state.groupTasks[i].taskId)
-                    && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId))
+                && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId)){
                     this.tabTaskDependencies.push(this.state.groupTasks[i])
+                    
+                }
+                    
             }
         }
 
@@ -231,7 +230,7 @@ export default class DetailedTask extends React.Component {
                         open={this.state.open}
                         drawerContent={this.drawerContent()}
                         drawerPercentage={55}
-                        animationTime={0}
+                        animationTime={200}
                         overlay={false}
                         opacity={0.2}
                     >
@@ -371,7 +370,7 @@ const styles = StyleSheet.create({
         fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
         fontSize: 17,
         textAlign: 'center',
-        color: 'white',
+        color: '#03ACAC',
         flexWrap: 'wrap',
         marginRight: 20,
     },

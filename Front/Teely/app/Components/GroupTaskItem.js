@@ -37,6 +37,7 @@ class GroupTaskItem extends React.Component {
     }
     
     render() {
+        this.task = this.props.task
         let pers = this.task.taskUser
         if(pers=="" || pers==null){
             pers = "Non défini"
