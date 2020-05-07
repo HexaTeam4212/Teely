@@ -610,7 +610,6 @@ def task_put(id_task):
         return sendError(400, "Task not found")
 
     try:
-
         if 'taskUser' in content :
             if content['taskUser']!= "" :
                 people= PERSON.get(PERSON.Username == content['taskUser'])
@@ -621,16 +620,16 @@ def task_put(id_task):
             task.Frequency = content['frequency']
         if 'name' in content:
             task.Name = content['name']
-        if 'datetimeStart' in content and  content['datetimeStart']!= "":
+        if 'datetimeStart' in content:
             if content['datetimeStart']!= "" :
                 task.DatetimeStart = content['datetimeStart']
-        if 'datetimeEnd' in content and  content['datetimeEnd']!= "":
-            if content['taskUser']!= "" :
+        if 'datetimeEnd' in content:
+            if content['datetimeEnd']!= "" :
                 task.DatetimeEnd = content['datetimeEnd']
         if 'priority' in content:
             task.PriorityLevel = content['priority']
         if 'duration' in content and  content['duration']!= "":
-            if content['duration']!= "" :
+            if content['duration'] != "" and content['duration'] is not None :
                 task.Duration = content['duration']
             else :
                 if 'datetimeStart' in content and  content['datetimeStart']!= "" and 'datetimeEnd' in content and  content['datetimeEnd']!= "" :
@@ -645,30 +644,30 @@ def task_put(id_task):
     except:
         return sendError(400, "Make sure to send all the parameters")
 
-    try :
-        if 'datetimeStart' in content and  content['datetimeStart']!= "" and 'datetimeEnd' in content and  content['datetimeEnd']!= "" :
-            startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
-            endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
-            diff = endTime - startTime
-            duration = diff.seconds // 60
+    if 'datetimeStart' in content and  content['datetimeStart']!= "" and 'datetimeEnd' in content and  content['datetimeEnd']!= "" :
+        startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
+        endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
+        diff = endTime - startTime
+        duration = diff.seconds // 60
 
-
-            if duration!=content['duration'] :
-                startTime = datetime.datetime.strptime(content["datetimeStart"] , "%Y-%m-%d %H:%M:%S")  + datetime.timedelta(minutes=content['duration'])
-                task.DatetimeEnd  = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
-
-        if "datetimeStart" in content and content['datetimeStart'] != "" and "datetimeEnd" in content and content['datetimeEnd'] == "":
-            duration=task.Duration
-            startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=duration)
+        if content["duration"] == "" or content["duration"] is None:
+            startTime = datetime.datetime.strptime(content["datetimeStart"] , "%Y-%m-%d %H:%M:%S")  + datetime.timedelta(minutes=duration)
             task.DatetimeEnd  = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
+            task.Duration = duration
+        elif duration != content['duration'] :
+            return sendError(400, "Durée et Heures incohérentes")
 
-        if "datetimeEnd" in content and content['datetimeEnd'] != "" and "datetimeStart" in content and content['datetimeStart'] == "":
-            duration=task.Duration
-            endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S") - datetime.timedelta(minutes=duration)
-            task.DatetimeStart  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
-        task.save()
-    except:
-        return sendError(400, "Durée et Heures incohérentes")
+    elif "datetimeStart" in content and content['datetimeStart'] != "" and "datetimeEnd" in content and content['datetimeEnd'] == "":
+        duration=task.Duration
+        startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=duration)
+        task.DatetimeEnd  = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
+
+    elif "datetimeEnd" in content and content['datetimeEnd'] != "" and "datetimeStart" in content and content['datetimeStart'] == "":
+        duration=task.Duration
+        endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S") - datetime.timedelta(minutes=duration)
+        task.DatetimeStart  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
+    
+    task.save()
 
 
     if 'dependencies' in content  :
