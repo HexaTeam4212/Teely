@@ -224,7 +224,7 @@ export default class GroupTasks extends React.Component {
             open={this.state.open}
             drawerContent={this.drawerContent()}
             drawerPercentage={55}
-            animationTime={0}
+            animationTime={200}
             overlay={false}
             opacity={0.2}
           >
