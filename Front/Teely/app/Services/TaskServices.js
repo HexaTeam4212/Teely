@@ -82,9 +82,7 @@ class TaskServices {
             dependencies: dependencies,
             duration: duration,
         })
-        console.log(requestBody)
         const fullEndpoint = endpoint + '/' + taskId
-        console.log(backendURL + fullEndpoint)
         try {
             const response = await fetch(backendURL + fullEndpoint,
                 {

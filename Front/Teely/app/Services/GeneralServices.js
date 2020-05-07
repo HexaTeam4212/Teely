@@ -55,8 +55,6 @@ class GeneralServices {
     }
 
     checkPrecedence(startDateString, endDateString) {
-        console.log(startDateString)
-        console.log(endDateString)
         if (startDateString == "" || endDateString == "" || startDateString == endDateString ||
             startDateString == null || endDateString == null) {
             return true

@@ -149,8 +149,6 @@ export default class DetailedTask extends React.Component {
         this.tabTaskDependencies = []
         if (this.state.taskDependencies != null && this.state.groupTasks.length) {
             for (let i = 0; i < this.state.groupTasks.length; i++) {
-                console.log("groupTask id : "+this.state.groupTasks[i].taskId)
-                console.log("taskdepend id : "+this.state.taskDependencies[i])
                 if (this.state.taskDependencies.includes(this.state.groupTasks[i].taskId)
                 && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId)){
                     this.tabTaskDependencies.push(this.state.groupTasks[i])
