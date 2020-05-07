@@ -110,7 +110,7 @@ export default class EditTask extends React.Component {
 
     updateTaskInfos = (data) => {
         this.setState({
-            taskName: data.name, taskDescription: data.description, taskUser: data.taskUser,
+            taskName: data.name, taskDescription: data.description,
             taskPriority: data.priority, taskDependencies: data.dependencies, datetimeStart: data.datetimeStart,
             datetimeEnd: data.datetimeEnd, taskDuration: data.duration
         })
@@ -121,6 +121,9 @@ export default class EditTask extends React.Component {
         }
         if (data.datetimeEnd != null) {
             this.setState({ datetimeEnd: generalServices.formatDateTimeForTask(data.datetimeEnd) })
+        }
+        if (data.taskUser != null) {
+            this.setState({taskUser: data.taskUser})
         }
         this.getGroupInfos(this.groupId)
         groupServices.getGroupTasks(this.groupId, this.updateGroupTasks)
@@ -393,7 +396,7 @@ export default class EditTask extends React.Component {
                                     <Text style={styles.text}> Début : </Text>
                                 </View>
                                 <View style={styles.rightAligned_container}>
-                                    <DateTimePicker mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
+                                    <DateTimePicker width={200} mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
                                 </View>
                             </View>
                             <View style={styles.groupLined_container}>
@@ -401,7 +404,7 @@ export default class EditTask extends React.Component {
                                     <Text style={styles.text}> Fin : </Text>
                                 </View>
                                 <View style={styles.rightAligned_container}>
-                                    <DateTimePicker mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
+                                    <DateTimePicker width={200} mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
                                 </View>
                             </View>
                             <View style={styles.groupLined_container}>
