@@ -83,18 +83,14 @@ export default class DetailedTask extends React.Component {
     }
 
     updateTaskInfos = (data) => {
-        console.log("priorité : " + data.priority)
         let priority = "Aucune"
         if (data.priority == 1) {
-            //priority = "Basse"
             priority = "★"
             this.colorPrio = "green"
         } else if (data.priority == 2) {
-            //priority = "Moyenne"
             priority = "★★"
             this.colorPrio = "orange"
         } else if (data.priority == 3) {
-            //priority = "Haute"
             priority = "★★★"
             this.colorPrio = "red"
         }
@@ -153,9 +149,14 @@ export default class DetailedTask extends React.Component {
         this.tabTaskDependencies = []
         if (this.state.taskDependencies != null && this.state.groupTasks.length) {
             for (let i = 0; i < this.state.groupTasks.length; i++) {
+                console.log("groupTask id : "+this.state.groupTasks[i].taskId)
+                console.log("taskdepend id : "+this.state.taskDependencies[i])
                 if (this.state.taskDependencies.includes(this.state.groupTasks[i].taskId)
-                && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId))
+                && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId)){
                     this.tabTaskDependencies.push(this.state.groupTasks[i])
+                    
+                }
+                    
             }
         }
 
@@ -371,7 +372,7 @@ const styles = StyleSheet.create({
         fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
         fontSize: 17,
         textAlign: 'center',
-        color: 'white',
+        color: '#03ACAC',
         flexWrap: 'wrap',
         marginRight: 20,
     },

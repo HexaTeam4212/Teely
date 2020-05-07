@@ -44,7 +44,9 @@ export default class GroupTasks extends React.Component {
   componentDidMount() {
     const { navigation } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.onRefresh()
+      this.getGroupData()
+      this.getDataProfile()
+      this.getGroupTasks()
     });
   }
 
@@ -61,7 +63,6 @@ export default class GroupTasks extends React.Component {
 
   getGroupTasks() {
     groupServices.getGroupTasks(this.idGroup, (tasks) => {
-      console.log("tasks : " + tasks)
       this.groupTasks = tasks
       this.setState({
         tabGroupTasks: tasks, isLoading: false, refreshing: false
@@ -88,14 +89,12 @@ export default class GroupTasks extends React.Component {
   }
 
   deleteTask = (task) => {
-    console.log("delete task")
     this.taskDeleted = task
     this.setState({ visibleDeleteTaskGroupDialog: true })
 
   }
 
   seeDetails = (task) => {
-    console.log("see details task")
     this.props.navigation.navigate("DetailedTask", { taskId: task.taskId, idGroup: this.idGroup })
 
   }
@@ -163,7 +162,6 @@ export default class GroupTasks extends React.Component {
 
 
   displayTasks() {
-    console.log("invit : " + this.groupTasks.length)
     if (!(this.groupTasks.length)) {
       return (
         <View style={styles.noTask_container}>
@@ -199,7 +197,7 @@ export default class GroupTasks extends React.Component {
   drawerContent = () => {
     return (
       <ScrollView style={styles.menu}>
-        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 60  }} >
+        <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 60 }} >
           <ProfileIcon idImage={this.state.idImageProfile} />
         </TouchableOpacity>
         <View style={{ flex: 12 }}>

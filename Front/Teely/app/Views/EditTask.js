@@ -149,7 +149,6 @@ export default class EditTask extends React.Component {
     }
 
     updatePriority = (value) => {
-        console.log(value)
         this.setState({ taskPrioriy: value })
     }
 
