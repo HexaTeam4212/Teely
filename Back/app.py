@@ -608,8 +608,6 @@ def task_put(id_task):
             if content['taskUser']!= "" :
                 people= PERSON.get(PERSON.Username == content['taskUser'])
                 task.TaskUser = people
-            elif task.TaskUSer is None :
-                task.TaskUser = None
         if 'description' in content:
             task.Description = content['description']
         if 'frequency' in content:
@@ -619,13 +617,9 @@ def task_put(id_task):
         if 'datetimeStart' in content and  content['datetimeStart']!= "":
             if content['datetimeStart']!= "" :
                 task.DatetimeStart = content['datetimeStart']
-            elif task.DatetimeStart!=None :
-                task.DatetimeStart = None
         if 'datetimeEnd' in content and  content['datetimeEnd']!= "":
             if content['taskUser']!= "" :
                 task.DatetimeEnd = content['datetimeEnd']
-            elif task.DatetimeEnd!=None :
-                task.DatetimeEnd = None
         if 'priority' in content:
             task.PriorityLevel = content['priority']
         if 'duration' in content and  content['duration']!= "":
@@ -643,32 +637,32 @@ def task_put(id_task):
         task.save()
     except:
         return sendError(400, "Make sure to send all the parameters")
-    """
+
     try :
         if 'datetimeStart' in content and  content['datetimeStart']!= "" and 'datetimeEnd' in content and  content['datetimeEnd']!= "" :
             startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S")
             endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S")
             diff = endTime - startTime
-            duration = diff.seconds / 60
+            duration = diff.seconds // 60
 
-            if duration!=task.Duration :
-                endTime = datetime.datetime.strptime(task.DatetimeStart , "%Y-%m-%d %H:%M:%S")  + datetime.timedelta(minutes=task.Duration)
-                newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
 
-        if task.DatetimeStart is not None and task.DatetimeEnd is None:
-            endTime = datetime.strptime(task.DatetimeStart , "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=task.Duration)
-            newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
+            if duration!=content['duration'] :
+                startTime = datetime.datetime.strptime(content["datetimeStart"] , "%Y-%m-%d %H:%M:%S")  + datetime.timedelta(minutes=content['duration'])
+                task.DatetimeEnd  = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
 
-            endTime = datetime.strptime(task.DatetimeStart , "%a, %d %b %Y %H:%M:%S GMT") + datetime.timedelta(minutes=task.Duration)
-            newTask.DatetimeEnd  = datetime.datetime.strftime(endTime, "%a, %d %b %Y %H:%M:%S GMT")
+        if "datetimeStart" in content and content['datetimeStart'] != "" and "datetimeEnd" in content and content['datetimeEnd'] == "":
+            duration=task.Duration
+            startTime = datetime.datetime.strptime(content["datetimeStart"], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=duration)
+            task.DatetimeEnd  = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
 
-        if task.DatetimeEnd is not None and task.DatetimeStart is None:
-            startTime = datetime.datetime.strptime(task.DatetimeEnd , "%Y-%m-%d %H:%M:%S")  - datetime.timedelta(minutes=task.Duration)
-            newTask.DatetimeStart = datetime.datetime.strftime(startTime, "%Y-%m-%d %H:%M:%S")
+        if "datetimeEnd" in content and content['datetimeEnd'] != "" and "datetimeStart" in content and content['datetimeStart'] == "":
+            duration=task.Duration
+            endTime = datetime.datetime.strptime(content["datetimeEnd"], "%Y-%m-%d %H:%M:%S") - datetime.timedelta(minutes=duration)
+            task.DatetimeStart  = datetime.datetime.strftime(endTime, "%Y-%m-%d %H:%M:%S")
         task.save()
     except:
         return sendError(400, "Durée et Heures incohérentes")
-    """
+
 
     if 'dependencies' in content  :
         DEPENDANCE.delete().where(DEPENDANCE.TaskConcerned == task).execute()
