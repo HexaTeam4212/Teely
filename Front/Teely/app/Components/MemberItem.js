@@ -18,6 +18,7 @@ export default class MemberItem extends React.Component {
             biography: "",
             idImageProfile: 18,
         }
+        this.username = this.props.username
         this.getDataProfile()
     }
 
@@ -34,12 +35,12 @@ export default class MemberItem extends React.Component {
     updateDataProfile = (dataProfile) => {
         this.setState({
             name: dataProfile.name, lastName: dataProfile.lastName, birthDate: this.formatDate(dataProfile.birthDate),
-            biography: dataProfile.bio, idImageProfile: dataProfile.idImage, isLoading: false
+            biography: dataProfile.bio, idImageProfile: dataProfile.idImage, isLoading: false, refreshing: false
         })
     }
 
     getDataProfile = () => {
-        accountServices.dataProfile(this.updateDataProfile, this.state.username) 
+        accountServices.dataProfile(this.updateDataProfile, this.username) 
     }
 
     formatDate(dateString) {
@@ -48,6 +49,7 @@ export default class MemberItem extends React.Component {
         return formattedDate
     }
     render() {
+        this.username = this.props.username
         return (
             <View style={styles.main_container}>
                 <Image

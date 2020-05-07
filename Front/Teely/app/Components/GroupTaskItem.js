@@ -73,11 +73,15 @@ const styles = StyleSheet.create({
     main_container: {
         flex: 1,
         flexDirection: 'row',
-        margin: 5,
+        marginTop:5,
+        marginBottom:5,
+        marginRight:5,
+        marginLeft:10,
 
     },
     left_container: {
         flex: 3,
+        marginRight:5,
     },
     right_container: {
         flex: 1,
@@ -104,14 +108,14 @@ const styles = StyleSheet.create({
         fontFamily: Platform.OS === 'ios' ? 'Noteworthy' : 'Roboto',
         fontSize: 16,
         textAlign: 'left',
-        //color: 'white',
         flexWrap: 'wrap',
         textDecorationLine: 'underline'
     },
     date_text: {
         fontSize: 16,
         textAlign: 'right',
-        color: '#262726',
+        fontWeight: 'bold',
+        color: '#03ACAC',
         fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'Roboto',
     }
 })
