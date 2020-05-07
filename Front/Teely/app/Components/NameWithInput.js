@@ -26,12 +26,14 @@ export default class NameWithInput extends React.Component {
     const height = this.props.height
     const value = this.props.value
     const multiline = this.props.multiline
+    const maxLength = this.props.maxLength
+    const scrollEnabled= this.props.scrollEnabled
     return(
     <View style={styles.main_container} >
         <Text style = {styles.text}> {name}</Text>
-        <TextInput placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type} 
+        <TextInput maxLength={maxLength} placeholder={placeholder} placeholderTextColor='#d9d9d9' textContentType={type} 
         value={value} secureTextEntry= {secureTextEntry} onChangeText={(text) => this.textInputChangedText(text)}
-        style = {[styles.textInput, {height: height}]} multiline={multiline}/>
+        style = {[styles.textInput, {height: height}]} multiline={multiline} scrollEnabled={scrollEnabled}/>
         
     </View>
 
@@ -64,5 +66,7 @@ const styles = StyleSheet.create({
       width: 200,
       borderRadius: 10,
       marginRight: 25,
+      flexWrap : 'wrap',
+      textAlignVertical: 'center'
     }
 });

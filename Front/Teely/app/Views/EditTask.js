@@ -36,15 +36,15 @@ export default class EditTask extends React.Component {
             groupTasks: [],
             isLoading: true,
             refreshing: false,
-            open:false
+            open: false
         }
-        this.groupId = this.props.route.params.groupId
+        this.groupId = ""
         this.taskId = this.props.route.params.taskId
         this.userSelection = new Map()
         this.taskSelection = new Map()
         this.getDataProfile()
-        this.getGroupInfos()
         this.getTaskInfos()
+
 
     }
 
@@ -71,7 +71,7 @@ export default class EditTask extends React.Component {
                 this.taskSelection.set(this.state.taskDependencies[i], true)
             }
         }
-        this.setState({isLoading: false})
+        this.setState({ isLoading: false })
 
     }
 
@@ -114,12 +114,15 @@ export default class EditTask extends React.Component {
             taskPriority: data.priority, taskDependencies: data.dependencies, datetimeStart: data.datetimeStart,
             datetimeEnd: data.datetimeEnd, taskDuration: data.duration
         })
-        if (data.datetimeStart!=null) {
-            this.setState({datetimeStart: generalServices.formatDateTimeForTask(data.datetimeStart)})
+        this.groupId = data.idGroup
+        console.log(this.groupId)
+        if (data.datetimeStart != null) {
+            this.setState({ datetimeStart: generalServices.formatDateTimeForTask(data.datetimeStart) })
         }
-        if (data.datetimeEnd!=null) {
-            this.setState({datetimeEnd: generalServices.formatDateTimeForTask(data.datetimeEnd)})
+        if (data.datetimeEnd != null) {
+            this.setState({ datetimeEnd: generalServices.formatDateTimeForTask(data.datetimeEnd) })
         }
+        this.getGroupInfos(this.groupId)
         groupServices.getGroupTasks(this.groupId, this.updateGroupTasks)
 
     }
@@ -312,137 +315,137 @@ export default class EditTask extends React.Component {
 
     toggleOpen = () => {
         this.setState({ open: !this.state.open });
-      }
-    
-      drawerContent = () => {
+    }
+
+    drawerContent = () => {
         return (
-          <View style={styles.menu}>
-            <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 10 }} >
-              <ProfileIcon idImage={this.state.idImageProfile} />
-            </TouchableOpacity>
-            <View style={{ flex: 12 }}>
-              <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
-              <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
-              <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
-              <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
-              <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
-              <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
-                accountServices.logout()
-                this.props.navigation.navigate("Login")
-              }} />
+            <View style={styles.menu}>
+                <TouchableOpacity onPress={this.toggleOpen} style={{ flex: 1, marginBottom: 10 }} >
+                    <ProfileIcon idImage={this.state.idImageProfile} />
+                </TouchableOpacity>
+                <View style={{ flex: 12 }}>
+                    <MenuButton name='Profil' width={'95%'} onPress={() => this.props.navigation.navigate("Profile")} />
+                    <MenuButton name='Calendrier' width={'95%'} onPress={() => this.props.navigation.navigate("PersonalCalendar")} />
+                    <MenuButton name='Groupes' width={'95%'} onPress={() => this.props.navigation.navigate("Groups")} />
+                    <MenuButton name='Invitations' width={'95%'} onPress={() => this.props.navigation.navigate("Invitations", { invitations: this.invitations })} />
+                    <MenuButton name='Paramètres' width={'95%'} onPress={() => this.props.navigation.navigate("EditProfile")} />
+                    <MenuButton name='Déconnexion' width={'95%'} onPress={() => {
+                        accountServices.logout()
+                        this.props.navigation.navigate("Login")
+                    }} />
+                </View>
             </View>
-          </View>
         )
-      }
+    }
 
     render() {
         return (
             <View style={styles.main_container}>
                 {backgroundGradientColor()}
                 <View style={{ flex: 1 }}>
-                <MenuDrawer
-            open={this.state.open}
-            drawerContent={this.drawerContent()}
-            drawerPercentage={55}
-            animationTime={200}
-            overlay={false}
-            opacity={0.2}
-          >
-              <View style={styles.icon_container}>
-              <TouchableOpacity onPress={this.toggleOpen}>
-                <Image style={styles.profil} source={Images[this.state.idImageProfile]} />
-              </TouchableOpacity>
-            </View>
-                <KeyboardAwareScrollView
-                    scrollEnabled={true}
-                    enableAutomaticScroll={(Platform.OS === 'ios')}
-                    enableOnAndroid={true}
-                    keyboardOpeningTime={0}
-                    enableResetScrollToCoords={true}
-                    contentContainerStyle={styles.content_container}
-                >
-                    <NameWithInput value={this.state.taskName} name='Nom de la tâche : ' type='none' placeholder={"Nom"} height={40}
-                        secureTextEntry={false} parentCallback={this.callbackFunctionTaskName} />
-                    <View style={styles.groupLined_container}>
-                        <Text style={styles.text}> Groupe : </Text>
-                        <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
-                        <Text style={styles.name_text}>{this.state.groupName}</Text>
-                    </View>
-                    <NameWithInput value={this.state.taskDescription} name='Description : ' type='none' placeholder={"Description"} height={60}
-                        secureTextEntry={false} parentCallback={this.callbackFunctionTaskDescription} />
-                    <Text style={styles.container_title}> Personne en charge : </Text>
-                    <ScrollView
-                        resetScrollToCoords={{ x: 0, y: 0 }}
-                        scrollEnabled={true}
-                        enableAutomaticScroll={(Platform.OS === 'ios')}
-                        enableOnAndroid={true}
-                        contentContainerStyle={[styles.taskUser_container, { maxHeight: 300 }]}
+                    <MenuDrawer
+                        open={this.state.open}
+                        drawerContent={this.drawerContent()}
+                        drawerPercentage={55}
+                        animationTime={0}
+                        overlay={false}
+                        opacity={0.2}
                     >
-                        <FlatList
-                            data={this.state.groupMembers}
-                            keyExtractor={(item) => item.toString()}
-                            renderItem={({ item }) => this.renderMemberItem(item)}
-                        />
-                    </ScrollView>
-
-                    <View style={styles.groupLined_container}>
-                        <View style={styles.centered_container}>
-                            <Text style={styles.text}> Début : </Text>
+                        <View style={styles.icon_container}>
+                            <TouchableOpacity onPress={this.toggleOpen}>
+                                <Image style={styles.profil} source={Images[this.state.idImageProfile]} />
+                            </TouchableOpacity>
                         </View>
-                        <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' width={200} name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
-                        </View>
-                    </View>
-                    <View style={styles.groupLined_container}>
-                        <View style={styles.centered_container}>
-                            <Text style={styles.text}> Fin : </Text>
-                        </View>
-                        <View style={styles.rightAligned_container}>
-                            <DateTimePicker mode='datetime' width={200} name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
-                        </View>
-                    </View>
-                    <View style={styles.groupLined_container}>
-                        <View style={styles.leftAligned_container}>
-                            <View style={styles.leftAligned_container}>
-                                <Text style={styles.text}>Durée : </Text>
+                        <KeyboardAwareScrollView
+                            scrollEnabled={true}
+                            enableAutomaticScroll={(Platform.OS === 'ios')}
+                            enableOnAndroid={true}
+                            keyboardOpeningTime={0}
+                            enableResetScrollToCoords={true}
+                            contentContainerStyle={styles.content_container}
+                        >
+                            <NameWithInput maxLength={100} value={this.state.taskName} name='Nom de la tâche : ' type='none' placeholder={"Nom"} height={40}
+                                multiLine={true} secureTextEntry={false} parentCallback={this.callbackFunctionTaskName} />
+                            <View style={styles.groupLined_container}>
+                                <Text style={styles.text}> Groupe : </Text>
+                                <Image style={styles.groupPic} source={ImagesGroup[this.state.idImageGroup]} />
+                                <Text style={styles.name_text}>{this.state.groupName}</Text>
                             </View>
-                            <View style={styles.rightAligned_container}>
-                                <TextInput
-                                    placeholder="en minutes"
-                                    style={styles.textInput}
-                                    keyboardType='numeric'
-                                    onChangeText={(text) => this.updateDuration(text)}
-                                    value={this.state.taskDuration.toString()}
+                            <NameWithInput maxLength={100} scrollEnabled={true} value={this.state.taskDescription} name='Description : ' type='none' placeholder={"Description"}
+                                multiLine={true} height={100} secureTextEntry={false} parentCallback={this.callbackFunctionTaskDescription} />
+                            <Text style={styles.container_title}> Personne en charge : </Text>
+                            <ScrollView
+                                resetScrollToCoords={{ x: 0, y: 0 }}
+                                scrollEnabled={true}
+                                enableAutomaticScroll={(Platform.OS === 'ios')}
+                                enableOnAndroid={true}
+                                contentContainerStyle={[styles.taskUser_container, { maxHeight: 300 }]}
+                            >
+                                <FlatList
+                                    data={this.state.groupMembers}
+                                    keyExtractor={(item) => item.toString()}
+                                    renderItem={({ item }) => this.renderMemberItem(item)}
                                 />
+                            </ScrollView>
+
+                            <View style={styles.groupLined_container}>
+                                <View style={styles.centered_container}>
+                                    <Text style={styles.text}> Début : </Text>
+                                </View>
+                                <View style={styles.rightAligned_container}>
+                                    <DateTimePicker mode='datetime' name={this.state.datetimeStart} parentCallback={this.callbackFunctionDateTimeStart} />
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.rightAligned_container}>
-                            <View style={styles.leftAligned_container}>
-                                <Text style={styles.text}> Priorité : </Text>
+                            <View style={styles.groupLined_container}>
+                                <View style={styles.centered_container}>
+                                    <Text style={styles.text}> Fin : </Text>
+                                </View>
+                                <View style={styles.rightAligned_container}>
+                                    <DateTimePicker mode='datetime' name={this.state.datetimeEnd} parentCallback={this.callbackFunctionDateTimeEnd} />
+                                </View>
                             </View>
-                            <View style={styles.rightAligned_container}>
-                                <Picker
-                                    style={styles.picker}
-                                    itemStyle={styles.pickerItem}
-                                    selectedValue={this.state.taskPriority}
-                                    onValueChange={(itemValue, itemIndex) => { this.setState({ taskPriority: itemValue }) }}
-                                >
-                                    <Picker.Item label="Basse" value={1} />
-                                    <Picker.Item label="Moyenne" value={2} />
-                                    <Picker.Item label="Haute" value={3} />
-                                </Picker>
+                            <View style={styles.groupLined_container}>
+                                <View style={styles.leftAligned_container}>
+                                    <View style={styles.leftAligned_container}>
+                                        <Text style={styles.text}>Durée : </Text>
+                                    </View>
+                                    <View style={styles.rightAligned_container}>
+                                        <TextInput
+                                            placeholder="en minutes"
+                                            style={styles.textInput}
+                                            keyboardType='numeric'
+                                            onChangeText={(text) => this.updateDuration(text)}
+                                            value={this.state.taskDuration.toString()}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={styles.rightAligned_container}>
+                                    <View style={styles.leftAligned_container}>
+                                        <Text style={styles.text}> Priorité : </Text>
+                                    </View>
+                                    <View style={styles.rightAligned_container}>
+                                        <Picker
+                                            style={styles.picker}
+                                            itemStyle={styles.pickerItem}
+                                            selectedValue={this.state.taskPriority}
+                                            onValueChange={(itemValue, itemIndex) => { this.setState({ taskPriority: itemValue }) }}
+                                        >
+                                            <Picker.Item label="Basse" value={1} />
+                                            <Picker.Item label="Moyenne" value={2} />
+                                            <Picker.Item label="Haute" value={3} />
+                                        </Picker>
+                                    </View>
+                                </View>
                             </View>
-                        </View>
-                    </View>
-                    {this.displayPossibleDependencies()}
-                    <View style={{ marginBottom: 100 }}>
-                        <CustomButton name='Enregistrer' width={170} onPress={this.updateTask}>
-                        </CustomButton>
-                    </View>
-                    <View style={{ marginBottom: 80 }}></View>
-                </KeyboardAwareScrollView>
-                </MenuDrawer>
-                {this.displayLoading()}
+                            {this.displayPossibleDependencies()}
+                            <View style={{ marginBottom: 100 }}>
+                                <CustomButton name='Enregistrer' width={170} onPress={this.updateTask}>
+                                </CustomButton>
+                            </View>
+                            <View style={{ marginBottom: 80 }}></View>
+                        </KeyboardAwareScrollView>
+                    </MenuDrawer>
+                    {this.displayLoading()}
                 </View>
             </View >
 
@@ -520,6 +523,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
+        marginRight: 10,
     },
     checkedImage_container: {
         flex: 1,
@@ -621,12 +625,12 @@ const styles = StyleSheet.create({
         borderRadius: 60,
         margin: 10
     },
-      menu: {
+    menu: {
         flex: 1,
         flexDirection: 'column',
         backgroundColor: "#ffb4e2",
         padding: 0
-      },
+    },
 })
 
 

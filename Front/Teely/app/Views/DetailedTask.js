@@ -53,11 +53,11 @@ export default class DetailedTask extends React.Component {
             this.getDataProfile()
             this.getTaskInfos()
         });
-      }
-    
-      componentWillUnmount() {
+    }
+
+    componentWillUnmount() {
         this._unsubscribe();
-      }
+    }
 
     onRefresh = () => {
         this.setState({ refreshing: true })

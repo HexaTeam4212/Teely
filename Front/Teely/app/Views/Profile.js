@@ -84,7 +84,7 @@ export default class Profile extends React.Component {
 
     updateTasksList = (tasksList) => {
         this.setState({
-            tasks: tasksList, isLoading: false, refreshing: false
+            tasks: tasksList.slice(0,3), isLoading: false, refreshing: false
         })
     }
 
