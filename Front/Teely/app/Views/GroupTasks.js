@@ -20,8 +20,7 @@ export default class GroupTasks extends React.Component {
   constructor(props) {
     super(props)
     this.groupTasks = []
-    this.selectedTask;
-    this.idGroup = '';
+    this.idGroup = ''
     this.taskDeleted = ''
     this.state = {
       isLoading: true,

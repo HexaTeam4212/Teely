@@ -31,6 +31,17 @@ export default class PersonalCalendar extends React.Component {
     this.getAllTasks()
   }
 
+  componentDidMount() {
+    const { navigation } = this.props
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.getAllTasks()
+    });
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
   onRefresh = () => {
     this.setState({ refreshing: true })
     this.getAllTasks()

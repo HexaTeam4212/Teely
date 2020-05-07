@@ -53,11 +53,11 @@ export default class DetailedTask extends React.Component {
             this.getDataProfile()
             this.getTaskInfos()
         });
-      }
-    
-      componentWillUnmount() {
+    }
+
+    componentWillUnmount() {
         this._unsubscribe();
-      }
+    }
 
     onRefresh = () => {
         this.setState({ refreshing: true })
@@ -154,7 +154,7 @@ export default class DetailedTask extends React.Component {
         if (this.state.taskDependencies != null && this.state.groupTasks.length) {
             for (let i = 0; i < this.state.groupTasks.length; i++) {
                 if (this.state.taskDependencies.includes(this.state.groupTasks[i].taskId)
-                && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId))
+                    && !this.tabTaskDependencies.includes(this.state.groupTasks[i].taskId))
                     this.tabTaskDependencies.push(this.state.groupTasks[i])
             }
         }
