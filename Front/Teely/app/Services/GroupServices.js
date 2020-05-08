@@ -392,7 +392,9 @@ class GroupServices {
                 else if (response.status == 409) {
                     alert("Attention : certaines tâches ont une durée supérieure au créneau imposé et n'ont donc pas été agencées")
                 }
-                httpError(response.status)
+                else {
+                    httpError(response.status)
+                }
                 callback(false)
                 console.warn(respBody.error)
             }
